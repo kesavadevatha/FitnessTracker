@@ -795,47 +795,47 @@ async function getFoodMacros(foodText, quantity, unit) {
     };
 }
 
-app.get('/', (req, res) => {
-    res.redirect('/login');
+app.get('${API_BASE_URL}/', (req, res) => {
+    res.redirect('${API_BASE_URL}/login');
 });
 
-app.get('/login', (req, res) => {
+app.get('${API_BASE_URL}/login', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'login.html'));
 });
 
-app.get('/reset-password', (req, res) => {
+app.get('${API_BASE_URL}/reset-password', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'reset-password.html'));
 });
 
-app.get('/admin', (req, res) => {
+app.get('${API_BASE_URL}/admin', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'admin.html'));
 });
 
-app.get('/index', (req, res) => {
+app.get('${API_BASE_URL}/index', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'index.html'));
 });
 
-app.get('/food-intake', (req, res) => {
+app.get('${API_BASE_URL}/food-intake', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'food-intake.html'));
 });
 
-app.get('/food-catalog', (req, res) => {
+app.get('${API_BASE_URL}/food-catalog', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'food-catalog.html'));
 });
 
-app.get('/food-catalog-browser', (req, res) => {
+app.get('${API_BASE_URL}/food-catalog-browser', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'food-catalog-browser.html'));
 });
 
-app.get('/day-details', (req, res) => {
+app.get('${API_BASE_URL}/day-details', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'day-details.html'));
 });
 
-app.get('/user-details', (req, res) => {
+app.get('${API_BASE_URL}/user-details', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'user-details.html'));
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('${API_BASE_URL}/api/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
@@ -866,7 +866,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-app.get('/api/me', authenticateRequest, async (req, res) => {
+app.get('${API_BASE_URL}/api/me', authenticateRequest, async (req, res) => {
     try {
         const user = await findUserByEmail(req.user.email);
         if (!user) {
@@ -884,7 +884,7 @@ app.get('/api/me', authenticateRequest, async (req, res) => {
     }
 });
 
-app.get('/api/user/profile', authenticateRequest, async (req, res) => {
+app.get('${API_BASE_URL}/api/user/profile', authenticateRequest, async (req, res) => {
     if (req.user.isAdmin) {
         return res.status(403).json({ error: 'Admins cannot access standard user profile.' });
     }
@@ -909,7 +909,7 @@ app.get('/api/user/profile', authenticateRequest, async (req, res) => {
     }
 });
 
-app.put('/api/user/profile', authenticateRequest, async (req, res) => {
+app.put('${API_BASE_URL}/api/user/profile', authenticateRequest, async (req, res) => {
     if (req.user.isAdmin) {
         return res.status(403).json({ error: 'Admins cannot update standard user profile.' });
     }
@@ -971,7 +971,7 @@ app.put('/api/user/profile', authenticateRequest, async (req, res) => {
     }
 });
 
-app.post('/api/users', async (req, res) => {
+app.post('${API_BASE_URL}/api/users', async (req, res) => {
     const { email, password, isAdmin } = req.body;
 
     if (!email || !password) {
@@ -1021,7 +1021,7 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-app.get('/api/admin/users', authenticateRequest, requireAdmin, async (req, res) => {
+app.get('${API_BASE_URL}/api/admin/users', authenticateRequest, requireAdmin, async (req, res) => {
     let connection;
     try {
         connection = await getConnection();
@@ -1056,7 +1056,7 @@ app.get('/api/admin/users', authenticateRequest, requireAdmin, async (req, res) 
     }
 });
 
-app.post('/api/admin/reset-password', authenticateRequest, requireAdmin, async (req, res) => {
+app.post('${API_BASE_URL}/api/admin/reset-password', authenticateRequest, requireAdmin, async (req, res) => {
     const { email, newPassword } = req.body;
 
     if (!email || !newPassword) {
@@ -1076,7 +1076,7 @@ app.post('/api/admin/reset-password', authenticateRequest, requireAdmin, async (
     }
 });
 
-app.put('/api/user/password', authenticateRequest, async (req, res) => {
+app.put('${API_BASE_URL}/api/user/password', authenticateRequest, async (req, res) => {
     const { password } = req.body;
 
     if (!password) {
@@ -1097,7 +1097,7 @@ app.put('/api/user/password', authenticateRequest, async (req, res) => {
 });
 
 // Tracker API endpoints
-app.get('/api/tracker', authenticateRequest, async (req, res) => {
+app.get('${API_BASE_URL}/api/tracker', authenticateRequest, async (req, res) => {
     console.log('Fetching meal-log tracker data from DB');
     let connection;
     try {
@@ -1150,7 +1150,7 @@ app.get('/api/tracker', authenticateRequest, async (req, res) => {
     }
 });
 
-app.get('/api/day-details', authenticateRequest, async (req, res) => {
+app.get('${API_BASE_URL}/api/day-details', authenticateRequest, async (req, res) => {
     const trackDate = String(req.query.date || '').trim();
 
     if (!trackDate) {
@@ -1249,7 +1249,7 @@ app.get('/api/day-details', authenticateRequest, async (req, res) => {
     }
 });
 
-app.put('/api/meal-log/:mealLogId', authenticateRequest, async (req, res) => {
+app.put('${API_BASE_URL}/api/meal-log/:mealLogId', authenticateRequest, async (req, res) => {
     const mealLogId = Number(req.params.mealLogId);
     const { quantity, unit } = req.body;
 
@@ -1322,7 +1322,7 @@ app.put('/api/meal-log/:mealLogId', authenticateRequest, async (req, res) => {
     }
 });
 
-app.delete('/api/meal-log/:mealLogId', authenticateRequest, async (req, res) => {
+app.delete('${API_BASE_URL}/api/meal-log/:mealLogId', authenticateRequest, async (req, res) => {
     const mealLogId = Number(req.params.mealLogId);
 
     if (!Number.isFinite(mealLogId) || mealLogId <= 0) {
@@ -1355,7 +1355,7 @@ app.delete('/api/meal-log/:mealLogId', authenticateRequest, async (req, res) => 
     }
 });
 
-app.post('/api/food-macros', async (req, res) => {
+app.post('${API_BASE_URL}/api/food-macros', async (req, res) => {
     const { foodText, quantity, unit } = req.body;
 
     if (!foodText || String(foodText).trim().length === 0) {
@@ -1371,7 +1371,7 @@ app.post('/api/food-macros', async (req, res) => {
     }
 });
 
-app.get('/api/food-catalog', async (req, res) => {
+app.get('${API_BASE_URL}/api/food-catalog', async (req, res) => {
     const search = String(req.query.search || '').trim();
     let connection;
 
@@ -1404,7 +1404,7 @@ app.get('/api/food-catalog', async (req, res) => {
     }
 });
 
-app.post('/api/food-catalog', async (req, res) => {
+app.post('${API_BASE_URL}/api/food-catalog', async (req, res) => {
     const {
         foodName,
         measurementType,
@@ -1458,7 +1458,7 @@ app.post('/api/food-catalog', async (req, res) => {
     }
 });
 
-app.put('/api/food-catalog/:foodId', async (req, res) => {
+app.put('${API_BASE_URL}/api/food-catalog/:foodId', async (req, res) => {
     const foodId = Number(req.params.foodId);
     const {
         foodName,
@@ -1531,7 +1531,7 @@ app.put('/api/food-catalog/:foodId', async (req, res) => {
     }
 });
 
-app.delete('/api/food-catalog/:foodId', async (req, res) => {
+app.delete('${API_BASE_URL}/api/food-catalog/:foodId', async (req, res) => {
     const foodId = Number(req.params.foodId);
 
     if (!Number.isFinite(foodId) || foodId <= 0) {
@@ -1567,7 +1567,7 @@ app.delete('/api/food-catalog/:foodId', async (req, res) => {
     }
 });
 
-app.post('/api/meal-log', authenticateRequest, async (req, res) => {
+app.post('${API_BASE_URL}/api/meal-log', authenticateRequest, async (req, res) => {
     const { foodId, trackDate, mealName, quantity, unit, notes } = req.body;
     const normalizedMealName = normalizeMealName(mealName);
 
