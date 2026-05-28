@@ -10,7 +10,10 @@ const PROJECT_ROOT = path.resolve(process.cwd(), '..');
 const AUTH_TOKEN_SECRET = process.env.AUTH_TOKEN_SECRET || 'fitness-tracker-secret';
 const AUTH_TOKEN_EXPIRY_SECONDS = 60 * 60;
 
-app.use(cors());
+app.use(cors({
+  origin: [""],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/css', express.static(path.join(__dirname, '..', 'css')));
 app.use('/js', express.static(path.join(__dirname, '..', 'js')));
@@ -803,8 +806,8 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'admin.html'));
 });
 
-app.get('/fitness-dashboard', (req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, 'html', 'fitness-dashboard.html'));
+app.get('/index', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'index.html'));
 });
 
 app.get('/food-intake', (req, res) => {
