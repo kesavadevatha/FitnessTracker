@@ -23,8 +23,6 @@ const editItemFeedback = document.getElementById('edit-item-feedback');
 const editItemSubmitButton = document.getElementById('edit-item-submit-btn');
 const closeEditItemModalButton = document.getElementById('close-edit-item-modal');
 
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
-
 if (window.auth) {
   auth.requireLogin();
 }

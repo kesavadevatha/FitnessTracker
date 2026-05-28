@@ -2,7 +2,6 @@ const resetForm = document.getElementById('reset-password-form');
 const resetFeedback = document.getElementById('reset-feedback');
 const resetUserEmail = document.getElementById('reset-user-email');
 const resetSuccessModal = document.getElementById('reset-success-modal');
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 if (!auth.requireLogin()) {
   // requireLogin already redirects unauthenticated users.

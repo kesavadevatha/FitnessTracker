@@ -1,8 +1,6 @@
 const AUTH_TOKEN_KEY = 'fitnessTrackerAuthToken';
 const AUTH_USER_KEY = 'fitnessTrackerAuthUser';
 
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
-
 const APP_ROUTES = {
   login: `${API_BASE_URL}/login`,
   resetPassword: `${API_BASE_URL}/reset-password`,

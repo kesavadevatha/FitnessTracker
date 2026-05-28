@@ -1,5 +1,3 @@
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
-
 const form = document.getElementById('food-catalog-form');
 const status = document.getElementById('catalog-status');
 const measurementType = document.getElementById('measurement-type');

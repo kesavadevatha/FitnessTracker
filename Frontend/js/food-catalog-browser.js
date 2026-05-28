@@ -1,5 +1,3 @@
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
-
 const searchInput = document.getElementById('catalog-search');
 const status = document.getElementById('catalog-status');
 const results = document.getElementById('catalog-results');

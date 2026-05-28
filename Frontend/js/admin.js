@@ -10,7 +10,6 @@ const userSearchList = document.getElementById('user-search-list');
 const closeSearchModalButton = document.getElementById('close-search-modal');
 const backButton = document.getElementById('back-button');
 const logoutButton = document.getElementById('logout-button');
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 const API_ENDPOINTS = {
   users: `${API_BASE_URL}/api/users`,

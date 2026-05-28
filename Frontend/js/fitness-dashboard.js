@@ -11,7 +11,6 @@ const reportTrackedDays = document.getElementById('report-tracked-days');
 const reportAverageCalories = document.getElementById('report-average-calories');
 const reportAverageProtein = document.getElementById('report-average-protein');
 const reportCarbsFat = document.getElementById('report-carbs-fat');
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 const API_ENDPOINTS = {
   tracker: `${API_BASE_URL}/api/tracker`,

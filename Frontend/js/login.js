@@ -1,6 +1,5 @@
 const loginForm = document.getElementById('login-form');
 const loginFeedback = document.getElementById('login-feedback');
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 if (window.auth) {
   window.auth.redirectIfAuthenticated();

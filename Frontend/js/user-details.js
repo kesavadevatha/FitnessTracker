@@ -1,7 +1,6 @@
 const profileForm = document.getElementById('user-profile-form');
 const profileFeedback = document.getElementById('profile-feedback');
 const profileEmail = document.getElementById('profile-email');
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 async function initProfilePage() {
   if (!auth.requireLogin()) {
