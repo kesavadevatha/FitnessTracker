@@ -4,7 +4,7 @@ export const sidebarItems = [
     label: 'Dashboard',
     icon: '⌂',
     action: 'route',
-    href: '/fitness-dashboard'
+    href: '/index'
   },
   {
     id: 'profile',

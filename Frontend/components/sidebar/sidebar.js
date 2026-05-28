@@ -41,11 +41,11 @@ function isActiveItem(item) {
   }
 
   if (item.id === 'dashboard' && !dashboardView) {
-    return window.location.pathname === '/fitness-dashboard';
+    return window.location.pathname === '/index';
   }
 
   if (item.id === 'reports' && !dashboardView) {
-    return window.location.pathname === '/fitness-dashboard';
+    return window.location.pathname === '/index';
   }
 
   return item.id === currentView;
