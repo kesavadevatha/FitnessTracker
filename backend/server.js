@@ -3,7 +3,12 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const app = express();
-const PORT = 3000;
+//const PORT = 3000;
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 const cors = require('cors');
 const ExcelJS = require('exceljs');
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
