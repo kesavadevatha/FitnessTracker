@@ -23,6 +23,8 @@ const editItemFeedback = document.getElementById('edit-item-feedback');
 const editItemSubmitButton = document.getElementById('edit-item-submit-btn');
 const closeEditItemModalButton = document.getElementById('close-edit-item-modal');
 
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
+
 if (window.auth) {
   auth.requireLogin();
 }
@@ -280,11 +282,13 @@ async function openAddItemModal(mealName) {
   addItemFoodSelect.innerHTML = catalogItems.map((item) => `
     <option value="${item.FOOD_ID}">${item.FOOD_NAME}</option>
   `).join('');
+
   addItemFoodSelect.disabled = false;
   addItemQuantityInput.disabled = false;
   addItemUnitSelect.disabled = false;
   addItemNotesInput.disabled = false;
   addItemFoodSelect.value = String(catalogItems[0].FOOD_ID);
+
   updateCatalogPreview();
   addItemFeedback.textContent = 'Choose a food item and add your serving details.';
 }
@@ -299,16 +303,21 @@ function updateCatalogPreview() {
 
   addItemQuantityInput.value = Number(selectedItem.SERVING_SIZE) || 1;
   addItemUnitSelect.value = normalizeUnitForSelect(selectedItem.SERVING_SIZE_UNIT || 'g');
+
   catalogItemSummary.classList.remove('hidden');
+
   catalogItemPreview.innerHTML = `
-    ${selectedItem.FOOD_NAME} • ${currencyFormatter.format(Number(selectedItem.CALORIES_PER_SERVING || 0))} kcal, ${metricFormatter.format(Number(selectedItem.PROTEIN_PER_SERVING || 0))} g protein, ${metricFormatter.format(Number(selectedItem.CARBS_PER_SERVING || 0))} g carbs, ${metricFormatter.format(Number(selectedItem.FAT_PER_SERVING || 0))} g fat per serving.
+    ${selectedItem.FOOD_NAME} • ${currencyFormatter.format(Number(selectedItem.CALORIES_PER_SERVING || 0))} kcal,
+    ${metricFormatter.format(Number(selectedItem.PROTEIN_PER_SERVING || 0))} g protein,
+    ${metricFormatter.format(Number(selectedItem.CARBS_PER_SERVING || 0))} g carbs,
+    ${metricFormatter.format(Number(selectedItem.FAT_PER_SERVING || 0))} g fat per serving.
     ${selectedItem.NOTES ? `<br />${selectedItem.NOTES}` : ''}
   `;
 }
 
 async function loadCatalogItems() {
   try {
-    const response = await auth.authFetch('/api/food-catalog');
+    const response = await auth.authFetch(`${API_BASE_URL}/api/food-catalog`);
 
     if (!response.ok) {
       throw new Error(`Unable to load food catalog (${response.status})`);
@@ -371,7 +380,7 @@ async function handleEditItemSubmit(event) {
   editItemFeedback.textContent = 'Saving item changes...';
 
   try {
-    const response = await fetch(`/api/meal-log/${activeEditMealLogId}`, {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/meal-log/${activeEditMealLogId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -383,8 +392,7 @@ async function handleEditItemSubmit(event) {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unable to update item.' }));
-      throw new Error(error.error || 'Unable to update item.');
+      throw new Error('Unable to update item.');
     }
 
     closeEditItemModal();
@@ -408,13 +416,12 @@ async function handleDeleteItem(mealLogId) {
   }
 
   try {
-    const response = await fetch(`/api/meal-log/${mealLogId}`, {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/meal-log/${mealLogId}`, {
       method: 'DELETE'
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unable to delete item.' }));
-      throw new Error(error.error || 'Unable to delete item.');
+      throw new Error('Unable to delete item.');
     }
 
     await loadDayDetails();
@@ -450,7 +457,7 @@ async function handleAddItemSubmit(event) {
   addItemFeedback.textContent = 'Saving item...';
 
   try {
-    const response = await auth.authFetch('/api/meal-log', {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/meal-log`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -466,8 +473,7 @@ async function handleAddItemSubmit(event) {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unable to add item.' }));
-      throw new Error(error.error || 'Unable to add item.');
+      throw new Error('Unable to add item.');
     }
 
     closeAddItemModal();
@@ -500,21 +506,24 @@ async function loadDayDetails() {
   }
 
   currentDayDate = date;
+
   dayTitle.textContent = formatDateLabel(date);
   dayCopy.textContent = `Review the meal breakdown for ${formatDateLabel(date)}.`;
 
   try {
-    const response = await auth.authFetch(`/api/day-details?date=${encodeURIComponent(date)}`);
+    const response = await auth.authFetch(`${API_BASE_URL}/api/day-details?date=${encodeURIComponent(date)}`);
 
     if (!response.ok) {
       throw new Error(`Unable to fetch day details (${response.status})`);
     }
 
     const data = await response.json();
+
     renderSummary(data);
     renderMealPanels(data);
   } catch (error) {
     console.error(error);
+
     dayCopy.textContent = 'Unable to load this day’s meal details right now.';
     daySummaryGrid.innerHTML = '';
     mealTabs.innerHTML = '';

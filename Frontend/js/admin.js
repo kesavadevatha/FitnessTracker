@@ -10,6 +10,14 @@ const userSearchList = document.getElementById('user-search-list');
 const closeSearchModalButton = document.getElementById('close-search-modal');
 const backButton = document.getElementById('back-button');
 const logoutButton = document.getElementById('logout-button');
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
+
+const API_ENDPOINTS = {
+  users: `${API_BASE_URL}/api/users`,
+  adminUsers: `${API_BASE_URL}/api/admin/users`,
+  resetPassword: `${API_BASE_URL}/api/admin/reset-password`,
+  dashboard: `${API_BASE_URL}/fitness-dashboard`
+};
 
 function renderUserSearchResults(users) {
   userSearchModal.classList.remove('hidden');
@@ -40,7 +48,10 @@ async function searchUsers(query = '') {
   }
 
   try {
-    const response = await auth.authFetch(`/api/admin/users?search=${encodeURIComponent(String(query || '').trim())}`);
+    //const response = await auth.authFetch(`/api/admin/users?search=${encodeURIComponent(String(query || '').trim())}`);
+	const response = await auth.authFetch(
+	  `${API_ENDPOINTS.adminUsers}?search=${encodeURIComponent(String(query || '').trim())}`
+	);
     if (!response.ok) {
       throw new Error('Failed to load users.');
     }
@@ -72,7 +83,8 @@ createUserForm.addEventListener('submit', async (event) => {
   createUserFeedback.textContent = 'Creating user...';
 
   try {
-    const response = await auth.authFetch('/api/users', {
+    //const response = await auth.authFetch('/api/users', {
+	const response = await auth.authFetch(API_ENDPOINTS.users, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -111,7 +123,8 @@ resetUserForm.addEventListener('submit', async (event) => {
   resetUserFeedback.textContent = 'Resetting password...';
 
   try {
-    const response = await auth.authFetch('/api/admin/reset-password', {
+    //const response = await auth.authFetch('/api/admin/reset-password', {
+	const response = await auth.authFetch(API_ENDPOINTS.resetPassword, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -165,7 +178,8 @@ function closeSearchModal() {
 }
 
 backButton.addEventListener('click', () => {
-  window.location.href = '/fitness-dashboard';
+  //window.location.href = '/fitness-dashboard';
+  window.location.href = API_ENDPOINTS.dashboard;
 });
 
 logoutButton.addEventListener('click', () => auth.logout());

@@ -1,6 +1,7 @@
 const profileForm = document.getElementById('user-profile-form');
 const profileFeedback = document.getElementById('profile-feedback');
 const profileEmail = document.getElementById('profile-email');
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 async function initProfilePage() {
   if (!auth.requireLogin()) {
@@ -9,12 +10,12 @@ async function initProfilePage() {
 
   const currentUser = auth.getAuthUser();
   if (currentUser?.isAdmin) {
-    window.location.href = '/fitness-dashboard';
+    window.location.href = '${API_BASE_URL}/fitness-dashboard';
     return;
   }
 
   try {
-    const response = await auth.authFetch('/api/user/profile');
+    const response = await auth.authFetch('${API_BASE_URL}/api/user/profile');
     if (!response.ok) {
       const data = await response.json();
       profileFeedback.textContent = data.error || 'Unable to load profile.';
@@ -74,7 +75,7 @@ profileForm.addEventListener('submit', async (event) => {
   profileFeedback.textContent = 'Saving details...';
 
   try {
-    const response = await auth.authFetch('/api/user/profile', {
+    const response = await auth.authFetch('${API_BASE_URL}/api/user/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

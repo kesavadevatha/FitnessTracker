@@ -11,6 +11,13 @@ const reportTrackedDays = document.getElementById('report-tracked-days');
 const reportAverageCalories = document.getElementById('report-average-calories');
 const reportAverageProtein = document.getElementById('report-average-protein');
 const reportCarbsFat = document.getElementById('report-carbs-fat');
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
+
+const API_ENDPOINTS = {
+  tracker: `${API_BASE_URL}/api/tracker`,
+  foodCatalog: `${API_BASE_URL}/api/food-catalog`,
+  mealLog: `${API_BASE_URL}/api/meal-log`
+};
 
 if (window.auth) {
   auth.requireLogin();
@@ -358,7 +365,8 @@ function renderCards(entries) {
 
 async function loadTrackerData() {
   try {
-    const response = await auth.authFetch('/api/tracker');
+    //const response = await auth.authFetch('/api/tracker');
+	const response = await auth.authFetch(API_ENDPOINTS.tracker);
 
     if (!response.ok) {
       throw new Error(`Unable to fetch tracker data (${response.status})`);
@@ -403,7 +411,8 @@ function normalizeUnitForSelect(unit) {
 
 async function loadCatalogItems() {
   try {
-    const response = await auth.authFetch('/api/food-catalog');
+    //const response = await auth.authFetch('/api/food-catalog');
+	const response = await auth.authFetch(API_ENDPOINTS.foodCatalog);
 
     if (!response.ok) {
       throw new Error(`Unable to load food catalog (${response.status})`);
@@ -501,7 +510,8 @@ async function handleSubmit(event) {
   document.getElementById('intake-feedback').textContent = 'Saving item...';
 
   try {
-    const response = await auth.authFetch('/api/meal-log', {
+    //const response = await auth.authFetch('/api/meal-log', {
+	const response = await auth.authFetch(API_ENDPOINTS.mealLog, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

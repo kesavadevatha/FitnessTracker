@@ -1,6 +1,14 @@
 const AUTH_TOKEN_KEY = 'fitnessTrackerAuthToken';
 const AUTH_USER_KEY = 'fitnessTrackerAuthUser';
 
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
+
+const APP_ROUTES = {
+  login: `${API_BASE_URL}/login`,
+  resetPassword: `${API_BASE_URL}/reset-password`,
+  dashboard: `${API_BASE_URL}/fitness-dashboard`
+};
+
 function getAuthToken() {
   return localStorage.getItem(AUTH_TOKEN_KEY);
 }
@@ -25,7 +33,7 @@ function clearAuth() {
 
 function redirectToLogin() {
   clearAuth();
-  window.location.href = '/login';
+  window.location.href = APP_ROUTES.login;
 }
 
 async function authFetch(url, options = {}) {
@@ -57,8 +65,11 @@ function requireLogin() {
     return false;
   }
 
-  if (user.passwordResetRequired && window.location.pathname !== '/reset-password') {
-    window.location.href = '/reset-password';
+  if (
+    user.passwordResetRequired &&
+    !window.location.href.includes('/reset-password')
+  ) {
+    window.location.href = APP_ROUTES.resetPassword;
     return false;
   }
 
@@ -67,10 +78,12 @@ function requireLogin() {
 
 function requireAdmin() {
   const user = getAuthUser();
+
   if (!user?.isAdmin) {
-    window.location.href = '/fitness-dashboard';
+    window.location.href = APP_ROUTES.dashboard;
     return false;
   }
+
   return true;
 }
 
@@ -82,13 +95,16 @@ function redirectIfAuthenticated() {
     return false;
   }
 
-  if (user.passwordResetRequired && window.location.pathname !== '/reset-password') {
-    window.location.href = '/reset-password';
+  if (
+    user.passwordResetRequired &&
+    !window.location.href.includes('/reset-password')
+  ) {
+    window.location.href = APP_ROUTES.resetPassword;
     return true;
   }
 
-  if (window.location.pathname === '/login') {
-    window.location.href = '/fitness-dashboard';
+  if (window.location.href.includes('/login')) {
+    window.location.href = APP_ROUTES.dashboard;
     return true;
   }
 
@@ -101,12 +117,16 @@ function parseAuthToken(token) {
   }
 
   const parts = token.split('.');
+
   if (parts.length !== 3) {
     return null;
   }
 
   try {
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    );
+
     return payload;
   } catch (error) {
     return null;
@@ -120,7 +140,7 @@ function getAuthPayload() {
 
 function logout() {
   clearAuth();
-  window.location.href = '/login';
+  window.location.href = APP_ROUTES.login;
 }
 
 window.auth = {
@@ -132,5 +152,6 @@ window.auth = {
   requireLogin,
   requireAdmin,
   redirectIfAuthenticated,
-  logout
+  logout,
+  getAuthPayload
 };

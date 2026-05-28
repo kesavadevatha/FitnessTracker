@@ -2,6 +2,7 @@ const resetForm = document.getElementById('reset-password-form');
 const resetFeedback = document.getElementById('reset-feedback');
 const resetUserEmail = document.getElementById('reset-user-email');
 const resetSuccessModal = document.getElementById('reset-success-modal');
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
 
 if (!auth.requireLogin()) {
   // requireLogin already redirects unauthenticated users.
@@ -24,7 +25,7 @@ async function loadResetUser() {
     }
 
     try {
-      const response = await auth.authFetch('/api/me');
+      const response = await auth.authFetch('${API_BASE_URL}/api/me');
       if (response.ok) {
         const data = await response.json();
         currentUser = data;
@@ -108,7 +109,7 @@ resetForm.addEventListener('submit', async (event) => {
   resetFeedback.textContent = 'Updating password...';
 
   try {
-    const response = await auth.authFetch('/api/user/password', {
+    const response = await auth.authFetch('${API_BASE_URL}/api/user/password', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -130,7 +131,7 @@ resetForm.addEventListener('submit', async (event) => {
 
     updateLocalUserOnSuccess();
     showSuccessModal();
-    window.location.replace('/fitness-dashboard');
+    window.location.replace('${API_BASE_URL}/fitness-dashboard');
   } catch (error) {
     console.error('Password reset failed:', error);
     resetFeedback.textContent = 'Unable to update password. Please try again.';

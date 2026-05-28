@@ -1,3 +1,5 @@
+const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
+
 const searchInput = document.getElementById('catalog-search');
 const status = document.getElementById('catalog-status');
 const results = document.getElementById('catalog-results');
@@ -31,7 +33,6 @@ function getAllowedMealUnits(food) {
   if (food.MEASUREMENT_TYPE === 'unit') {
     return ['unit'];
   }
-
   return ['g', 'kg', 'oz'];
 }
 
@@ -75,9 +76,10 @@ function openModal(title, bodyHtml, submitLabel, onSubmit) {
     </div>
   `;
 
-  modal.querySelectorAll('[data-close-modal]').forEach((element) => {
-    element.addEventListener('click', closeModal);
+  modal.querySelectorAll('[data-close-modal]').forEach((el) => {
+    el.addEventListener('click', closeModal);
   });
+
   modal.querySelector('.catalog-modal-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     await onSubmit(event.target);
@@ -86,6 +88,8 @@ function openModal(title, bodyHtml, submitLabel, onSubmit) {
   document.body.appendChild(modal);
   activeModal = modal;
 }
+
+/* -------------------- EDIT FOOD -------------------- */
 
 function buildEditModal(food) {
   const body = `
@@ -152,13 +156,14 @@ function buildEditModal(food) {
     };
 
     try {
-      const response = await fetch(`/api/food-catalog/${food.FOOD_ID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/food-catalog/${food.FOOD_ID}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }
+      );
 
       const data = await response.json();
 
@@ -173,7 +178,6 @@ function buildEditModal(food) {
       showStatus(error.message, true);
     }
   });
-
   const typeField = activeModal.querySelector('#edit-measurement-type');
   const servingInput = activeModal.querySelector('#edit-serving-size');
   const servingUnitField = activeModal.querySelector('#edit-serving-size-unit');
@@ -192,7 +196,6 @@ function buildEditModal(food) {
   typeField.addEventListener('change', syncServingDefaults);
   syncServingDefaults();
 }
-
 function buildMealModal(food) {
   const today = new Date().toISOString().slice(0, 10);
   const defaultQuantity = getDefaultQuantity(food);
@@ -233,6 +236,7 @@ function buildMealModal(food) {
 
   openModal(`Add ${food.FOOD_NAME} to a meal`, body, 'Add to meal', async (form) => {
     const formData = new FormData(form);
+
     const payload = {
       foodId: food.FOOD_ID,
       trackDate: formData.get('trackDate'),
@@ -243,11 +247,9 @@ function buildMealModal(food) {
     };
 
     try {
-      const response = await auth.authFetch('/api/meal-log', {
+      const response = await auth.authFetch(`${API_BASE_URL}/api/meal-log`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
@@ -287,22 +289,43 @@ function attachActionHandlers() {
         return;
       }
 
-      try {
-        const response = await fetch(`/api/food-catalog/${food.FOOD_ID}`, {
-          method: 'DELETE'
-        });
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/food-catalog/${food.FOOD_ID}`,
+      { method: 'DELETE' }
+    );
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Unable to delete food entry.');
-        }
+    if (!response.ok) {
+      throw new Error(data.error || 'Delete failed.');
+    }
 
-        showStatus(`Deleted ${food.FOOD_NAME}.`);
-        await loadCatalog(searchInput.value.trim());
-      } catch (error) {
-        showStatus(error.message, true);
-      }
+    showStatus(`Deleted ${food.FOOD_NAME}.`);
+    await loadCatalog(searchInput.value.trim());
+  } catch (error) {
+    showStatus(error.message, true);
+  }
+}
+
+/* -------------------- RENDER -------------------- */
+
+function attachActionHandlers() {
+  document.querySelectorAll('[data-edit-food]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const food = currentCatalog.find(
+        (f) => String(f.FOOD_ID) === btn.dataset.foodId
+      );
+      if (food) buildEditModal(food);
+    });
+  });
+
+  document.querySelectorAll('[data-delete-food]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const food = currentCatalog.find(
+        (f) => String(f.FOOD_ID) === btn.dataset.foodId
+      );
+      if (food) deleteFood(food);
     });
   });
 
@@ -351,11 +374,17 @@ function renderCatalog(items) {
   attachActionHandlers();
 }
 
+/* -------------------- LOAD -------------------- */
+
 async function loadCatalog(searchTerm = '') {
   showStatus('Loading catalog...');
 
   try {
-    const response = await fetch(`/api/food-catalog${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ''}`);
+    const response = await fetch(
+      `${API_BASE_URL}/api/food-catalog${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ''}`
+    );
+
+    const data = await response.json();
 
     if (!response.ok) {
       throw new Error(`Unable to load catalog (${response.status})`);
@@ -371,8 +400,10 @@ async function loadCatalog(searchTerm = '') {
   }
 }
 
-searchInput.addEventListener('input', (event) => {
-  loadCatalog(event.target.value.trim());
+/* -------------------- EVENTS -------------------- */
+
+searchInput.addEventListener('input', (e) => {
+  loadCatalog(e.target.value.trim());
 });
 
 loadCatalog();
