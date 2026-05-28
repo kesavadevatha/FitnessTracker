@@ -1,19 +1,14 @@
-const oracledb = require('oracledb');
+const { Pool } = require('pg');
 
-const dbConfig = {
-    user: 'system',
-    password: 'manager',
-    connectString: '192.168.1.82:1521/TNDDB'
-};
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production'
+        ? { rejectUnauthorized: false }
+        : false
+});
 
 async function getConnection() {
-    try {
-        const connection = await oracledb.getConnection(dbConfig);
-        console.log('Connected to Oracle DB');
-        return connection;
-    } catch (err) {
-        console.error('DB Connection Error:', err);
-    }
+    return pool; // reuse pool directly
 }
 
 module.exports = { getConnection };
