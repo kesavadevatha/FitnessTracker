@@ -1,0 +1,344 @@
+:root {
+  --page-bg: #020617;
+  --panel-bg: rgba(15, 23, 42, 0.88);
+  --panel-border: rgba(148, 163, 184, 0.22);
+  --text-main: #e2e8f0;
+  --text-muted: #cbd5e1;
+  --accent: #38bdf8;
+  --danger: #f87171;
+  --shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, "Segoe UI", sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 32%),
+    linear-gradient(135deg, #020617, #111827 50%, #0f172a);
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.content-shell {
+  padding: 32px;
+}
+
+.browse-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+  margin: 0 0 8px;
+  font-weight: 700;
+  font-size: 0.76rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.subcopy {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  max-width: 760px;
+}
+
+.search-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.search-field input,
+.catalog-modal-form input,
+.catalog-modal-form select,
+.catalog-modal-form textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text-main);
+  padding: 12px 14px;
+  font-size: 0.98rem;
+}
+
+.catalog-status {
+  margin: 14px 0 0;
+  color: var(--text-muted);
+}
+
+.catalog-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.catalog-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.catalog-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding-right: 52px;
+}
+
+.catalog-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+}
+
+.catalog-meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.catalog-macros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.macro-pill {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.macro-pill span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.macro-pill strong {
+  font-size: 1rem;
+}
+
+.catalog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: auto;
+}
+
+.action-icon-btn {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+}
+
+.action-icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.action-top-right {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.action-edit {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--text-main);
+}
+
+.action-delete {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fecaca;
+}
+
+.action-add {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #03111d;
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.icon-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #03111d;
+}
+
+.secondary-btn {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--text-main);
+}
+
+.danger-btn {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fecaca;
+}
+
+.icon-button {
+  background: rgba(148, 163, 184, 0.16);
+  color: var(--text-main);
+  padding: 10px 12px;
+}
+
+.empty-state {
+  background: var(--panel-bg);
+  border: 1px dashed rgba(148, 163, 184, 0.32);
+  border-radius: 22px;
+  padding: 20px;
+  color: var(--text-muted);
+}
+
+.catalog-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.8);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  z-index: 20;
+}
+
+.catalog-modal-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-modal {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 48px);
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.catalog-modal::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.catalog-modal-header h2 {
+  margin: 0;
+}
+
+.catalog-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.catalog-modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.catalog-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.modal-macro-grid {
+  margin-top: 4px;
+}
+
+@media (max-width: 1000px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

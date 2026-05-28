@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Fitness Tracker</title>
+  <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="auth-card admin-card">
+      <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:24px;">
+        <div>
+          <h1>User administration</h1>
+          <p class="auth-subcopy">Create user accounts and reset passwords for users who need support.</p>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button id="back-button" type="button">Back</button>
+          <button id="logout-button" type="button">Logout</button>
+        </div>
+      </div>
+
+      <section class="admin-section">
+        <h2>Create new user</h2>
+        <form id="create-user-form">
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" required placeholder="new.user@example.com" />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" required placeholder="Temporary password" />
+          </label>
+          <label>
+            <span>Role</span>
+            <select name="isAdmin">
+              <option value="false">Standard user</option>
+              <option value="true">Administrator</option>
+            </select>
+          </label>
+          <p id="create-user-feedback" class="auth-feedback"></p>
+          <button type="submit">Create user</button>
+        </form>
+      </section>
+
+      <section class="admin-section">
+        <h2>Reset existing password</h2>
+        <form id="reset-user-form">
+          <label>
+            <span>User email</span>
+            <div class="search-input-wrapper">
+              <input type="text" name="email" placeholder="user@example.com" autocomplete="off" />
+              <button id="search-users-button" type="button" class="search-icon-btn" aria-label="Search users">🔎</button>
+            </div>
+          </label>
+          <label>
+            <span>New password</span>
+            <input type="password" name="newPassword" required placeholder="New temporary password" />
+          </label>
+          <p id="reset-user-feedback" class="auth-feedback"></p>
+          <button type="submit">Reset password</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <div id="user-search-overlay" class="user-search-overlay hidden"></div>
+  <div id="user-search-modal" class="user-search-modal hidden" role="dialog" aria-modal="true" aria-labelledby="user-search-title">
+    <div class="user-search-modal-inner">
+      <div class="user-search-modal-header">
+        <h3 id="user-search-title">Search results</h3>
+        <button type="button" id="close-search-modal" class="user-search-close" aria-label="Close search results">✕</button>
+      </div>
+      <ul id="user-search-list"></ul>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

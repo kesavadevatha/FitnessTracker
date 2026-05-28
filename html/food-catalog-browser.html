@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Food Catalog</title>
+  <link rel="stylesheet" href="/css/food-catalog-browser.css" />
+  <link rel="stylesheet" href="/components/sidebar/sidebar.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside id="sidebar-root" class="sidebar-shell" aria-label="Sidebar navigation"></aside>
+
+    <main class="content-shell">
+      <section class="browse-page">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Catalog overview</p>
+            <h1>Browse Food Catalog</h1>
+            <p class="subcopy">Search your saved foods, inspect their serving values, and quickly find the right entry for the food intake page.</p>
+          </div>
+        </div>
+
+        <div class="search-panel">
+          <label class="search-field">
+            <span>Search foods</span>
+            <input type="search" id="catalog-search" placeholder="Try 'milk', 'banana', 'chapathi'" />
+          </label>
+          <p id="catalog-status" class="catalog-status" aria-live="polite">Loading catalog...</p>
+        </div>
+
+        <div id="catalog-results" class="catalog-results"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script type="module" src="/components/sidebar/sidebar.js"></script>
+  <script src="/js/food-catalog-browser.js"></script>
+</body>
+</html>

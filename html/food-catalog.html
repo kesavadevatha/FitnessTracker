@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Catalog</title>
+  <link rel="stylesheet" href="/css/food-catalog.css" />
+  <link rel="stylesheet" href="/components/sidebar/sidebar.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside id="sidebar-root" class="sidebar-shell" aria-label="Sidebar navigation"></aside>
+
+    <main class="content-shell">
+      <section class="food-catalog-page">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Local nutrition setup</p>
+            <h1>Food Catalog</h1>
+            <p class="subcopy">Add the foods you cook or eat often so the intake page can calculate macros from your own database.</p>
+          </div>
+        </div>
+
+        <div class="entry-grid">
+          <form id="food-catalog-form" class="food-catalog-form">
+            <label>
+              <span>Food name</span>
+              <input type="text" id="food-name" name="foodName" placeholder="e.g. White rice" required />
+            </label>
+
+            <label>
+              <span>Measurement type</span>
+              <select id="measurement-type" name="measurementType" required>
+                <option value="g">Weight-based (grams)</option>
+                <option value="unit">Quantity-based (units)</option>
+              </select>
+            </label>
+
+            <div class="form-row">
+              <label>
+                <span>Serving size</span>
+                <input type="number" id="serving-size" name="servingSize" min="1" step="0.1" value="100" required />
+              </label>
+
+              <label>
+                <span>Serving size unit</span>
+                <select id="serving-size-unit" name="servingSizeUnit" required>
+                  <option value="g">grams</option>
+                  <option value="ml">ml</option>
+                  <option value="kg">kg</option>
+                  <option value="oz">oz</option>
+                  <option value="unit">units</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="macro-grid">
+              <label>
+                <span>Calories per serving</span>
+                <input type="number" id="calories-per-serving" name="caloriesPerServing" min="0" step="0.1" value="0" required />
+              </label>
+              <label>
+                <span>Protein per serving</span>
+                <input type="number" id="protein-per-serving" name="proteinPerServing" min="0" step="0.1" value="0" required />
+              </label>
+              <label>
+                <span>Carbs per serving</span>
+                <input type="number" id="carbs-per-serving" name="carbsPerServing" min="0" step="0.1" value="0" required />
+              </label>
+              <label>
+                <span>Fat per serving</span>
+                <input type="number" id="fat-per-serving" name="fatPerServing" min="0" step="0.1" value="0" required />
+              </label>
+            </div>
+
+            <label>
+              <span>Notes</span>
+              <textarea id="notes" name="notes" rows="4" placeholder="Optional notes about this food entry"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button type="reset" class="secondary-btn">Reset</button>
+              <button type="submit" class="primary-btn">Save food</button>
+            </div>
+
+            <p id="catalog-status" class="form-status" aria-live="polite"></p>
+          </form>
+
+          <aside class="catalog-help-card">
+            <p class="eyebrow">How to use it</p>
+            <h2>Recommended entries</h2>
+            <ul>
+              <li>Use weight-based entries for foods like rice, oats, and flour.</li>
+              <li>Use quantity-based entries for foods like bananas, eggs, and fruits.</li>
+              <li>For weight-based foods, set serving size to 100 and use the macros per 100g.</li>
+              <li>For quantity-based foods, set serving size to 1 and use the macros per one item.</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script type="module" src="/components/sidebar/sidebar.js"></script>
+  <script src="/js/food-catalog.js"></script>
+</body>
+</html>
