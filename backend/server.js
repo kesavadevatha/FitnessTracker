@@ -520,6 +520,10 @@ app.get('/', (req, res) => {
     res.send('Fitness Tracker Backend Running');
 });
 
+app.get('/api/login', (req, res) => {
+    res.send('Login API working');
+});
+
 /* =====================================================
    START SERVER
 ===================================================== */
