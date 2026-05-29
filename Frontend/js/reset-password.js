@@ -130,7 +130,7 @@ resetForm.addEventListener('submit', async (event) => {
 
     updateLocalUserOnSuccess();
     showSuccessModal();
-    window.location.replace(`${API_BASE_URL}/index.html`);
+    window.location.replace(`/index.html`);
   } catch (error) {
     console.error('Password reset failed:', error);
     resetFeedback.textContent = 'Unable to update password. Please try again.';
