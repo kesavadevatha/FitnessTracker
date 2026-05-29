@@ -41,11 +41,11 @@ function isActiveItem(item) {
   }
 
   if (item.id === 'dashboard' && !dashboardView) {
-    return window.location.pathname === '/index';
+    return window.location.pathname === '/index.html';
   }
 
   if (item.id === 'reports' && !dashboardView) {
-    return window.location.pathname === '/index';
+    return window.location.pathname === '/index.html';
   }
 
   return item.id === currentView;
