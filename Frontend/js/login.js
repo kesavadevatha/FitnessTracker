@@ -44,7 +44,8 @@ loginForm.addEventListener('submit', async (event) => {
     }
 	
 
-    window.location.href = `${API_BASE_URL}/fitness-dashboard`;
+    //window.location.href = `${API_BASE_URL}/fitness-dashboard`;
+	window.location.href = `/index.html`;
   } catch (error) {
     console.error('Login failed:', error);
     loginFeedback.textContent = 'Unable to sign in. Please try again later.';
