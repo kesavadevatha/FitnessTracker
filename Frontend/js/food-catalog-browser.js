@@ -278,12 +278,33 @@ function attachActionHandlers() {
     });
   });
 
-  document.querySelectorAll('[data-delete-food]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const food = currentCatalog.find(
-        (f) => String(f.food_id) === btn.dataset.foodId
-      );
-      if (food) deleteFood(food);
+  document.querySelectorAll('[data-delete-food]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const food = currentCatalog.find((item) => String(item.food_id) === button.dataset.food_id);
+      if (!food) {
+        return;
+      }
+
+      if (!window.confirm(`Delete ${food.food_name}? This cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/food-catalog/${food.FOOD_ID}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to delete food entry.');
+        }
+
+        showStatus(`Deleted ${food.food_name}.`);
+        await loadCatalog(searchInput.value.trim());
+      } catch (error) {
+        showStatus(error.message, true);
+      }
     });
   });
 
