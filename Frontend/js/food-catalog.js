@@ -1,9 +1,9 @@
 const form = document.getElementById('food-catalog-form');
 const status = document.getElementById('catalog-status');
-const measurementType = document.getElementById('measurement-type');
+const measurement_type = document.getElementById('measurement-type');
 
-const servingSize = document.getElementById('serving-size');
-const servingSizeUnit = document.getElementById('serving-size-unit');
+const serving_size = document.getElementById('serving-size');
+const serving_size_unit = document.getElementById('serving-size-unit');
 
 if (window.auth) {
   auth.requireLogin();
@@ -17,19 +17,19 @@ function toNumber(value) {
 }
 
 function syncServingDefaults() {
-  const selected = measurementType.value;
+  const selected = measurement_type.value;
 
   if (selected === 'unit') {
-    servingSize.value = '1';
-    servingSizeUnit.value = 'unit';
+    serving_size.value = '1';
+    serving_size_unit.value = 'unit';
     return;
   }
 
-  servingSize.value = '100';
-  servingSizeUnit.value = 'g';
+  serving_size.value = '100';
+  serving_size_unit.value = 'g';
 }
 
-measurementType.addEventListener('change', syncServingDefaults);
+measurement_type.addEventListener('change', syncServingDefaults);
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -39,67 +39,42 @@ form.addEventListener('submit', async (event) => {
   const formData = new FormData(form);
 
   const food_name = String(formData.get('food_name') || '').trim();
-  const measurement_type = String(formData.get('measurement_type') || '');
-
-  const serving_size = toNumber(formData.get('serving_size'));
-
-  const calories_per_serving = toNumber(
-    formData.get('calories_per_serving')
-  );
-
-  const protein_per_serving = toNumber(
-    formData.get('protein_per_serving')
-  );
-
-  const carbs_per_serving = toNumber(
-    formData.get('carbs_per_serving')
-  );
-
-  const fat_per_serving = toNumber(
-    formData.get('fat_per_serving')
-  );
+  const measurement = String(formData.get('measurement_type') || '');
+  const serving = toNumber(formData.get('serving_size'));
+  const calories = toNumber(formData.get('calories_per_serving'));
+  const protein = toNumber(formData.get('protein_per_serving'));
+  const carbs = toNumber(formData.get('carbs_per_serving'));
+  const fat = toNumber(formData.get('fat_per_serving'));
 
   const payload = {
     food_name,
-    measurement_type,
-    serving_size,
+    measurement_type: measurement,
+    serving_size: serving,
     serving_size_unit: formData.get('serving_size_unit'),
-
-    calories_per_serving,
-    protein_per_serving,
-    carbs_per_serving,
-    fat_per_serving,
-
+    calories_per_serving: calories,
+    protein_per_serving: protein,
+    carbs_per_serving: carbs,
+    fat_per_serving: fat,
     notes: String(formData.get('notes') || '').trim()
   };
 
-  if (!food_name || !measurement_type || !serving_size) {
-    status.textContent =
-      'Please fill in required fields (food name, measurement, serving size).';
+  if (!food_name || !measurement || !serving) {
+    status.textContent = 'Please fill in required fields (food name, measurement, serving size).';
     return;
   }
 
   isSaving = true;
-
   status.textContent = 'Saving food entry...';
-
-  form
-    .querySelectorAll('input, button, select, textarea')
-    .forEach((el) => {
-      el.disabled = true;
-    });
+  form.querySelectorAll('input, button, select, textarea').forEach(el => el.disabled = true);
 
   try {
-    const response = await auth.authFetch(
-      `${API_BASE_URL}/api/food-catalog`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      }
-    );
+    const response = await auth.authFetch(`${API_BASE_URL}/api/food-catalog`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
     const data = await response.json().catch(() => ({}));
 
@@ -107,28 +82,16 @@ form.addEventListener('submit', async (event) => {
       throw new Error(data.error || 'Unable to save food entry.');
     }
 
-    status.textContent =
-      `Saved "${payload.food_name}". Available in Food Intake now.`;
+    status.textContent = `Saved "${payload.food_name}". Available in Food Intake now.`;
 
     form.reset();
-
     syncServingDefaults();
-
   } catch (error) {
     console.error(error);
-
-    status.textContent =
-      error.message || 'Something went wrong while saving.';
-
+    status.textContent = error.message || 'Something went wrong while saving.';
   } finally {
-
     isSaving = false;
-
-    form
-      .querySelectorAll('input, button, select, textarea')
-      .forEach((el) => {
-        el.disabled = false;
-      });
+    form.querySelectorAll('input, button, select, textarea').forEach(el => el.disabled = false);
   }
 });
 
