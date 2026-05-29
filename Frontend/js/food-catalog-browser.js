@@ -19,16 +19,16 @@ function escapeHtml(value) {
 }
 
 function formatServing(food) {
-  const unit = food.SERVING_SIZE_UNIT === 'unit' ? 'unit' : food.SERVING_SIZE_UNIT;
-  return `${food.SERVING_SIZE} ${unit}${Number(food.SERVING_SIZE) === 1 ? '' : ''}`;
+  const unit = food.serving_size_unit === 'unit' ? 'unit' : food.serving_size_unit;
+  return `${food.serving_size} ${unit}${Number(food.serving_size) === 1 ? '' : ''}`;
 }
 
 function getDefaultQuantity(food) {
-  return food.MEASUREMENT_TYPE === 'unit' ? 1 : Number(food.SERVING_SIZE) || 1;
+  return food.measurement_type === 'unit' ? 1 : Number(food.serving_size) || 1;
 }
 
 function getAllowedMealUnits(food) {
-  if (food.MEASUREMENT_TYPE === 'unit') {
+  if (food.measurement_type === 'unit') {
     return ['unit'];
   }
   return ['g', 'kg', 'oz'];
@@ -93,53 +93,53 @@ function buildEditModal(food) {
   const body = `
     <label>
       <span>Food name</span>
-      <input type="text" name="foodName" value="${escapeHtml(food.FOOD_NAME)}" required />
+      <input type="text" name="foodName" value="${escapeHtml(food.food_name)}" required />
     </label>
     <label>
       <span>Measurement type</span>
       <select name="measurementType" id="edit-measurement-type" required>
-        <option value="g" ${food.MEASUREMENT_TYPE === 'g' ? 'selected' : ''}>Weight-based (grams)</option>
-        <option value="unit" ${food.MEASUREMENT_TYPE === 'unit' ? 'selected' : ''}>Quantity-based (units)</option>
+        <option value="g" ${food.measurement_type === 'g' ? 'selected' : ''}>Weight-based (grams)</option>
+        <option value="unit" ${food.measurement_type === 'unit' ? 'selected' : ''}>Quantity-based (units)</option>
       </select>
     </label>
     <div class="form-row">
       <label>
         <span>Serving size</span>
-        <input type="number" name="servingSize" id="edit-serving-size" min="1" step="0.1" value="${escapeHtml(food.SERVING_SIZE)}" required />
+        <input type="number" name="servingSize" id="edit-serving-size" min="1" step="0.1" value="${escapeHtml(food.serving_size)}" required />
       </label>
       <label>
         <span>Serving size unit</span>
         <select name="servingSizeUnit" id="edit-serving-size-unit" required>
-          <option value="g" ${food.SERVING_SIZE_UNIT === 'g' ? 'selected' : ''}>grams</option>
-          <option value="unit" ${food.SERVING_SIZE_UNIT === 'unit' ? 'selected' : ''}>units</option>
+          <option value="g" ${food.serving_size_unit === 'g' ? 'selected' : ''}>grams</option>
+          <option value="unit" ${food.serving_size_unit === 'unit' ? 'selected' : ''}>units</option>
         </select>
       </label>
     </div>
     <div class="macro-grid modal-macro-grid">
       <label>
         <span>Calories per serving</span>
-        <input type="number" name="caloriesPerServing" min="0" step="0.1" value="${escapeHtml(food.CALORIES_PER_SERVING)}" required />
+        <input type="number" name="caloriesPerServing" min="0" step="0.1" value="${escapeHtml(food.calories_per_serving)}" required />
       </label>
       <label>
         <span>Protein per serving</span>
-        <input type="number" name="proteinPerServing" min="0" step="0.1" value="${escapeHtml(food.PROTEIN_PER_SERVING)}" required />
+        <input type="number" name="proteinPerServing" min="0" step="0.1" value="${escapeHtml(food.protein_per_serving)}" required />
       </label>
       <label>
         <span>Carbs per serving</span>
-        <input type="number" name="carbsPerServing" min="0" step="0.1" value="${escapeHtml(food.CARBS_PER_SERVING)}" required />
+        <input type="number" name="carbsPerServing" min="0" step="0.1" value="${escapeHtml(food.carbs_per_serving)}" required />
       </label>
       <label>
         <span>Fat per serving</span>
-        <input type="number" name="fatPerServing" min="0" step="0.1" value="${escapeHtml(food.FAT_PER_SERVING)}" required />
+        <input type="number" name="fatPerServing" min="0" step="0.1" value="${escapeHtml(food.fat_per_serving)}" required />
       </label>
     </div>
     <label>
       <span>Notes</span>
-      <textarea name="notes" rows="4">${escapeHtml(food.NOTES || '')}</textarea>
+      <textarea name="notes" rows="4">${escapeHtml(food.notes || '')}</textarea>
     </label>
   `;
 
-  openModal(`Edit ${food.FOOD_NAME}`, body, 'Save changes', async (form) => {
+  openModal(`Edit ${food.food_name}`, body, 'Save changes', async (form) => {
     const formData = new FormData(form);
     const payload = {
       foodName: formData.get('food_name'),
@@ -155,7 +155,7 @@ function buildEditModal(food) {
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/food-catalog/${food.FOOD_ID}`,
+        `${API_BASE_URL}/api/food-catalog/${food.food_id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -198,7 +198,7 @@ function buildMealModal(food) {
   const today = new Date().toISOString().slice(0, 10);
   const defaultQuantity = getDefaultQuantity(food);
   const mealUnits = getAllowedMealUnits(food);
-  const unitOptions = mealUnits.map((unit) => `<option value="${unit}" ${unit === food.SERVING_SIZE_UNIT ? 'selected' : ''}>${unit}</option>`).join('');
+  const unitOptions = mealUnits.map((unit) => `<option value="${unit}" ${unit === food.serving_size_unit ? 'selected' : ''}>${unit}</option>`).join('');
 
   const body = `
     <label>
@@ -232,11 +232,11 @@ function buildMealModal(food) {
     </label>
   `;
 
-  openModal(`Add ${food.FOOD_NAME} to a meal`, body, 'Add to meal', async (form) => {
+  openModal(`Add ${food.food_name} to a meal`, body, 'Add to meal', async (form) => {
     const formData = new FormData(form);
 
     const payload = {
-      foodId: food.FOOD_ID,
+      foodId: food.food_id,
       trackDate: formData.get('trackDate'),
       mealName: formData.get('mealName'),
       quantity: formData.get('quantity'),
@@ -257,7 +257,7 @@ function buildMealModal(food) {
         throw new Error(data.error || 'Unable to add item to meal.');
       }
 
-      showStatus(`Added ${food.FOOD_NAME} to ${payload.mealName} on ${payload.trackDate}.`);
+      showStatus(`Added ${food.food_name} to ${payload.mealName} on ${payload.trackDate}.`);
       closeModal();
       await loadCatalog(searchInput.value.trim());
     } catch (error) {
@@ -272,7 +272,7 @@ function attachActionHandlers() {
   document.querySelectorAll('[data-edit-food]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const food = currentCatalog.find(
-        (f) => String(f.FOOD_ID) === btn.dataset.foodId
+        (f) => String(f.food_id) === btn.dataset.foodId
       );
       if (food) buildEditModal(food);
     });
@@ -281,7 +281,7 @@ function attachActionHandlers() {
   document.querySelectorAll('[data-delete-food]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const food = currentCatalog.find(
-        (f) => String(f.FOOD_ID) === btn.dataset.foodId
+        (f) => String(f.food_id) === btn.dataset.foodId
       );
       if (food) deleteFood(food);
     });
@@ -289,7 +289,7 @@ function attachActionHandlers() {
 
   document.querySelectorAll('[data-add-meal]').forEach((button) => {
     button.addEventListener('click', () => {
-      const food = currentCatalog.find((item) => String(item.FOOD_ID) === button.dataset.foodId);
+      const food = currentCatalog.find((item) => String(item.food_id) === button.dataset.foodId);
       if (food) {
         buildMealModal(food);
       }
@@ -309,22 +309,22 @@ function renderCatalog(items) {
     <article class="catalog-card">
       <div class="catalog-card-header">
         <div>
-          <h2>${escapeHtml(food.FOOD_NAME)}</h2>
-          <p class="catalog-meta">Type: ${food.MEASUREMENT_TYPE === 'unit' ? 'quantity' : 'weight'} · Serving: ${formatServing(food)}</p>
+          <h2>${escapeHtml(food.food_name)}</h2>
+          <p class="catalog-meta">Type: ${food.measurement_type === 'unit' ? 'quantity' : 'weight'} · Serving: ${formatServing(food)}</p>
         </div>
-        <span class="badge">${food.MEASUREMENT_TYPE === 'unit' ? 'quantity' : 'weight'}</span>
+        <span class="badge">${food.measurement_type === 'unit' ? 'quantity' : 'weight'}</span>
       </div>
-      <p class="catalog-meta">${escapeHtml(food.NOTES || 'No note added.')}</p>
+      <p class="catalog-meta">${escapeHtml(food.notes || 'No note added.')}</p>
       <div class="catalog-macros">
-        <div class="macro-pill"><span>Calories</span><strong>${escapeHtml(food.CALORIES_PER_SERVING)}</strong></div>
-        <div class="macro-pill"><span>Protein</span><strong>${escapeHtml(food.PROTEIN_PER_SERVING)} g</strong></div>
-        <div class="macro-pill"><span>Carbs</span><strong>${escapeHtml(food.CARBS_PER_SERVING)} g</strong></div>
-        <div class="macro-pill"><span>Fat</span><strong>${escapeHtml(food.FAT_PER_SERVING)} g</strong></div>
+        <div class="macro-pill"><span>Calories</span><strong>${escapeHtml(food.calories_per_serving)}</strong></div>
+        <div class="macro-pill"><span>Protein</span><strong>${escapeHtml(food.protein_per_serving)} g</strong></div>
+        <div class="macro-pill"><span>Carbs</span><strong>${escapeHtml(food.carbs_per_serving)} g</strong></div>
+        <div class="macro-pill"><span>Fat</span><strong>${escapeHtml(food.fat_per_serving)} g</strong></div>
       </div>
-      <button type="button" class="action-icon-btn action-add action-top-right" data-add-meal data-food-id="${escapeHtml(food.FOOD_ID)}" aria-label="Add ${escapeHtml(food.FOOD_NAME)} to meal" title="Add to meal">🍽</button>
+      <button type="button" class="action-icon-btn action-add action-top-right" data-add-meal data-food-id="${escapeHtml(food.food_id)}" aria-label="Add ${escapeHtml(food.food_name)} to meal" title="Add to meal">🍽</button>
       <div class="catalog-actions">
-        <button type="button" class="action-icon-btn action-edit" data-edit-food data-food-id="${escapeHtml(food.FOOD_ID)}" aria-label="Edit ${escapeHtml(food.FOOD_NAME)}" title="Edit">✎</button>
-        <button type="button" class="action-icon-btn action-delete" data-delete-food data-food-id="${escapeHtml(food.FOOD_ID)}" aria-label="Delete ${escapeHtml(food.FOOD_NAME)}" title="Delete">🗑</button>
+        <button type="button" class="action-icon-btn action-edit" data-edit-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Edit ${escapeHtml(food.food_name)}" title="Edit">✎</button>
+        <button type="button" class="action-icon-btn action-delete" data-delete-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Delete ${escapeHtml(food.food_name)}" title="Delete">🗑</button>
       </div>
     </article>
   `).join('');
