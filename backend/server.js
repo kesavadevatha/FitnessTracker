@@ -274,8 +274,8 @@ async function initTables() {
    LOGIN
 ===================================================== */
 
-//app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
-app.post(`/api/login`, async (req, res) => {
+app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
+//app.post(`/api/login`, async (req, res) => {
     try {
 
         const { email, password } = req.body;
