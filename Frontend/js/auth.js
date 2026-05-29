@@ -2,7 +2,8 @@ const AUTH_TOKEN_KEY = 'fitnessTrackerAuthToken';
 const AUTH_USER_KEY = 'fitnessTrackerAuthUser';
 
 const APP_ROUTES = {
-  login: `${API_BASE_URL}/login`,
+  //login: `${API_BASE_URL}/login`,
+  login: `/login.html`,
   resetPassword: `${API_BASE_URL}/reset-password`,
   dashboard: `${API_BASE_URL}/fitness-dashboard`
 };
