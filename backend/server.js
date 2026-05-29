@@ -46,7 +46,7 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/fitness-dashboard', (req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, 'html', 'fitness-dashboard.html'));
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'index.html'));
 });
 
 app.get('/food-intake', (req, res) => {
@@ -67,6 +67,10 @@ app.get('/day-details', (req, res) => {
 
 app.get('/user-details', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'user-details.html'));
+});
+
+app.get('/index', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'index.html'));
 });
 
 /* =====================================================
