@@ -10,13 +10,12 @@ const userSearchList = document.getElementById('user-search-list');
 const closeSearchModalButton = document.getElementById('close-search-modal');
 const backButton = document.getElementById('back-button');
 const logoutButton = document.getElementById('logout-button');
-const PROJECT_ROOT = path.resolve(process.cwd(), '..');
 
 const API_ENDPOINTS = {
   users: `${API_BASE_URL}/api/users`,
   adminUsers: `${API_BASE_URL}/api/admin/users`,
   resetPassword: `${API_BASE_URL}/api/admin/reset-password`,
-  dashboard: `${API_BASE_URL}/fitness-dashboard`
+  dashboard: `${API_BASE_URL}/index.html`
 };
 
 function renderUserSearchResults(users) {
@@ -177,13 +176,9 @@ function closeSearchModal() {
   userSearchOverlay.classList.add('hidden');
 }
 
-app.get('/index', (req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, 'html', 'index.html'));
-});
-
 backButton.addEventListener('click', () => {
-  window.location.href = '/index';
-  //window.location.href = API_ENDPOINTS.dashboard;
+  //window.location.href = '/index';
+  window.location.href = API_ENDPOINTS.dashboard;
 });
 
 logoutButton.addEventListener('click', () => auth.logout());
