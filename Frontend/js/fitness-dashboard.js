@@ -495,13 +495,15 @@ async function handleSubmit(event) {
   }
 
   const formData = new FormData(intakeForm);
-  const food_id = Number(formData.get('food_id'));
+
+  const foodId = Number(formData.get('foodId'));
   const quantity = Number(formData.get('quantity'));
   const trackDate = String(formData.get('trackDate') || '').trim();
   const mealName = String(formData.get('mealName') || '').trim();
 
-  if (!food_id || !trackDate || !mealName || !Number.isFinite(quantity) || quantity <= 0) {
-    document.getElementById('intake-feedback').textContent = 'Please choose a food item, date, meal, and a valid quantity.';
+  if (!foodId || !trackDate || !mealName || !Number.isFinite(quantity) || quantity <= 0) {
+    document.getElementById('intake-feedback').textContent =
+      'Please choose a food item, date, meal, and a valid quantity.';
     return;
   }
 
@@ -509,16 +511,15 @@ async function handleSubmit(event) {
   document.getElementById('intake-feedback').textContent = 'Saving item...';
 
   try {
-    //const response = await auth.authFetch('/api/meal-log', {
-	const response = await auth.authFetch(API_ENDPOINTS.mealLog, {
+    const response = await auth.authFetch(API_ENDPOINTS.mealLog, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        food_id,
-        trackDate,
-        mealName,
+        food_id: foodId,
+        track_date: trackDate,
+        meal_name: mealName,
         quantity,
         unit: formData.get('unit') || null,
         notes: formData.get('notes') || null
@@ -526,15 +527,22 @@ async function handleSubmit(event) {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unable to save meal entry.' }));
+      const error = await response.json().catch(() => ({
+        error: 'Unable to save meal entry.'
+      }));
+
       throw new Error(error.error || 'Unable to save meal entry.');
     }
 
     closeModal();
     await loadTrackerData();
+
   } catch (error) {
     console.error(error);
-    document.getElementById('intake-feedback').textContent = error.message;
+
+    document.getElementById('intake-feedback').textContent =
+      error.message || 'Something went wrong.';
+
     isSavingIntake = false;
   }
 }
