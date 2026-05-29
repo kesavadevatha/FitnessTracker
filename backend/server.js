@@ -270,6 +270,37 @@ async function initTables() {
     }
 }
 
+async function seedData() {
+    const conn = await getConnection();
+
+    try {
+        const result = await conn.query(
+            `SELECT * FROM custom.app_user WHERE email=$1`,
+            ['admin']
+        );
+
+        if (result.rows.length === 0) {
+			
+			const hashPass = hashPassword("manager");
+            await conn.query(
+                `INSERT INTO custom.app_user
+                (user_id, email, password_hash, is_admin, created_date, modified_date)
+                VALUES ($1,$2,$3,$4,NOW(),NOW())`,
+                [
+                    'admin',
+                    'admin',
+                    hashPass,   // ideally hashed
+                    'Y'
+                ]
+            );
+            console.log('Admin user created');
+        }
+
+    } finally {
+        conn.release();
+    }
+}
+
 /* =====================================================
    LOGIN
 ===================================================== */
@@ -533,6 +564,7 @@ app.get('/api/login', (req, res) => {
     try {
 
         await initTables();
+		await seedData();
 
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
