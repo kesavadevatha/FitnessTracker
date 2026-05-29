@@ -334,7 +334,10 @@ app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
 
         res.json({
             token,
-            user
+            user: {
+                email: user.USER_ID,
+                isAdmin: user.IS_ADMIN === 'Y',
+                passwordResetRequired: user.PASSWORD_RESET_REQUIRED === 'Y'
         });
 
     } catch (err) {
