@@ -10,6 +10,7 @@ const userSearchList = document.getElementById('user-search-list');
 const closeSearchModalButton = document.getElementById('close-search-modal');
 const backButton = document.getElementById('back-button');
 const logoutButton = document.getElementById('logout-button');
+const PROJECT_ROOT = path.resolve(process.cwd(), '..');
 
 const API_ENDPOINTS = {
   users: `${API_BASE_URL}/api/users`,
@@ -175,6 +176,10 @@ function closeSearchModal() {
   userSearchModal.classList.add('hidden');
   userSearchOverlay.classList.add('hidden');
 }
+
+app.get('/index', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'index.html'));
+});
 
 backButton.addEventListener('click', () => {
   window.location.href = '/index';
