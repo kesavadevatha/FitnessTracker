@@ -531,14 +531,14 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
             `,
             [
-                food_name,
-                measurement_type,
-                serving_size,
-                serving_size_unit,
-                calories_per_serving,
-                protein_per_serving,
-                carbs_per_serving,
-                fat_per_serving,
+                foodName,
+                measurementType,
+                servingSize,
+                servingSizeUnit,
+                caloriesPerServing,
+                proteinPerServing,
+                carbsPerServing,
+                fatPerServing,
                 notes
             ]
         );
