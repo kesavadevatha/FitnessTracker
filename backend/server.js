@@ -503,14 +503,14 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
     try {
 
         const {
-			foodName,
-			measurementType,
-			servingSize,
-			servingSizeUnit,
-			caloriesPerServing,
-			proteinPerServing,
-			carbsPerServing,
-			fatPerServing,
+			food_name,
+			measurement_type,
+			serving_size,
+			serving_size_unit,
+			calories_per_serving,
+			protein_per_serving,
+			carbs_per_serving,
+			fat_per_serving,
 			notes
 		} = req.body;
 
@@ -531,15 +531,15 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
             `,
             [
-                foodName,
-                measurementType,
-                servingSize,
-                servingSizeUnit,
-                caloriesPerServing,
-                proteinPerServing,
-                carbsPerServing,
-                fatPerServing,
-                notes
+                food_name,
+				measurement_type,
+				serving_size,
+				serving_size_unit,
+				calories_per_serving,
+				protein_per_serving,
+				carbs_per_serving,
+				fat_per_serving,
+				notes
             ]
         );
 
@@ -549,6 +549,115 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
 
     } finally {
         conn.release();
+    }
+});
+
+app.put('/api/food-catalog/:food_id', async (req, res) => {
+    const food_id = Number(req.params.food_id);
+    const {
+        food_name,
+		measurement_type,
+		serving_size,
+		serving_size_unit,
+		calories_per_serving,
+		protein_per_serving,
+		carbs_per_serving,
+		fat_per_serving,
+		notes
+    } = req.body;
+
+    if (!Number.isFinite(food_id) || food_id <= 0) {
+        return res.status(400).json({ error: 'A valid food id is required.' });
+    }
+
+    if (!foodName || !measurementType || !servingSize || !servingSizeUnit) {
+        return res.status(400).json({ error: 'Food name, measurement type, serving size, and serving size unit are required.' });
+    }
+
+    let conn;
+
+    try {
+        conn = await getConnection();
+        const result = await conn.query(
+            `update custom.FOOD_CATALOG
+             set food_name = :food_name,
+                 measurement_type = :measurement_type,
+                 serving_size_unit = :serving_size,
+                 serving_size_unit = :serving_size_unit,
+                 calories_per_serving = :calories_per_serving,
+                 protein_per_serving = :protein_per_serving,
+                 carbs_per_serving = :carbs_per_serving,
+                 fat_per_serving = :fat_per_serving,
+                 notes = :notes,
+                 modified_date = now()
+             where food_id = :food_id`,
+            {
+                foodName: String(foodName).trim(),
+                measurementType: String(measurementType).toLowerCase(),
+                servingSize: Number(servingSize),
+                servingSizeUnit: String(servingSizeUnit).toLowerCase(),
+                caloriesPerServing: Number(caloriesPerServing || 0),
+                proteinPerServing: Number(proteinPerServing || 0),
+                carbsPerServing: Number(carbsPerServing || 0),
+                fatPerServing: Number(fatPerServing || 0),
+                notes: notes || null,
+                food_id
+            },
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected === 0) {
+            return res.status(404).json({ error: 'Food entry not found.' });
+        }
+
+        res.json({ message: 'Food updated successfully.' });
+    } catch (error) {
+        console.error('Error updating food catalog entry:', error);
+        res.status(500).json({ error: error.message || 'Failed to update food catalog entry.' });
+    } finally {
+        if (conn) {
+            try {
+                await conn.release();
+            } catch (closeError) {
+                console.error('Error closing DB conn:', closeError);
+            }
+        }
+    }
+});
+
+app.delete('/api/food-catalog/:food_id', async (req, res) => {
+    const food_id = Number(req.params.food_id);
+
+    if (!Number.isFinite(food_id) || food_id <= 0) {
+        return res.status(400).json({ error: 'A valid food id is required.' });
+    }
+
+    let conn;
+
+    try {
+        conn = await getConnection();
+        const result = await conn.query(
+            `delete from custom.food_catalog where food_id = :food_id`,
+            { food_id },
+            { autoCommit: true }
+        );
+
+        if (result.rowsAffected === 0) {
+            return res.status(404).json({ error: 'Food entry not found.' });
+        }
+
+        res.json({ message: 'Food deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting food catalog entry:', error);
+        res.status(500).json({ error: error.message || 'Failed to delete food catalog entry.' });
+    } finally {
+        if (conn) {
+            try {
+                await conn.release();
+            } catch (closeError) {
+                console.error('Error closing DB conn:', closeError);
+            }
+        }
     }
 });
 
@@ -563,17 +672,16 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
     try {
 
         const {
-            foodId,
-            foodName,
-            trackDate,
-            mealName,
-            quantity,
-            unit,
-            calories,
-            protein,
-            carbs,
-            fat,
-            notes,
+            food_id,
+            food_name,
+			measurement_type,
+			serving_size,
+			serving_size_unit,
+			calories_per_serving,
+			protein_per_serving,
+			carbs_per_serving,
+			fat_per_serving,
+			notes,
             userId
         } = req.body;
 
@@ -598,10 +706,10 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
             ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
             `,
             [
-                foodId,
-                foodName,
-                trackDate,
-                mealName,
+                food_id,
+                food_name,
+                track_date,
+                meal_name,
                 quantity,
                 unit,
                 calories,
@@ -609,7 +717,7 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
                 carbs,
                 fat,
                 notes,
-                userId
+                user_id
             ]
         );
 
