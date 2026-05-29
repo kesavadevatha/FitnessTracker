@@ -338,8 +338,8 @@ app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
             token,
 			user: {
                 email: user.email,
-                isAdmin: user.IS_ADMIN === 'Y',
-                passwordResetRequired: user.PASSWORD_RESET_REQUIRED === 'Y'
+                isAdmin: user.is_admin === 'Y',
+                passwordResetRequired: user.password_reset_required === 'Y'
             }
         });
 
