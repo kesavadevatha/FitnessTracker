@@ -280,7 +280,7 @@ function attachActionHandlers() {
 
   document.querySelectorAll('[data-delete-food]').forEach((button) => {
     button.addEventListener('click', async () => {
-      const food = currentCatalog.find((item) => String(item.food_id) === button.dataset.food_id);
+      const food = currentCatalog.find((item) => String(item.food_id) === button.dataset.foodId);
       if (!food) {
         return;
       }
