@@ -588,7 +588,7 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
     }
 });
 
-app.put('/api/food-catalog/:food_id', async (req, res) => {
+app.put(`${API_BASE_URL}/api/food-catalog/:food_id`, async (req, res) => {
     const food_id = Number(req.params.food_id);
     const {
         food_name,
@@ -627,7 +627,7 @@ app.put('/api/food-catalog/:food_id', async (req, res) => {
                  notes = :notes,
                  modified_date = now()
              where food_id = :food_id`,
-            {
+            [
                 food_name: String(food_name).trim(),
                 measurement_type: String(measurement_type).toLowerCase(),
                 serving_size: Number(serving_size),
@@ -638,7 +638,7 @@ app.put('/api/food-catalog/:food_id', async (req, res) => {
                 fat_per_serving: Number(fat_per_serving || 0),
                 notes: notes || null,
                 food_id
-            },
+            ],
             { autoCommit: true }
         );
 
@@ -661,7 +661,7 @@ app.put('/api/food-catalog/:food_id', async (req, res) => {
     }
 });
 
-app.delete('/api/food-catalog/:food_id', async (req, res) => {
+app.delete(`${API_BASE_URL}/api/food-catalog/:food_id`, async (req, res) => {
     const food_id = Number(req.params.food_id);
 
     if (!Number.isFinite(food_id) || food_id <= 0) {
@@ -674,7 +674,7 @@ app.delete('/api/food-catalog/:food_id', async (req, res) => {
         conn = await getConnection();
         const result = await conn.query(
             `delete from custom.food_catalog where food_id = :food_id`,
-            { food_id },
+            [ food_id ],
             { autoCommit: true }
         );
 
