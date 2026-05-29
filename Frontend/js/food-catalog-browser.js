@@ -290,7 +290,7 @@ function attachActionHandlers() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/food-catalog/${food.FOOD_ID}`, {
+        const response = await fetch(`${API_BASE_URL}/api/food-catalog/${food.food_id}`, {
           method: 'DELETE'
         });
 
