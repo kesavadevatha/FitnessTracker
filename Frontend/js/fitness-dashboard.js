@@ -428,7 +428,7 @@ function updateCatalogPreview() {
   const select = document.getElementById('food-select');
   const preview = document.getElementById('catalog-preview');
   const summary = document.getElementById('catalog-summary');
-  const selectedItem = catalogItems.find((item) => String(item.FOOD_ID) === String(select.value));
+  const selectedItem = catalogItems.find((item) => String(item.food_id) === String(select.value));
 
   if (!selectedItem) {
     summary.classList.add('hidden');
@@ -442,7 +442,7 @@ function updateCatalogPreview() {
   unitSelect.value = normalizeUnitForSelect(selectedItem.SERVING_SIZE_UNIT || 'g');
   summary.classList.remove('hidden');
   preview.innerHTML = `
-    ${selectedItem.FOOD_NAME} • ${currencyFormatter.format(Number(selectedItem.CALORIES_PER_SERVING || 0))} kcal, ${metricFormatter.format(Number(selectedItem.PROTEIN_PER_SERVING || 0))} g protein, ${metricFormatter.format(Number(selectedItem.CARBS_PER_SERVING || 0))} g carbs, ${metricFormatter.format(Number(selectedItem.FAT_PER_SERVING || 0))} g fat per serving.
+    ${selectedItem.food_name} • ${currencyFormatter.format(Number(selectedItem.CALORIES_PER_SERVING || 0))} kcal, ${metricFormatter.format(Number(selectedItem.PROTEIN_PER_SERVING || 0))} g protein, ${metricFormatter.format(Number(selectedItem.CARBS_PER_SERVING || 0))} g carbs, ${metricFormatter.format(Number(selectedItem.FAT_PER_SERVING || 0))} g fat per serving.
     ${selectedItem.NOTES ? `<br />${selectedItem.NOTES}` : ''}
   `;
 }
@@ -471,7 +471,7 @@ async function openModal() {
   }
 
   foodSelect.innerHTML = catalogItems.map((item) => `
-    <option value="${item.FOOD_ID}">${item.FOOD_NAME}</option>
+    <option value="${item.food_id}">${item.food_name}</option>
   `).join('');
   foodSelect.disabled = false;
   updateCatalogPreview();
