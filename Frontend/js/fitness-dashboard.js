@@ -490,9 +490,7 @@ function closeModal() {
 async function handleSubmit(event) {
   event.preventDefault();
 
-  if (isSavingIntake) {
-    return;
-  }
+  if (isSavingIntake) return;
 
   const formData = new FormData(intakeForm);
 
@@ -500,10 +498,21 @@ async function handleSubmit(event) {
   const quantity = Number(formData.get('quantity'));
   const trackDate = String(formData.get('trackDate') || '').trim();
   const mealName = String(formData.get('mealName') || '').trim();
+  const unit = formData.get('unit') || null;
+  const notes = formData.get('notes') || null;
 
   if (!foodId || !trackDate || !mealName || !Number.isFinite(quantity) || quantity <= 0) {
     document.getElementById('intake-feedback').textContent =
-      'Please choose a food item, date, meal, and a valid quantity.';
+      'Please choose food, date, meal, and valid quantity.';
+    return;
+  }
+
+  // 🔥 find selected food details
+  const food = catalogItems.find(f => String(f.FOOD_ID) === String(foodId));
+
+  if (!food) {
+    document.getElementById('intake-feedback').textContent =
+      'Invalid food selection.';
     return;
   }
 
@@ -517,21 +526,29 @@ async function handleSubmit(event) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        food_id: foodId,
+        food_id: food.FOOD_ID,
+        food_name: food.FOOD_NAME,
+
         track_date: trackDate,
         meal_name: mealName,
+
         quantity,
-        unit: formData.get('unit') || null,
-        notes: formData.get('notes') || null
+        unit,
+
+        // 🔥 calculate macros based on quantity
+        calories: (Number(food.CALORIES_PER_SERVING || 0) * quantity),
+        protein: (Number(food.PROTEIN_PER_SERVING || 0) * quantity),
+        carbs: (Number(food.CARBS_PER_SERVING || 0) * quantity),
+        fat: (Number(food.FAT_PER_SERVING || 0) * quantity),
+
+        notes,
+        user_id: window.auth?.user?.id || null
       })
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({
-        error: 'Unable to save meal entry.'
-      }));
-
-      throw new Error(error.error || 'Unable to save meal entry.');
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Unable to save meal entry.');
     }
 
     closeModal();
@@ -539,10 +556,8 @@ async function handleSubmit(event) {
 
   } catch (error) {
     console.error(error);
-
     document.getElementById('intake-feedback').textContent =
-      error.message || 'Something went wrong.';
-
+      error.message || 'Failed to save intake.';
     isSavingIntake = false;
   }
 }
