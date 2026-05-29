@@ -142,14 +142,14 @@ function buildEditModal(food) {
   openModal(`Edit ${food.FOOD_NAME}`, body, 'Save changes', async (form) => {
     const formData = new FormData(form);
     const payload = {
-      foodName: formData.get('foodName'),
-      measurementType: formData.get('measurementType'),
-      servingSize: formData.get('servingSize'),
-      servingSizeUnit: formData.get('servingSizeUnit'),
-      caloriesPerServing: formData.get('caloriesPerServing'),
-      proteinPerServing: formData.get('proteinPerServing'),
-      carbsPerServing: formData.get('carbsPerServing'),
-      fatPerServing: formData.get('fatPerServing'),
+      foodName: formData.get('food_name'),
+      measurementType: formData.get('measurement_type'),
+      servingSize: formData.get('serving_size'),
+      servingSizeUnit: formData.get('serving_size_unit'),
+      caloriesPerServing: formData.get('calories_per_serving'),
+      proteinPerServing: formData.get('protein_per_serving'),
+      carbsPerServing: formData.get('carbs_per_serving'),
+      fatPerServing: formData.get('fat_per_serving'),
       notes: formData.get('notes') || ''
     };
 
