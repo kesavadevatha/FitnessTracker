@@ -508,7 +508,7 @@ async function handleSubmit(event) {
   }
 
   // 🔥 find selected food details
-  const food = catalogItems.find(f => String(f.FOOD_ID) === String(foodId));
+  const food = catalogItems.find(f => String(f.food_id) === String(foodId));
 
   if (!food) {
     document.getElementById('intake-feedback').textContent =
@@ -526,7 +526,7 @@ async function handleSubmit(event) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        food_id: food.FOOD_ID,
+        food_id: food.food_id,
         food_name: food.FOOD_NAME,
 
         track_date: trackDate,
