@@ -39,12 +39,10 @@ loginForm.addEventListener('submit', async (event) => {
     auth.setAuth(data.token, data.user);
 
     if (data.user.passwordResetRequired) {
-      window.location.href = `${API_BASE_URL}/reset-password`;
+      window.location.href = `/reset-password.html`;
       return;
     }
 	
-
-    //window.location.href = `${API_BASE_URL}/fitness-dashboard`;
 	window.location.href = `/index.html`;
   } catch (error) {
     console.error('Login failed:', error);
