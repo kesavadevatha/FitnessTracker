@@ -21,7 +21,7 @@ loginForm.addEventListener('submit', async (event) => {
   loginFeedback.textContent = 'Signing in...';
 
   try {
-    const response = await fetch('${API_BASE_URL}/api/login', {
+    const response = await fetch(`${API_BASE_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -39,11 +39,12 @@ loginForm.addEventListener('submit', async (event) => {
     auth.setAuth(data.token, data.user);
 
     if (data.user.passwordResetRequired) {
-      window.location.href = '${API_BASE_URL}/reset-password';
+      window.location.href = `${API_BASE_URL}/reset-password`;
       return;
     }
+	
 
-    window.location.href = '${API_BASE_URL}/fitness-dashboard';
+    window.location.href = `${API_BASE_URL}/fitness-dashboard`;
   } catch (error) {
     console.error('Login failed:', error);
     loginFeedback.textContent = 'Unable to sign in. Please try again later.';
