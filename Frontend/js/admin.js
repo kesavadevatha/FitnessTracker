@@ -15,7 +15,7 @@ const API_ENDPOINTS = {
   users: `${API_BASE_URL}/api/users`,
   adminUsers: `${API_BASE_URL}/api/admin/users`,
   resetPassword: `${API_BASE_URL}/api/admin/reset-password`,
-  dashboard: `${API_BASE_URL}/index.html`
+  dashboard: `/index.html`
 };
 
 function renderUserSearchResults(users) {
