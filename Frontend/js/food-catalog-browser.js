@@ -304,6 +304,8 @@ function attachActionHandlers() {
   } catch (error) {
     showStatus(error.message, true);
   }
+  });
+});
 }
 
 /* -------------------- RENDER -------------------- */
