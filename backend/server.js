@@ -338,6 +338,7 @@ app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
                 email: user.USER_ID,
                 isAdmin: user.IS_ADMIN === 'Y',
                 passwordResetRequired: user.PASSWORD_RESET_REQUIRED === 'Y'
+			}
         });
 
     } catch (err) {
