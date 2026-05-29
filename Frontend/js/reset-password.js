@@ -24,7 +24,7 @@ async function loadResetUser() {
     }
 
     try {
-      const response = await auth.authFetch('${API_BASE_URL}/api/me');
+      const response = await auth.authFetch(`${API_BASE_URL}/api/me`);
       if (response.ok) {
         const data = await response.json();
         currentUser = data;
@@ -108,7 +108,7 @@ resetForm.addEventListener('submit', async (event) => {
   resetFeedback.textContent = 'Updating password...';
 
   try {
-    const response = await auth.authFetch('${API_BASE_URL}/api/user/password', {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/user/password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -130,7 +130,7 @@ resetForm.addEventListener('submit', async (event) => {
 
     updateLocalUserOnSuccess();
     showSuccessModal();
-    window.location.replace('${API_BASE_URL}/fitness-dashboard');
+    window.location.replace(`${API_BASE_URL}/fitness-dashboard`);
   } catch (error) {
     console.error('Password reset failed:', error);
     resetFeedback.textContent = 'Unable to update password. Please try again.';

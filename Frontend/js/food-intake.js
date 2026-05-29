@@ -42,7 +42,7 @@ form.addEventListener('submit', async (event) => {
   formStatus.textContent = 'Searching local food catalog...';
 
   try {
-    const response = await auth.authFetch('${API_BASE_URL}/api/food-macros', {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/food-macros`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

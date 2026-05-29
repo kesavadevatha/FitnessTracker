@@ -68,7 +68,7 @@ form.addEventListener('submit', async (event) => {
   form.querySelectorAll('input, button, select, textarea').forEach(el => el.disabled = true);
 
   try {
-    const response = await auth.authFetch('${API_BASE_URL}/api/food-catalog', {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/food-catalog`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
