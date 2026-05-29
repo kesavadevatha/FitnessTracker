@@ -570,7 +570,7 @@ app.put('/api/food-catalog/:food_id', async (req, res) => {
         return res.status(400).json({ error: 'A valid food id is required.' });
     }
 
-    if (!foodName || !measurementType || !servingSize || !servingSizeUnit) {
+    if (!food_name || !measurement_type || !serving_size || !serving_size_unit) {
         return res.status(400).json({ error: 'Food name, measurement type, serving size, and serving size unit are required.' });
     }
 
@@ -582,7 +582,7 @@ app.put('/api/food-catalog/:food_id', async (req, res) => {
             `update custom.FOOD_CATALOG
              set food_name = :food_name,
                  measurement_type = :measurement_type,
-                 serving_size_unit = :serving_size,
+                 serving_size = :serving_size,
                  serving_size_unit = :serving_size_unit,
                  calories_per_serving = :calories_per_serving,
                  protein_per_serving = :protein_per_serving,
@@ -592,14 +592,14 @@ app.put('/api/food-catalog/:food_id', async (req, res) => {
                  modified_date = now()
              where food_id = :food_id`,
             {
-                foodName: String(foodName).trim(),
-                measurementType: String(measurementType).toLowerCase(),
-                servingSize: Number(servingSize),
-                servingSizeUnit: String(servingSizeUnit).toLowerCase(),
-                caloriesPerServing: Number(caloriesPerServing || 0),
-                proteinPerServing: Number(proteinPerServing || 0),
-                carbsPerServing: Number(carbsPerServing || 0),
-                fatPerServing: Number(fatPerServing || 0),
+                food_name: String(food_name).trim(),
+                measurement_type: String(measurement_type).toLowerCase(),
+                serving_size: Number(serving_size),
+                serving_size_unit: String(serving_size_unit).toLowerCase(),
+                calories_per_serving: Number(calories_per_serving || 0),
+                protein_per_serving: Number(protein_per_serving || 0),
+                carbs_per_serving: Number(carbs_per_serving || 0),
+                fat_per_serving: Number(fat_per_serving || 0),
                 notes: notes || null,
                 food_id
             },
