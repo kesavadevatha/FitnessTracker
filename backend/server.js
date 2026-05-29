@@ -516,6 +516,10 @@ app.get(`${API_BASE_URL}/api/tracker`, async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.send('Fitness Tracker Backend Running');
+});
+
 /* =====================================================
    START SERVER
 ===================================================== */
