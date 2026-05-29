@@ -438,12 +438,12 @@ function updateCatalogPreview() {
   const quantityInput = document.getElementById('quantity');
   const unitSelect = document.getElementById('unit');
 
-  quantityInput.value = Number(selectedItem.SERVING_SIZE) || 1;
-  unitSelect.value = normalizeUnitForSelect(selectedItem.SERVING_SIZE_UNIT || 'g');
+  quantityInput.value = Number(selectedItem.serving_size) || 1;
+  unitSelect.value = normalizeUnitForSelect(selectedItem.serving_size_unit || 'g');
   summary.classList.remove('hidden');
   preview.innerHTML = `
-    ${selectedItem.food_name} • ${currencyFormatter.format(Number(selectedItem.CALORIES_PER_SERVING || 0))} kcal, ${metricFormatter.format(Number(selectedItem.PROTEIN_PER_SERVING || 0))} g protein, ${metricFormatter.format(Number(selectedItem.CARBS_PER_SERVING || 0))} g carbs, ${metricFormatter.format(Number(selectedItem.FAT_PER_SERVING || 0))} g fat per serving.
-    ${selectedItem.NOTES ? `<br />${selectedItem.NOTES}` : ''}
+    ${selectedItem.food_name} • ${currencyFormatter.format(Number(selectedItem.calories_per_serving || 0))} kcal, ${metricFormatter.format(Number(selectedItem.protein_per_serving || 0))} g protein, ${metricFormatter.format(Number(selectedItem.carbs_per_serving || 0))} g carbs, ${metricFormatter.format(Number(selectedItem.fat_per_serving || 0))} g fat per serving.
+    ${selectedItem.notes ? `<br />${selectedItem.notes}` : ''}
   `;
 }
 
@@ -495,12 +495,12 @@ async function handleSubmit(event) {
   }
 
   const formData = new FormData(intakeForm);
-  const foodId = Number(formData.get('foodId'));
+  const food_id = Number(formData.get('food_id'));
   const quantity = Number(formData.get('quantity'));
   const trackDate = String(formData.get('trackDate') || '').trim();
   const mealName = String(formData.get('mealName') || '').trim();
 
-  if (!foodId || !trackDate || !mealName || !Number.isFinite(quantity) || quantity <= 0) {
+  if (!food_id || !trackDate || !mealName || !Number.isFinite(quantity) || quantity <= 0) {
     document.getElementById('intake-feedback').textContent = 'Please choose a food item, date, meal, and a valid quantity.';
     return;
   }
@@ -516,7 +516,7 @@ async function handleSubmit(event) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        foodId,
+        food_id,
         trackDate,
         mealName,
         quantity,
