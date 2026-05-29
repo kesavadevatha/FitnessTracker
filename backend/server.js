@@ -589,110 +589,141 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
 });
 
 app.put(`${API_BASE_URL}/api/food-catalog/:food_id`, async (req, res) => {
+
     const food_id = Number(req.params.food_id);
+
     const {
         food_name,
-		measurement_type,
-		serving_size,
-		serving_size_unit,
-		calories_per_serving,
-		protein_per_serving,
-		carbs_per_serving,
-		fat_per_serving,
-		notes
+        measurement_type,
+        serving_size,
+        serving_size_unit,
+        calories_per_serving,
+        protein_per_serving,
+        carbs_per_serving,
+        fat_per_serving,
+        notes
     } = req.body;
 
     if (!Number.isFinite(food_id) || food_id <= 0) {
-        return res.status(400).json({ error: 'A valid food id is required.' });
+        return res.status(400).json({
+            error: 'A valid food id is required.'
+        });
     }
 
     if (!food_name || !measurement_type || !serving_size || !serving_size_unit) {
-        return res.status(400).json({ error: 'Food name, measurement type, serving size, and serving size unit are required.' });
+        return res.status(400).json({
+            error: 'Food name, measurement type, serving size, and serving size unit are required.'
+        });
     }
 
     let conn;
 
     try {
+
         conn = await getConnection();
+
         const result = await conn.query(
-            `update custom.FOOD_CATALOG
-             set food_name = :food_name,
-                 measurement_type = :measurement_type,
-                 serving_size = :serving_size,
-                 serving_size_unit = :serving_size_unit,
-                 calories_per_serving = :calories_per_serving,
-                 protein_per_serving = :protein_per_serving,
-                 carbs_per_serving = :carbs_per_serving,
-                 fat_per_serving = :fat_per_serving,
-                 notes = :notes,
-                 modified_date = now()
-             where food_id = :food_id`,
+            `
+            UPDATE custom.food_catalog
+            SET
+                food_name = $1,
+                measurement_type = $2,
+                serving_size = $3,
+                serving_size_unit = $4,
+                calories_per_serving = $5,
+                protein_per_serving = $6,
+                carbs_per_serving = $7,
+                fat_per_serving = $8,
+                notes = $9,
+                modified_date = NOW()
+            WHERE food_id = $10
+            `,
             [
-                food_name: String(food_name).trim(),
-                measurement_type: String(measurement_type).toLowerCase(),
-                serving_size: Number(serving_size),
-                serving_size_unit: String(serving_size_unit).toLowerCase(),
-                calories_per_serving: Number(calories_per_serving || 0),
-                protein_per_serving: Number(protein_per_serving || 0),
-                carbs_per_serving: Number(carbs_per_serving || 0),
-                fat_per_serving: Number(fat_per_serving || 0),
-                notes: notes || null,
+                String(food_name).trim(),
+                String(measurement_type).toLowerCase(),
+                Number(serving_size),
+                String(serving_size_unit).toLowerCase(),
+                Number(calories_per_serving || 0),
+                Number(protein_per_serving || 0),
+                Number(carbs_per_serving || 0),
+                Number(fat_per_serving || 0),
+                notes || null,
                 food_id
-            ],
-            { autoCommit: true }
+            ]
         );
 
-        if (result.rowsAffected === 0) {
-            return res.status(404).json({ error: 'Food entry not found.' });
+        if (result.rowCount === 0) {
+            return res.status(404).json({
+                error: 'Food entry not found.'
+            });
         }
 
-        res.json({ message: 'Food updated successfully.' });
+        res.json({
+            message: 'Food updated successfully.'
+        });
+
     } catch (error) {
+
         console.error('Error updating food catalog entry:', error);
-        res.status(500).json({ error: error.message || 'Failed to update food catalog entry.' });
+
+        res.status(500).json({
+            error: error.message || 'Failed to update food catalog entry.'
+        });
+
     } finally {
+
         if (conn) {
-            try {
-                await conn.release();
-            } catch (closeError) {
-                console.error('Error closing DB conn:', closeError);
-            }
+            conn.release();
         }
     }
 });
 
 app.delete(`${API_BASE_URL}/api/food-catalog/:food_id`, async (req, res) => {
+
     const food_id = Number(req.params.food_id);
 
     if (!Number.isFinite(food_id) || food_id <= 0) {
-        return res.status(400).json({ error: 'A valid food id is required.' });
+        return res.status(400).json({
+            error: 'A valid food id is required.'
+        });
     }
 
     let conn;
 
     try {
+
         conn = await getConnection();
+
         const result = await conn.query(
-            `delete from custom.food_catalog where food_id = :food_id`,
-            [ food_id ],
-            { autoCommit: true }
+            `
+            DELETE FROM custom.food_catalog
+            WHERE food_id = $1
+            `,
+            [food_id]
         );
 
-        if (result.rowsAffected === 0) {
-            return res.status(404).json({ error: 'Food entry not found.' });
+        if (result.rowCount === 0) {
+            return res.status(404).json({
+                error: 'Food entry not found.'
+            });
         }
 
-        res.json({ message: 'Food deleted successfully.' });
+        res.json({
+            message: 'Food deleted successfully.'
+        });
+
     } catch (error) {
+
         console.error('Error deleting food catalog entry:', error);
-        res.status(500).json({ error: error.message || 'Failed to delete food catalog entry.' });
+
+        res.status(500).json({
+            error: error.message || 'Failed to delete food catalog entry.'
+        });
+
     } finally {
+
         if (conn) {
-            try {
-                await conn.release();
-            } catch (closeError) {
-                console.error('Error closing DB conn:', closeError);
-            }
+            conn.release();
         }
     }
 });
