@@ -503,16 +503,16 @@ app.post(`${API_BASE_URL}/api/food-catalog`, async (req, res) => {
     try {
 
         const {
-            food_name,
-            measurement_type,
-            serving_size,
-            serving_size_unit,
-            calories_per_serving,
-            protein_per_serving,
-            carbs_per_serving,
-            fat_per_serving,
-            notes
-        } = req.body;
+			foodName,
+			measurementType,
+			servingSize,
+			servingSizeUnit,
+			caloriesPerServing,
+			proteinPerServing,
+			carbsPerServing,
+			fatPerServing,
+			notes
+		} = req.body;
 
         await conn.query(
             `
