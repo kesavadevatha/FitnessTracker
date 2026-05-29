@@ -4,7 +4,7 @@ export const sidebarItems = [
     label: 'Dashboard',
     icon: '⌂',
     action: 'route',
-    href: '/index'
+    href: '/index.html'
   },
   {
     id: 'profile',
@@ -24,20 +24,20 @@ export const sidebarItems = [
     label: 'Admin',
     icon: '⚙️',
     action: 'route',
-    href: '/admin'
+    href: '/admin.html'
   },
   {
     id: 'food-catalog',
     label: 'Food Catalog',
     icon: '🗂',
     action: 'route',
-    href: '/food-catalog'
+    href: '/food-catalog.html'
   },
   {
     id: 'food-catalog-browser',
     label: 'Browse Catalog',
     icon: '🔎',
     action: 'route',
-    href: '/food-catalog-browser'
+    href: '/food-catalog-browser.html'
   }
 ];

@@ -4,7 +4,7 @@ const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
 const cors = require('cors');
 const ExcelJS = require('exceljs');
-
+const PROJECT_ROOT = path.resolve(process.cwd(), '..');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -27,6 +27,47 @@ app.use(express.json());
 app.use('/css', express.static(path.join(__dirname, '..', 'css')));
 app.use('/js', express.static(path.join(__dirname, '..', 'js')));
 app.use('/components', express.static(path.join(__dirname, '..', 'components')));
+
+
+app.get('/', (req, res) => {
+    res.redirect('/login');
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'login.html'));
+});
+
+app.get('/reset-password', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'reset-password.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'admin.html'));
+});
+
+app.get('/fitness-dashboard', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'fitness-dashboard.html'));
+});
+
+app.get('/food-intake', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'food-intake.html'));
+});
+
+app.get('/food-catalog', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'food-catalog.html'));
+});
+
+app.get('/food-catalog-browser', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'food-catalog-browser.html'));
+});
+
+app.get('/day-details', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'day-details.html'));
+});
+
+app.get('/user-details', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'user-details.html'));
+});
 
 /* =====================================================
    UTILS
