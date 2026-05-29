@@ -467,6 +467,22 @@ app.post(`${API_BASE_URL}/api/users`, async (req, res) => {
     }
 });
 
+function authenticateRequest(req, res, next) {
+    const authorization = String(req.headers.authorization || '').trim();
+    const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
+    const payload = verifyAuthToken(token);
+
+    if (!payload || !payload.email) {
+        return res.status(401).json({ error: 'Authentication required.' });
+    }
+
+    req.user = {
+        email: String(payload.email).trim().toLowerCase(),
+        isAdmin: Boolean(payload.isAdmin)
+    };
+    next();
+}
+
 app.put(`${API_BASE_URL}/api/user/password`, authenticateRequest, async (req, res) => {
     const { password } = req.body;
 
