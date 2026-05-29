@@ -169,7 +169,7 @@ function buildEditModal(food) {
         throw new Error(data.error || 'Unable to update food entry.');
       }
 
-      showStatus(`Updated ${payload.foodName}.`);
+      showStatus(`Updated ${payload.food_name}.`);
       closeModal();
       await loadCatalog(searchInput.value.trim());
     } catch (error) {
