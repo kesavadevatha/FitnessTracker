@@ -135,7 +135,7 @@ async function findUserByEmail(email) {
     }
 }
 
-async function createUser(email, password, isAdmin = false, reset = false) {
+async function createUser(email, password, isAdmin, reset = false) {
     const conn = await getConnection();
 
     try {
@@ -337,9 +337,6 @@ app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
 			user: {
                 email: user.email,
                 isAdmin: user.IS_ADMIN === 'Y',
-				AdminFlg: user.IS_ADMIN !== 'Y',
-				AdminVal: user.IS_ADMIN,
-				PASSWORD_RESET_REQUIRED: user.PASSWORD_RESET_REQUIRED,
                 passwordResetRequired: user.PASSWORD_RESET_REQUIRED === 'Y'
             }
         });
