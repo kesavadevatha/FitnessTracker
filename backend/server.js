@@ -376,6 +376,59 @@ app.get(`${API_BASE_URL}/api/me`, async (req, res) => {
     }
 });
 
+/* ========================
+	User Creation
+========================== */
+app.post(`${API_BASE_URL}/api/users`, async (req, res) => {
+    const { email, password, isAdmin } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    let connection;
+    try {
+        connection = await getConnection();
+        const countResult = await connection.execute(
+            `select count(*) as TOTAL from custom.APP_USER`,
+            {},
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        const userCount = Number(countResult.rows?.[0]?.TOTAL || 0);
+        let authUser = null;
+        const authorization = String(req.headers.authorization || '').trim();
+        const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
+        if (token) {
+            const payload = verifyAuthToken(token);
+            if (payload && payload.email) {
+                authUser = payload;
+            }
+        }
+
+        if (userCount > 0 && (!authUser || !authUser.isAdmin)) {
+            return res.status(403).json({ error: 'Admin access is required to create additional users.' });
+        }
+
+        const shouldCreateAdmin = userCount === 0 ? true : Boolean(isAdmin);
+        const requiresPasswordReset = userCount > 0;
+        await createUser(email, password, shouldCreateAdmin, requiresPasswordReset);
+
+        res.status(201).json({ message: 'User created successfully.', email: String(email).trim().toLowerCase(), isAdmin: shouldCreateAdmin });
+    } catch (error) {
+        console.error('Error creating user account:', error);
+        res.status(500).json({ error: 'Failed to create user account.' });
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (closeError) {
+                console.error('Error closing DB connection:', closeError);
+            }
+        }
+    }
+});
+
 /* =====================================================
    FOOD CATALOG
 ===================================================== */
