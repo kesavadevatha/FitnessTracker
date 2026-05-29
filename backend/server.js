@@ -135,7 +135,7 @@ async function findUserByEmail(email) {
     }
 }
 
-async function createUser(email, password, isAdmin, reset = true) {
+async function createUser(email, password, isAdmin = false, reset = false) {
     const conn = await getConnection();
 
     try {
@@ -392,7 +392,7 @@ app.post(`${API_BASE_URL}/api/users`, async (req, res) => {
             `select count(*) as TOTAL from custom.APP_USER`
         );
 
-        const userCount = Number(countResult.rows?.[0]?.TOTAL || 0);
+        const userCount = Number(countResult.rows?.[0]?.total || 0);
         let authUser = null;
         const authorization = String(req.headers.authorization || '').trim();
         const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
