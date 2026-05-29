@@ -266,48 +266,6 @@ function buildMealModal(food) {
   });
 }
 
-function attachActionHandlers() {
-  document.querySelectorAll('[data-edit-food]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const food = currentCatalog.find((item) => String(item.FOOD_ID) === button.dataset.foodId);
-      if (food) {
-        buildEditModal(food);
-      }
-    });
-  });
-
-  document.querySelectorAll('[data-delete-food]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      const food = currentCatalog.find((item) => String(item.FOOD_ID) === button.dataset.foodId);
-      if (!food) {
-        return;
-      }
-
-      if (!window.confirm(`Delete ${food.FOOD_NAME}? This cannot be undone.`)) {
-        return;
-      }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/food-catalog/${food.FOOD_ID}`,
-      { method: 'DELETE' }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Delete failed.');
-    }
-
-    showStatus(`Deleted ${food.FOOD_NAME}.`);
-    await loadCatalog(searchInput.value.trim());
-  } catch (error) {
-    showStatus(error.message, true);
-  }
-  });
-});
-}
-
 /* -------------------- RENDER -------------------- */
 
 function attachActionHandlers() {
@@ -390,7 +348,6 @@ async function loadCatalog(searchTerm = '') {
       throw new Error(`Unable to load catalog (${response.status})`);
     }
 
-    const data = await response.json();
     renderCatalog(data);
     showStatus(`Showing ${data.length} food${data.length === 1 ? '' : 's'}.`);
   } catch (error) {
