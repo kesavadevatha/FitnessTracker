@@ -93,11 +93,11 @@ function buildEditModal(food) {
   const body = `
     <label>
       <span>Food name</span>
-      <input type="text" name="foodName" value="${escapeHtml(food.food_name)}" required />
+      <input type="text" name="food_name" value="${escapeHtml(food.food_name)}" required />
     </label>
     <label>
       <span>Measurement type</span>
-      <select name="measurementType" id="edit-measurement-type" required>
+      <select name="measurement_type" id="edit-measurement-type" required>
         <option value="g" ${food.measurement_type === 'g' ? 'selected' : ''}>Weight-based (grams)</option>
         <option value="unit" ${food.measurement_type === 'unit' ? 'selected' : ''}>Quantity-based (units)</option>
       </select>
@@ -105,11 +105,11 @@ function buildEditModal(food) {
     <div class="form-row">
       <label>
         <span>Serving size</span>
-        <input type="number" name="servingSize" id="edit-serving-size" min="1" step="0.1" value="${escapeHtml(food.serving_size)}" required />
+        <input type="number" name="serving_size" id="edit-serving-size" min="1" step="0.1" value="${escapeHtml(food.serving_size)}" required />
       </label>
       <label>
         <span>Serving size unit</span>
-        <select name="servingSizeUnit" id="edit-serving-size-unit" required>
+        <select name="serving_size_unit" id="edit-serving-size-unit" required>
           <option value="g" ${food.serving_size_unit === 'g' ? 'selected' : ''}>grams</option>
           <option value="unit" ${food.serving_size_unit === 'unit' ? 'selected' : ''}>units</option>
         </select>
@@ -118,19 +118,19 @@ function buildEditModal(food) {
     <div class="macro-grid modal-macro-grid">
       <label>
         <span>Calories per serving</span>
-        <input type="number" name="caloriesPerServing" min="0" step="0.1" value="${escapeHtml(food.calories_per_serving)}" required />
+        <input type="number" name="calories_per_serving" min="0" step="0.1" value="${escapeHtml(food.calories_per_serving)}" required />
       </label>
       <label>
         <span>Protein per serving</span>
-        <input type="number" name="proteinPerServing" min="0" step="0.1" value="${escapeHtml(food.protein_per_serving)}" required />
+        <input type="number" name="protein_per_serving" min="0" step="0.1" value="${escapeHtml(food.protein_per_serving)}" required />
       </label>
       <label>
         <span>Carbs per serving</span>
-        <input type="number" name="carbsPerServing" min="0" step="0.1" value="${escapeHtml(food.carbs_per_serving)}" required />
+        <input type="number" name="carbs_per_serving" min="0" step="0.1" value="${escapeHtml(food.carbs_per_serving)}" required />
       </label>
       <label>
         <span>Fat per serving</span>
-        <input type="number" name="fatPerServing" min="0" step="0.1" value="${escapeHtml(food.fat_per_serving)}" required />
+        <input type="number" name="fat_per_serving" min="0" step="0.1" value="${escapeHtml(food.fat_per_serving)}" required />
       </label>
     </div>
     <label>
@@ -142,14 +142,14 @@ function buildEditModal(food) {
   openModal(`Edit ${food.food_name}`, body, 'Save changes', async (form) => {
     const formData = new FormData(form);
     const payload = {
-      foodName: formData.get('food_name'),
-      measurementType: formData.get('measurement_type'),
-      servingSize: formData.get('serving_size'),
-      servingSizeUnit: formData.get('serving_size_unit'),
-      caloriesPerServing: formData.get('calories_per_serving'),
-      proteinPerServing: formData.get('protein_per_serving'),
-      carbsPerServing: formData.get('carbs_per_serving'),
-      fatPerServing: formData.get('fat_per_serving'),
+      food_name: formData.get('food_name'),
+      measurement_type: formData.get('measurement_type'),
+      serving_size: formData.get('serving_size'),
+      serving_size_unit: formData.get('serving_size_unit'),
+      calories_per_serving: formData.get('calories_per_serving'),
+      protein_per_serving: formData.get('protein_per_serving'),
+      carbs_per_serving: formData.get('carbs_per_serving'),
+      fat_per_serving: formData.get('fat_per_serving'),
       notes: formData.get('notes') || ''
     };
 
