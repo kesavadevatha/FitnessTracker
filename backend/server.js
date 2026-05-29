@@ -135,11 +135,13 @@ async function findUserByEmail(email) {
     }
 }
 
-async function createUser(email, password, isAdmin, reset = false) {
+async function createUser(email, password, isAdmin, reset = true) {
     const conn = await getConnection();
 
     try {
         const hash = hashPassword(password);
+		const adm_flg = isAdmin ? 'Y' : 'N';
+		console.log(adm_flg);
 
         await conn.query(
             `
@@ -159,7 +161,7 @@ async function createUser(email, password, isAdmin, reset = false) {
                 email.toLowerCase(),
                 email.toLowerCase(),
                 hash,
-                isAdmin ? 'Y' : 'N',
+                adm_flg,
                 reset ? 'Y' : 'N'
             ]
         );
