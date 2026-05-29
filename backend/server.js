@@ -467,6 +467,26 @@ app.post(`${API_BASE_URL}/api/users`, async (req, res) => {
     }
 });
 
+app.put(`${API_BASE_URL}/api/user/password`, authenticateRequest, async (req, res) => {
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ error: 'New password is required.' });
+    }
+
+    try {
+        const success = await updateUserPassword(req.user.email, password, false);
+        if (!success) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        res.json({ message: 'Password changed successfully.' });
+    } catch (error) {
+        console.error('Error updating user password:', error);
+        res.status(500).json({ error: 'Unable to update password.' });
+    }
+});
+
 /* =====================================================
    FOOD CATALOG
 ===================================================== */
