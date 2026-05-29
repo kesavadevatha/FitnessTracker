@@ -386,13 +386,11 @@ app.post(`${API_BASE_URL}/api/users`, async (req, res) => {
         return res.status(400).json({ error: 'Email and password are required.' });
     }
 
-    let connection;
+    let conn;
     try {
-        connection = await getConnection();
-        const countResult = await connection.execute(
-            `select count(*) as TOTAL from custom.APP_USER`,
-            {},
-            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        conn = await getConnection();
+        const countResult = await conn.query(
+            `select count(*) as TOTAL from custom.APP_USER`
         );
 
         const userCount = Number(countResult.rows?.[0]?.TOTAL || 0);
@@ -419,12 +417,8 @@ app.post(`${API_BASE_URL}/api/users`, async (req, res) => {
         console.error('Error creating user account:', error);
         res.status(500).json({ error: 'Failed to create user account.' });
     } finally {
-        if (connection) {
-            try {
-                await connection.close();
-            } catch (closeError) {
-                console.error('Error closing DB connection:', closeError);
-            }
+        if (conn) {
+            conn.release();
         }
     }
 });
