@@ -177,8 +177,8 @@ function closeSearchModal() {
 }
 
 backButton.addEventListener('click', () => {
-  //window.location.href = '/fitness-dashboard';
-  window.location.href = API_ENDPOINTS.dashboard;
+  window.location.href = '/fitness-dashboard';
+  //window.location.href = API_ENDPOINTS.dashboard;
 });
 
 logoutButton.addEventListener('click', () => auth.logout());
