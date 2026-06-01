@@ -518,6 +518,8 @@ async function handleSubmit(event) {
 
   isSavingIntake = true;
   document.getElementById('intake-feedback').textContent = 'Saving item...';
+  const authUser = window.auth.getAuthUser();
+  console.log("Auth User:", authUser);
 
   try {
     const response = await auth.authFetch(API_ENDPOINTS.mealLog, {
