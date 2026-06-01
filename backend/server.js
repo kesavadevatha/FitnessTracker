@@ -67,6 +67,10 @@ app.get('/day-details', (req, res) => {
 	res.sendFile(path.join(FRONTEND_ROOT, 'day-details.html'));
 });
 
+app.get('/day-details', (req, reconst FRONTEND_ROOT = path.join(PROJECT_ROOT, 'Frontend');s) => {
+    res.send('DAY DETAILS ROUTE WORKING');
+});
+
 app.get('/user-details', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'user-details.html'));
 });
