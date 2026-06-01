@@ -555,10 +555,10 @@ async function handleSubmit(event) {
         unit,
 
         // 🔥 calculate macros based on quantity
-        calories: (Number(food.calories_per_serving || 0) * quantity),
-        protein: (Number(food.protein_per_serving || 0) * quantity),
-        carbs: (Number(food.carbs_per_serving || 0) * quantity),
-        fat: (Number(food.fat_per_serving || 0) * quantity),
+        calories: (Number(food.calories_per_serving || 0) * (quantity / food.serving_size)),
+        protein: (Number(food.protein_per_serving || 0) * (quantity / food.serving_size)),
+        carbs: (Number(food.carbs_per_serving || 0) * (quantity / food.serving_size)),
+        fat: (Number(food.fat_per_serving || 0) * (quantity / food.serving_size)),
 
         notes,
         user_id: authUser?.email || null
