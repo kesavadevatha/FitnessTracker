@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const cors = require('cors');
 const ExcelJS = require('exceljs');
 const PROJECT_ROOT = path.resolve(process.cwd(), '..');
+const FRONTEND_ROOT = path.join(PROJECT_ROOT, 'Frontend');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -62,11 +63,8 @@ app.get('/food-catalog-browser', (req, res) => {
 });
 
 app.get('/day-details', (req, res) => {
-    res.sendFile(path.join(PROJECT_ROOT, 'html', 'day-details.html'));
-});
-
-app.get('/day-details', (req, res) => {
-    res.send('DAY DETAILS ROUTE WORKING');
+    //res.sendFile(path.join(PROJECT_ROOT, 'Frontend', 'day-details.html'));
+	res.sendFile(path.join(FRONTEND_ROOT, 'day-details.html'));
 });
 
 app.get('/user-details', (req, res) => {
