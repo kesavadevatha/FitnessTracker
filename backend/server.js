@@ -825,6 +825,8 @@ app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => 
 
     try {
 
+        console.log("TRACKER USER:", req.user.email);
+
         const result = await conn.query(
             `
             SELECT *
@@ -835,18 +837,12 @@ app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => 
             [req.user.email]
         );
 
+        console.log("TRACKER ROW COUNT:", result.rows.length);
+        console.log("TRACKER ROWS:", result.rows);
+
         res.json(result.rows);
 
-    } catch(err) {
-
-        console.error(err);
-
-        res.status(500).json({
-            error:'Failed to load tracker data'
-        });
-
     } finally {
-
         conn.release();
     }
 });
