@@ -194,20 +194,20 @@ function groupTrackerEntries(entries) {
     if (!grouped.has(dateKey)) {
       grouped.set(dateKey, {
         TRACK_DATE: dateKey,
-        CALORIES: 0,
-        PROTEIN: 0,
-        CARBOHYDRATES: 0,
-        FAT: 0,
-        ENTRY_COUNT: 0
+        calories: 0,
+        protien: 0,
+        carbohdrates: 0,
+        fat: 0,
+        entry_count: 0
       });
     }
 
     const groupedEntry = grouped.get(dateKey);
-    groupedEntry.CALORIES += safeNumber(entry.CALORIES);
-    groupedEntry.PROTEIN += safeNumber(entry.PROTEIN);
-    groupedEntry.CARBOHYDRATES += safeNumber(entry.CARBOHYDRATES ?? entry.CARBS);
-    groupedEntry.FAT += safeNumber(entry.FAT);
-    groupedEntry.ENTRY_COUNT += 1;
+    groupedEntry.calories += safeNumber(entry.calories);
+    groupedEntry.protien += safeNumber(entry.protien);
+    groupedEntry.carbohdrates += safeNumber(entry.carbohdrates ?? entry.CARBS);
+    groupedEntry.fat += safeNumber(entry.fat);
+    groupedEntry.entry_count += 1;
   });
 
   return [...grouped.values()].sort((a, b) => a.TRACK_DATE.localeCompare(b.TRACK_DATE));
@@ -264,7 +264,7 @@ function renderMealShowcase(entries) {
           return `
             <a class="${classes.join(' ')}" href="/day-details?date=${encodeURIComponent(day.key)}">
               <div class="calendar-day-date">${day.date.getDate()}</div>
-              <div class="calendar-day-protein">${entry ? `${metricFormatter.format(entry.PROTEIN)} g protein` : ''}</div>
+              <div class="calendar-day-protein">${entry ? `${metricFormatter.format(entry.protien)} g protein` : ''}</div>
             </a>
           `;
         }).join('')}
@@ -285,10 +285,10 @@ function renderCards(entries) {
 
   const totals = dailyEntries.reduce(
     (acc, entry) => {
-      acc.calories += safeNumber(entry.CALORIES);
-      acc.protein += safeNumber(entry.PROTEIN);
-      acc.carbs += safeNumber(entry.CARBOHYDRATES);
-      acc.fat += safeNumber(entry.FAT);
+      acc.calories += safeNumber(entry.calories);
+      acc.protein += safeNumber(entry.protien);
+      acc.carbs += safeNumber(entry.carbohdrates);
+      acc.fat += safeNumber(entry.fat);
       return acc;
     },
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
@@ -365,21 +365,38 @@ function renderCards(entries) {
 async function loadTrackerData() {
   try {
     //const response = await auth.authFetch('/api/tracker');
-	const response = await auth.authFetch(API_ENDPOINTS.tracker);
+    const response = await auth.authFetch(API_ENDPOINTS.tracker);
 
     if (!response.ok) {
       throw new Error(`Unable to fetch tracker data (${response.status})`);
     }
 
     const entries = await response.json();
-    trackerEntriesCache = entries;
-    renderCards(entries);
+	console.log("TRACKER DATA:", entries);
+	const normalizedEntries = entries.map(normalizeTrackerEntry);
+    trackerEntriesCache = normalizedEntries;
+    renderCards(normalizedEntries);
   } catch (error) {
     console.error(error);
     dataStatus.textContent = 'Unable to load intake history right now.';
     summaryText.textContent = 'Check the backend server connection and try again.';
     renderEmptyState();
   }
+}
+
+function normalizeTrackerEntry(entry) {
+  return {
+    TRACK_DATE: entry.TRACK_DATE || entry.track_date,
+    calories: safeNumber(entry.calories ?? entry.calories),
+    protien: safeNumber(entry.protien ?? entry.protein),
+    carbohdrates: safeNumber(
+      entry.carbohdrates ??
+      entry.carbohydrates ??
+      entry.CARBS ??
+      entry.carbs
+    ),
+    fat: safeNumber(entry.fat ?? entry.fat)
+  };
 }
 
 function normalizeUnitForSelect(unit) {
@@ -411,7 +428,7 @@ function normalizeUnitForSelect(unit) {
 async function loadCatalogItems() {
   try {
     //const response = await auth.authFetch('/api/food-catalog');
-	const response = await auth.authFetch(API_ENDPOINTS.foodCatalog);
+    const response = await auth.authFetch(API_ENDPOINTS.foodCatalog);
 
     if (!response.ok) {
       throw new Error(`Unable to load food catalog (${response.status})`);
