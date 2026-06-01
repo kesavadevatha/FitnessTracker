@@ -471,6 +471,7 @@ function authenticateRequest(req, res, next) {
     const authorization = String(req.headers.authorization || '').trim();
     const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
     const payload = verifyAuthToken(token);
+	console.log("TOKEN PAYLOAD:", payload);
 
     if (!payload || !payload.email) {
         return res.status(401).json({ error: 'Authentication required.' });
@@ -839,6 +840,7 @@ app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => 
 
         console.log("TRACKER ROW COUNT:", result.rows.length);
         console.log("TRACKER ROWS:", result.rows);
+		console.log("TRACKER ROWS:", result.rows.length);
 
         res.json(result.rows);
 
