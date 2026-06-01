@@ -471,7 +471,6 @@ function authenticateRequest(req, res, next) {
     const authorization = String(req.headers.authorization || '').trim();
     const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
     const payload = verifyAuthToken(token);
-	console.log("TOKEN PAYLOAD:", payload);
 
     if (!payload || !payload.email) {
         return res.status(401).json({ error: 'Authentication required.' });
@@ -799,34 +798,13 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
     }
 });
 
-    const conn = await getConnection();
-
-    try {
-
-        const result = await conn.query(
-            `
-            SELECT *
-            FROM custom.meal_log
-            WHERE LOWER(user_id) = LOWER($1)
-            ORDER BY track_date DESC
-            `,
-            [req.query.userId]
-        );
-
-        res.json(result.rows);
-
-    } finally {
-        conn.release();
-    }
-});
-
 app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => {
 
     const conn = await getConnection();
+	console.log(req.user.email);
+	const user_id = req.user.email;
 
     try {
-
-        console.log("TRACKER USER:", req.user.email);
 
         const result = await conn.query(
             `
@@ -835,22 +813,26 @@ app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => 
             WHERE LOWER(user_id)=LOWER($1)
             ORDER BY track_date DESC
             `,
-            [req.user.email]
+            [user_id]
         );
-
-        console.log("TRACKER ROW COUNT:", result.rows.length);
-        console.log("TRACKER ROWS:", result.rows);
-		console.log("TRACKER ROWS:", result.rows.length);
-
+		
+		console.log('TOKEN USER:', req.user);
+		console.log('TRACKER QUERY USER:', user_id);
+		console.log('TRACKER ROWS:', result.rows.length);
         res.json(result.rows);
 
+    } catch(err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            error:'Failed to load tracker data'
+        });
+
     } finally {
+
         conn.release();
     }
-});
-
-app.get('/', (req, res) => {
-    res.send('Fitness Tracker Backend Running');
 });
 
 app.get('/api/login', (req, res) => {
