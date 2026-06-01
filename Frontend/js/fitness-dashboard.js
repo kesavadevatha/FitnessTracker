@@ -527,7 +527,7 @@ async function handleSubmit(event) {
       },
       body: JSON.stringify({
         food_id: food.food_id,
-        food_name: food.FOOD_NAME,
+        food_name: food.food_name,
 
         track_date: trackDate,
         meal_name: mealName,
@@ -536,13 +536,13 @@ async function handleSubmit(event) {
         unit,
 
         // 🔥 calculate macros based on quantity
-        calories: (Number(food.CALORIES_PER_SERVING || 0) * quantity),
-        protein: (Number(food.PROTEIN_PER_SERVING || 0) * quantity),
-        carbs: (Number(food.CARBS_PER_SERVING || 0) * quantity),
-        fat: (Number(food.FAT_PER_SERVING || 0) * quantity),
+        calories: (Number(food.calories_per_serving || 0) * quantity),
+        protein: (Number(food.protein_per_serving || 0) * quantity),
+        carbs: (Number(food.carbs_per_serving || 0) * quantity),
+        fat: (Number(food.fat_per_serving || 0) * quantity),
 
         notes,
-        user_id: window.auth?.user?.id || null
+        user_id: authUser?.user_id || authUser?.id || null
       })
     });
 
