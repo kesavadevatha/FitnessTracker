@@ -740,16 +740,17 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
 
         const {
             food_id,
-            food_name,
-			measurement_type,
-			serving_size,
-			serving_size_unit,
-			calories_per_serving,
-			protein_per_serving,
-			carbs_per_serving,
-			fat_per_serving,
+			food_name,
+			track_date,
+			meal_name,
+			quantity,
+			unit,
+			calories,
+			protein,
+			carbs,
+			fat,
 			notes,
-            userId
+			user_id
         } = req.body;
 
         await conn.query(
