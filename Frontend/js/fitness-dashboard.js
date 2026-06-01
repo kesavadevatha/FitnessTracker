@@ -544,7 +544,7 @@ async function handleSubmit(event) {
         fat: (Number(food.fat_per_serving || 0) * quantity),
 
         notes,
-        user_id: authUser?.user_id || authUser?.id || null
+        user_id: authUser?.email || null
       })
     });
 
