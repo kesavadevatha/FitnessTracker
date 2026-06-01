@@ -798,8 +798,6 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
     }
 });
 
-app.get(`${API_BASE_URL}/api/tracker`, async (req, res) => {
-
     const conn = await getConnection();
 
     try {
@@ -817,6 +815,38 @@ app.get(`${API_BASE_URL}/api/tracker`, async (req, res) => {
         res.json(result.rows);
 
     } finally {
+        conn.release();
+    }
+});
+
+app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => {
+
+    const conn = await getConnection();
+
+    try {
+
+        const result = await conn.query(
+            `
+            SELECT *
+            FROM custom.meal_log
+            WHERE LOWER(user_id)=LOWER($1)
+            ORDER BY track_date DESC
+            `,
+            [req.user.email]
+        );
+
+        res.json(result.rows);
+
+    } catch(err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            error:'Failed to load tracker data'
+        });
+
+    } finally {
+
         conn.release();
     }
 });

@@ -195,8 +195,8 @@ function groupTrackerEntries(entries) {
       grouped.set(dateKey, {
         TRACK_DATE: dateKey,
         calories: 0,
-        protien: 0,
-        carbohdrates: 0,
+        protein: 0,
+        carbohydrates: 0,
         fat: 0,
         entry_count: 0
       });
@@ -204,8 +204,8 @@ function groupTrackerEntries(entries) {
 
     const groupedEntry = grouped.get(dateKey);
     groupedEntry.calories += safeNumber(entry.calories);
-    groupedEntry.protien += safeNumber(entry.protien);
-    groupedEntry.carbohdrates += safeNumber(entry.carbohdrates ?? entry.CARBS);
+    groupedEntry.protein += safeNumber(entry.protein);
+    groupedEntry.carbohydrates += safeNumber(entry.carbohydrates ?? entry.CARBS);
     groupedEntry.fat += safeNumber(entry.fat);
     groupedEntry.entry_count += 1;
   });
@@ -264,7 +264,7 @@ function renderMealShowcase(entries) {
           return `
             <a class="${classes.join(' ')}" href="/day-details?date=${encodeURIComponent(day.key)}">
               <div class="calendar-day-date">${day.date.getDate()}</div>
-              <div class="calendar-day-protein">${entry ? `${metricFormatter.format(entry.protien)} g protein` : ''}</div>
+              <div class="calendar-day-protein">${entry ? `${metricFormatter.format(entry.protein)} g protein` : ''}</div>
             </a>
           `;
         }).join('')}
@@ -286,8 +286,8 @@ function renderCards(entries) {
   const totals = dailyEntries.reduce(
     (acc, entry) => {
       acc.calories += safeNumber(entry.calories);
-      acc.protein += safeNumber(entry.protien);
-      acc.carbs += safeNumber(entry.carbohdrates);
+      acc.protein += safeNumber(entry.protein);
+      acc.carbs += safeNumber(entry.carbohydrates);
       acc.fat += safeNumber(entry.fat);
       return acc;
     },
@@ -388,9 +388,9 @@ function normalizeTrackerEntry(entry) {
   return {
     TRACK_DATE: entry.TRACK_DATE || entry.track_date,
     calories: safeNumber(entry.calories ?? entry.calories),
-    protien: safeNumber(entry.protien ?? entry.protein),
-    carbohdrates: safeNumber(
-      entry.carbohdrates ??
+    protein: safeNumber(entry.protein ?? entry.protein),
+    carbohydrates: safeNumber(
+      entry.carbohydrates ??
       entry.carbohydrates ??
       entry.CARBS ??
       entry.carbs
