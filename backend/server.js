@@ -825,6 +825,114 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
     }
 });
 
+app.put(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (req, res) => {
+    const mealLogId = Number(req.params.mealLogId);
+    const { quantity, unit } = req.body;
+
+    if (!Number.isFinite(mealLogId) || mealLogId <= 0) {
+        return res.status(400).json({ error: 'Valid meal log ID is required.' });
+    }
+
+    if (!quantity || !unit) {
+        return res.status(400).json({ error: 'Quantity and unit are required.' });
+    }
+
+    let conn;
+
+    try {
+        conn = await getConnection();
+        
+        // Get the existing meal entry to recalculate macros
+        const mealResult = await conn.query(
+            `select FOOD_ID, QUANTITY, UNIT from custom.MEAL_LOG where MEAL_LOG_ID = $1 and lower(USER_ID) = lower($2)`,
+            [ mealLogId, userId: req.user.email ]
+        );
+
+        if (!mealResult.rows || mealResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Meal log entry not found.' });
+        }
+
+        const meal = mealResult.rows[0];
+        const food = await findFoodCatalogById(meal.FOOD_ID);
+
+        if (!food) {
+            return res.status(404).json({ error: 'Food entry not found.' });
+        }
+
+        // Calculate new macros
+        const scale = calculateScale(food, quantity, unit);
+        const newCalories = roundTo(Number(food.CALORIES_PER_SERVING) * scale, 1);
+        const newProtein = roundTo(Number(food.PROTEIN_PER_SERVING) * scale, 1);
+        const newCarbs = roundTo(Number(food.CARBS_PER_SERVING) * scale, 1);
+        const newFat = roundTo(Number(food.FAT_PER_SERVING) * scale, 1);
+
+        await connection.execute(
+            `update custom.MEAL_LOG
+             set QUANTITY = :quantity, UNIT = :unit, CALORIES = :calories, PROTEIN = :protein, CARBS = :carbs, FAT = :fat, MODIFIED_DATE = SYSDATE
+             where MEAL_LOG_ID = :mealLogId`,
+            {
+                mealLogId,
+                quantity: Number(quantity),
+                unit: String(unit).toLowerCase(),
+                calories: newCalories,
+                protein: newProtein,
+                carbs: newCarbs,
+                fat: newFat
+            },
+            { autoCommit: true }
+        );
+
+        res.json({ message: 'Meal entry updated successfully.' });
+    } catch (error) {
+        console.error('Error updating meal entry:', error);
+        res.status(500).json({ error: error.message || 'Failed to update meal entry.' });
+    } finally {
+        if (connection) {
+            try {
+                await conn.release();
+            } catch (closeError) {
+                console.error('Error closing DB connection:', closeError);
+            }
+        }
+    }
+});
+
+app.delete(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (req, res) => {
+    const mealLogId = Number(req.params.mealLogId);
+
+    if (!Number.isFinite(mealLogId) || mealLogId <= 0) {
+        return res.status(400).json({ error: 'Valid meal log ID is required.' });
+    }
+
+    let conn;
+
+    try {
+        conn = await getConnection();
+        
+        const result = await conn.query(
+            `delete from custom.MEAL_LOG where MEAL_LOG_ID = $1 and lower(USER_ID) = lower($2)`,
+            [ mealLogId, userId: req.user.email ]
+        );
+
+        res.json({ message: 'Meal entry deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting meal entry:', error);
+        res.status(500).json({ error: 'Failed to delete meal entry.' });
+    } finally {
+        if (connection) {
+            try {
+                await conn.release();
+            } catch (closeError) {
+                console.error('Error closing DB connection:', closeError);
+            }
+        }
+    }
+});
+
+/* =====================================================
+   TRACKER DETAILS
+===================================================== */
+
 app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => {
 
     const conn = await getConnection();
