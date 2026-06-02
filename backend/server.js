@@ -845,7 +845,7 @@ app.put(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (r
         // Get the existing meal entry to recalculate macros
         const mealResult = await conn.query(
             `select FOOD_ID, QUANTITY, UNIT from custom.MEAL_LOG where MEAL_LOG_ID = $1 and lower(USER_ID) = lower($2)`,
-            [ mealLogId, userId: req.user.email ]
+            [ mealLogId, req.user.email ]
         );
 
         if (!mealResult.rows || mealResult.rows.length === 0) {
@@ -911,7 +911,7 @@ app.delete(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async
         
         const result = await conn.query(
             `delete from custom.MEAL_LOG where MEAL_LOG_ID = $1 and lower(USER_ID) = lower($2)`,
-            [ mealLogId, userId: req.user.email ]
+            [ mealLogId, req.user.email ]
         );
 
         res.json({ message: 'Meal entry deleted successfully.' });
