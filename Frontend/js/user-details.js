@@ -2,6 +2,10 @@ const profileForm = document.getElementById('user-profile-form');
 const profileFeedback = document.getElementById('profile-feedback');
 const profileEmail = document.getElementById('profile-email');
 
+const API_ENDPOINTS = {
+  dashboard: `/index.html`
+};
+
 async function initProfilePage() {
   if (!auth.requireLogin()) {
     return;
@@ -132,5 +136,12 @@ profileForm.addEventListener('submit', async (event) => {
     profileFeedback.textContent = 'Unable to save details. Please try again.';
   }
 });
+
+const backButton = document.getElementById('profile-back-button');
+if (backButton) {
+  backButton.addEventListener('click', () => {
+    window.location.href = APP_ROUTES.dashboard;
+  });
+}
 
 initProfilePage();

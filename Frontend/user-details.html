@@ -15,17 +15,19 @@
       <p class="auth-help">Signed in as <strong id="profile-email"></strong></p>
 
       <form id="user-profile-form">
-        <label>
-          <span>Gender</span>
-          <select name="gender">
-            <option value="">Select gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Prefer not to mention">Prefer not to mention</option>
-          </select>
-        </label>
+        <div class="form-grid-row">
+          <label>
+            <span>Gender</span>
+            <select name="gender">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Prefer not to mention">Prefer not to mention</option>
+            </select>
+          </label>
+        </div>
 
-        <div class="form-row">
+        <div class="form-grid-row">
           <label>
             <span>Weight</span>
             <div class="split-input">
@@ -37,9 +39,7 @@
               </select>
             </div>
           </label>
-        </div>
 
-        <div class="form-row">
           <label>
             <span>Height</span>
             <div class="split-input">
@@ -53,28 +53,33 @@
           </label>
         </div>
 
-        <label>
-          <span>Date of birth</span>
-          <input type="date" name="dateOfBirth" />
-        </label>
+        <div class="form-grid-row">
+          <label>
+            <span>Date of birth</span>
+            <input type="date" name="dateOfBirth" />
+          </label>
 
-        <label>
-          <span>Fitness goal</span>
-          <select name="goal">
-            <option value="">Select your goal</option>
-            <option value="Body recomposition">Body recomposition</option>
-            <option value="Lose Fat">Lose Fat</option>
-            <option value="Build Muscle">Build Muscle</option>
-            <option value="Lose Fat & Build Muscle">Lose Fat & Build Muscle</option>
-            <option value="Maintain Weight">Maintain Weight</option>
-            <option value="Gain Weight">Gain Weight</option>
-            <option value="Healthy Lifestyle">Healthy Lifestyle</option>
-          </select>
-        </label>
+          <label>
+            <span>Fitness goal</span>
+            <select name="goal">
+              <option value="">Select your goal</option>
+              <option value="Body recomposition">Body recomposition</option>
+              <option value="Lose Fat">Lose Fat</option>
+              <option value="Build Muscle">Build Muscle</option>
+              <option value="Lose Fat & Build Muscle">Lose Fat & Build Muscle</option>
+              <option value="Maintain Weight">Maintain Weight</option>
+              <option value="Gain Weight">Gain Weight</option>
+              <option value="Healthy Lifestyle">Healthy Lifestyle</option>
+            </select>
+          </label>
+        </div>
 
         <p id="profile-feedback" class="auth-feedback" aria-live="polite"></p>
 
-        <button type="submit">Save details</button>
+        <div class="button-row">
+          <button type="button" id="profile-back-button" class="secondary-button">Back to dashboard</button>
+          <button type="submit">Save details</button>
+        </div>
       </form>
     </div>
   </div>
