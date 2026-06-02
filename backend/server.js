@@ -18,6 +18,11 @@ const AUTH_TOKEN_EXPIRY_SECONDS = 60 * 60;
 
 const API_BASE_URL = '';
 
+console.log('CWD:', process.cwd());
+console.log('DIRNAME:', __dirname);
+console.log('PROJECT_ROOT:', PROJECT_ROOT);
+console.log('FRONTEND_ROOT:', FRONTEND_ROOT);
+
 app.use(cors({
     origin: true,
     credentials: true
