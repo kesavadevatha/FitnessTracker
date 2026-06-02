@@ -553,19 +553,7 @@ async function loadDayDetails() {
   const params = new URLSearchParams(window.location.search);
   const date = params.get('date');
 
-  if (!date) {
-    currentDayDate = null;
-    dayTitle.textContent = 'Day details';
-    dayCopy.textContent = 'No date selected. Please return to the dashboard and choose a day.';
-    daySummaryGrid.innerHTML = '';
-    mealTabs.innerHTML = '';
-    mealPanel.innerHTML = `
-      <div class="meal-panel-card">
-        <p class="empty-state">Please choose a date from the dashboard to view its details.</p>
-      </div>
-    `;
-    return;
-  }
+  if (!date) return;
 
   currentDayDate = date;
 
@@ -573,39 +561,22 @@ async function loadDayDetails() {
   dayCopy.textContent = `Review the meal breakdown for ${formatDateLabel(date)}.`;
 
   try {
-    const response = await auth.authFetch(`${API_BASE_URL}/api/day-details?date=${encodeURIComponent(date)}`);
+    const response = await auth.authFetch(
+      `${API_BASE_URL}/api/day-details?date=${encodeURIComponent(date)}`
+    );
 
     if (!response.ok) {
       throw new Error(`Unable to fetch day details (${response.status})`);
     }
 
-    const rows = await response.json();
+    const data = await response.json();
 
-	console.log("DAY DETAILS RESPONSE:", rows);
+    console.log("DAY DETAILS RESPONSE:", data);
 
-	// normalize
-	const normalizedMeals = normalizeMeals(rows);
+    // ✅ DIRECT USE (NO NORMALIZATION)
+    renderSummary(data);
+    renderMealPanels(data);
 
-	// compute totals for summary
-	const totals = normalizedMeals.reduce(
-	  (acc, meal) => {
-		acc.calories += meal.totals.calories;
-		acc.protein += meal.totals.protein;
-		acc.carbs += meal.totals.carbs;
-		acc.fat += meal.totals.fat;
-		return acc;
-	  },
-	  { calories: 0, protein: 0, carbs: 0, fat: 0 }
-	);
-
-	// final UI object
-	const uiData = {
-	  meals: normalizedMeals,
-	  totals
-	};
-
-	renderSummary(uiData);
-	renderMealPanels(uiData);
   } catch (error) {
     console.error(error);
 
@@ -614,7 +585,7 @@ async function loadDayDetails() {
     mealTabs.innerHTML = '';
     mealPanel.innerHTML = `
       <div class="meal-panel-card">
-        <p class="empty-state">Unable to load the selected day’s meal details. Please try again.</p>
+        <p class="empty-state">Unable to load the selected day’s meal details.</p>
       </div>
     `;
   }
