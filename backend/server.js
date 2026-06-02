@@ -17,6 +17,14 @@ const AUTH_TOKEN_SECRET =
 const AUTH_TOKEN_EXPIRY_SECONDS = 60 * 60;
 
 const API_BASE_URL = '';
+const MEAL_ORDER = [
+  'morning drink',
+  'breakfast',
+  'lunch',
+  '1st snack',
+  '2nd snack',
+  'dinner'
+];
 
 console.log('CWD:', process.cwd());
 console.log('DIRNAME:', __dirname);
@@ -958,7 +966,9 @@ app.get(`/api/day-details`, authenticateRequest, async (req, res) => {
 
         const rows = result.rows;
 
-        // ---- 1. Calculate totals ----
+        // ==============================
+        // 1. TOTALS (overall day)
+        // ==============================
         const totals = rows.reduce(
             (acc, row) => {
                 acc.calories += Number(row.calories || 0);
@@ -970,20 +980,24 @@ app.get(`/api/day-details`, authenticateRequest, async (req, res) => {
             { calories: 0, protein: 0, carbs: 0, fat: 0 }
         );
 
-        // ---- 2. Group by meal ----
+        // ==============================
+        // 2. GROUP ROWS BY MEAL
+        // ==============================
         const mealMap = new Map();
 
         rows.forEach((row) => {
-            if (!mealMap.has(row.meal_name)) {
-                mealMap.set(row.meal_name, {
-                    mealName: row.meal_name,
-                    label: row.meal_name.charAt(0).toUpperCase() + row.meal_name.slice(1),
+            const key = row.meal_name;
+
+            if (!mealMap.has(key)) {
+                mealMap.set(key, {
+                    mealName: key,
+                    label: key.charAt(0).toUpperCase() + key.slice(1),
                     totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
                     items: []
                 });
             }
 
-            const meal = mealMap.get(row.meal_name);
+            const meal = mealMap.get(key);
 
             meal.items.push({
                 mealLogId: row.meal_log_id,
@@ -1003,9 +1017,36 @@ app.get(`/api/day-details`, authenticateRequest, async (req, res) => {
             meal.totals.fat += Number(row.fat || 0);
         });
 
+        // ==============================
+        // 3. NORMALIZE TO FIXED 6 MEALS
+        // ==============================
+        const meals = MEAL_ORDER.map((mealName) => {
+            if (mealMap.has(mealName)) {
+                return mealMap.get(mealName);
+            }
+
+            return {
+                mealName,
+                label: mealName
+                    .split(' ')
+                    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                    .join(' '),
+                totals: {
+                    calories: 0,
+                    protein: 0,
+                    carbs: 0,
+                    fat: 0
+                },
+                items: []
+            };
+        });
+
+        // ==============================
+        // RESPONSE
+        // ==============================
         res.json({
             totals,
-            meals: Array.from(mealMap.values())
+            meals
         });
 
     } catch (err) {
