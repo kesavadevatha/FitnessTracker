@@ -516,6 +516,7 @@ async function loadDayDetails() {
     }
 
     const data = await response.json();
+	console.log("DAY DETAILS RESPONSE:", data);
 
     renderSummary(data);
     renderMealPanels(data);
