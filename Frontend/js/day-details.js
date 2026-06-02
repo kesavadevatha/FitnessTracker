@@ -342,38 +342,38 @@ async function openAddItemModal(mealName) {
   }
 
   addItemFoodSelect.innerHTML = catalogItems.map((item) => `
-    <option value="${item.FOOD_ID}">${item.FOOD_NAME}</option>
+    <option value="${item.food_id}">${item.food_name}</option>
   `).join('');
 
   addItemFoodSelect.disabled = false;
   addItemQuantityInput.disabled = false;
   addItemUnitSelect.disabled = false;
   addItemNotesInput.disabled = false;
-  addItemFoodSelect.value = String(catalogItems[0].FOOD_ID);
+  addItemFoodSelect.value = String(catalogItems[0].food_id);
 
   updateCatalogPreview();
   addItemFeedback.textContent = 'Choose a food item and add your serving details.';
 }
 
 function updateCatalogPreview() {
-  const selectedItem = catalogItems.find((item) => String(item.FOOD_ID) === String(addItemFoodSelect.value));
+  const selectedItem = catalogItems.find((item) => String(item.food_id) === String(addItemFoodSelect.value));
 
   if (!selectedItem) {
     catalogItemSummary.classList.add('hidden');
     return;
   }
 
-  addItemQuantityInput.value = Number(selectedItem.SERVING_SIZE) || 1;
-  addItemUnitSelect.value = normalizeUnitForSelect(selectedItem.SERVING_SIZE_UNIT || 'g');
+  addItemQuantityInput.value = Number(selectedItem.serving_size) || 1;
+  addItemUnitSelect.value = normalizeUnitForSelect(selectedItem.serving_size_unit || 'g');
 
   catalogItemSummary.classList.remove('hidden');
 
   catalogItemPreview.innerHTML = `
-    ${selectedItem.FOOD_NAME} • ${currencyFormatter.format(Number(selectedItem.CALORIES_PER_SERVING || 0))} kcal,
-    ${metricFormatter.format(Number(selectedItem.PROTEIN_PER_SERVING || 0))} g protein,
-    ${metricFormatter.format(Number(selectedItem.CARBS_PER_SERVING || 0))} g carbs,
-    ${metricFormatter.format(Number(selectedItem.FAT_PER_SERVING || 0))} g fat per serving.
-    ${selectedItem.NOTES ? `<br />${selectedItem.NOTES}` : ''}
+    ${selectedItem.food_name} • ${currencyFormatter.format(Number(selectedItem.calories_per_serving || 0))} kcal,
+    ${metricFormatter.format(Number(selectedItem.protein_per_serving || 0))} g protein,
+    ${metricFormatter.format(Number(selectedItem.carbs_per_serving || 0))} g carbs,
+    ${metricFormatter.format(Number(selectedItem.fat_per_serving || 0))} g fat per serving.
+    ${selectedItem.notes ? `<br />${selectedItem.notes}` : ''}
   `;
 }
 
