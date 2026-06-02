@@ -22,6 +22,14 @@ const editItemUnitSelect = document.getElementById('edit-item-unit');
 const editItemFeedback = document.getElementById('edit-item-feedback');
 const editItemSubmitButton = document.getElementById('edit-item-submit-btn');
 const closeEditItemModalButton = document.getElementById('close-edit-item-modal');
+const MEAL_ORDER = [
+  'Morning drink',
+  'Breakfast',
+  '1st snack',
+  'Lunch',
+  '2nd snack',
+  'Dinner'
+];
 
 if (window.auth) {
   auth.requireLogin();
@@ -91,7 +99,61 @@ function formatDateLabel(dateString) {
   });
 }
 
+function normalizeMeals(rows) {
+  const mealMap = new Map();
+
+  // initialize all 6 meals with empty structure
+  MEAL_ORDER.forEach((meal) => {
+    mealMap.set(meal, {
+      mealName: meal,
+      label: mealLabels[meal] || meal,
+      items: [],
+      totals: {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0
+      }
+    });
+  });
+
+  // fill from API response
+  rows.forEach((row) => {
+    const mealKey = row.meal_name.toLowerCase();
+
+    if (!mealMap.has(mealKey)) return;
+
+    const meal = mealMap.get(mealKey);
+
+    meal.items.push({
+      mealLogId: row.meal_log_id,
+      foodName: row.food_name,
+      quantity: row.quantity,
+      unit: row.unit,
+      notes: row.notes,
+      calories: row.calories,
+      protein: row.protein,
+      carbs: row.carbs,
+      fat: row.fat
+    });
+
+    // accumulate totals safely
+    meal.totals.calories += Number(row.calories || 0);
+    meal.totals.protein += Number(row.protein || 0);
+    meal.totals.carbs += Number(row.carbs || 0);
+    meal.totals.fat += Number(row.fat || 0);
+  });
+
+  return Array.from(mealMap.values());
+}
+
 function renderSummary(data) {
+  const totals = data?.totals || {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0
+  };
   const summaryCards = [
     {
       label: 'Calories',
@@ -115,6 +177,8 @@ function renderSummary(data) {
     }
   ];
 
+  if (!daySummaryGrid) return;
+  
   daySummaryGrid.innerHTML = summaryCards.map((card) => `
     <article class="summary-card">
       <span class="summary-label">${card.label}</span>
@@ -515,11 +579,33 @@ async function loadDayDetails() {
       throw new Error(`Unable to fetch day details (${response.status})`);
     }
 
-    const data = await response.json();
-	console.log("DAY DETAILS RESPONSE:", data);
+    const rows = await response.json();
 
-    renderSummary(data);
-    renderMealPanels(data);
+	console.log("DAY DETAILS RESPONSE:", rows);
+
+	// normalize
+	const normalizedMeals = normalizeMeals(rows);
+
+	// compute totals for summary
+	const totals = normalizedMeals.reduce(
+	  (acc, meal) => {
+		acc.calories += meal.totals.calories;
+		acc.protein += meal.totals.protein;
+		acc.carbs += meal.totals.carbs;
+		acc.fat += meal.totals.fat;
+		return acc;
+	  },
+	  { calories: 0, protein: 0, carbs: 0, fat: 0 }
+	);
+
+	// final UI object
+	const uiData = {
+	  meals: normalizedMeals,
+	  totals
+	};
+
+	renderSummary(uiData);
+	renderMealPanels(uiData);
   } catch (error) {
     console.error(error);
 
