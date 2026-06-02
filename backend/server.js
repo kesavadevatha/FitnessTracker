@@ -51,6 +51,10 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'login.html'));
 });
 
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(PROJECT_ROOT, 'html', 'signup.html'));
+});
+
 app.get('/reset-password', (req, res) => {
     res.sendFile(path.join(PROJECT_ROOT, 'html', 'reset-password.html'));
 });
@@ -422,6 +426,45 @@ app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
         res.status(500).json({
             error: 'Server error'
         });
+    }
+});
+
+app.post(`${API_BASE_URL}/api/register`, async (req, res) => {
+    try {
+        const { email, password, confirmPassword } = req.body;
+
+        if (!email || !password || !confirmPassword) {
+            return res.status(400).json({ error: 'Email, password and confirm password are required.' });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ error: 'Passwords do not match.' });
+        }
+
+        const existingUser = await findUserByEmail(email);
+
+        if (existingUser) {
+            return res.status(409).json({ error: 'A user with that email already exists.' });
+        }
+
+        await createUser(email, password, false, false);
+
+        const token = createAuthToken({
+            email: email.toLowerCase(),
+            isAdmin: false
+        });
+
+        res.status(201).json({
+            token,
+            user: {
+                email: email.toLowerCase(),
+                isAdmin: false,
+                passwordResetRequired: false
+            }
+        });
+    } catch (err) {
+        console.error('Registration error:', err);
+        res.status(500).json({ error: 'Unable to create account.' });
     }
 });
 

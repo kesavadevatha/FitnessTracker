@@ -102,7 +102,7 @@ function redirectIfAuthenticated() {
     return true;
   }
 
-  if (window.location.href.includes('/login')) {
+  if (window.location.href.includes('/login') || window.location.href.includes('/signup')) {
     window.location.href = APP_ROUTES.dashboard;
     return true;
   }
