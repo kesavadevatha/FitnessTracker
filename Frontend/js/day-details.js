@@ -527,12 +527,12 @@ async function handleAddItemSubmit(event) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        foodId: Number(selectedFoodId),
-        trackDate: currentDayDate,
-        mealName: activeAddMealName,
-        quantity,
-        unit: addItemUnitSelect.value,
-        notes: addItemNotesInput.value.trim() || null
+		food_id: Number(selectedFoodId),
+	    track_date: currentDayDate,
+	    meal_name: activeAddMealName,
+	    quantity,
+	    unit: addItemUnitSelect.value,
+	    notes: addItemNotesInput.value.trim() || null
       })
     });
 
