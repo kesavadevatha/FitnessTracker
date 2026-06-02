@@ -498,6 +498,22 @@ async function handleDeleteItem(mealLogId) {
 async function handleAddItemSubmit(event) {
   console.log('ADD ITEM SUBMIT FIRED');
   event.preventDefault();
+  
+  console.log('selectedFoodId =', selectedFoodId);
+	console.log('quantity =', quantity);
+	console.log('activeAddMealName =', activeAddMealName);
+	console.log('currentDayDate =', currentDayDate);
+
+	const payload = {
+	  food_id: Number(selectedFoodId),
+	  track_date: currentDayDate,
+	  meal_name: activeAddMealName,
+	  quantity,
+	  unit: addItemUnitSelect.value,
+	  notes: addItemNotesInput.value.trim() || null
+	};
+
+	console.log('POST PAYLOAD =', payload);
 
   if (isSavingItem) {
     return;
@@ -527,15 +543,9 @@ async function handleAddItemSubmit(event) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-		food_id: Number(selectedFoodId),
-	    track_date: currentDayDate,
-	    meal_name: activeAddMealName,
-	    quantity,
-	    unit: addItemUnitSelect.value,
-	    notes: addItemNotesInput.value.trim() || null
-      })
+      body: JSON.stringify(payload)
     });
+	console.log('POST RESPONSE STATUS =', response.status);
 
     if (!response.ok) {
       throw new Error('Unable to add item.');
