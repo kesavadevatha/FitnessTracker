@@ -70,12 +70,16 @@ app.get('/food-catalog-browser', (req, res) => {
 app.get('/day-details', (req, res) => {
     const filePath = path.join(FRONTEND_ROOT, 'day-details.html');
 
-    console.log('Serving:', filePath);
+    console.log('DAY DETAILS REQUEST');
+    console.log('Query:', req.query);
+    console.log('File:', filePath);
 
-    res.sendFile(filePath, err => {
+    res.sendFile(filePath, (err) => {
         if (err) {
-            console.error(err);
-            res.status(404).send('day-details.html not found');
+            console.error('SEND FILE ERROR:', err);
+            res.status(err.statusCode || 500).end();
+        } else {
+            console.log('DAY DETAILS PAGE SENT');
         }
     });
 });
