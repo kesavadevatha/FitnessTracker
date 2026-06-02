@@ -864,7 +864,6 @@ app.get('/api/login', (req, res) => {
 
 app.get(`/api/day-details`, authenticateRequest, async (req, res) => {
     const { date } = req.query;
-
     const conn = await getConnection();
 
     try {
@@ -872,14 +871,65 @@ app.get(`/api/day-details`, authenticateRequest, async (req, res) => {
             `
             SELECT *
             FROM custom.meal_log
-            WHERE track_date = $1
+            WHERE track_date::date = $1
             AND LOWER(user_id)=LOWER($2)
             ORDER BY meal_name
             `,
             [date, req.user.email]
         );
 
-        res.json(result.rows);
+        const rows = result.rows;
+
+        // ---- 1. Calculate totals ----
+        const totals = rows.reduce(
+            (acc, row) => {
+                acc.calories += Number(row.calories || 0);
+                acc.protein += Number(row.protein || 0);
+                acc.carbs += Number(row.carbs || 0);
+                acc.fat += Number(row.fat || 0);
+                return acc;
+            },
+            { calories: 0, protein: 0, carbs: 0, fat: 0 }
+        );
+
+        // ---- 2. Group by meal ----
+        const mealMap = new Map();
+
+        rows.forEach((row) => {
+            if (!mealMap.has(row.meal_name)) {
+                mealMap.set(row.meal_name, {
+                    mealName: row.meal_name,
+                    label: row.meal_name.charAt(0).toUpperCase() + row.meal_name.slice(1),
+                    totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+                    items: []
+                });
+            }
+
+            const meal = mealMap.get(row.meal_name);
+
+            meal.items.push({
+                mealLogId: row.meal_log_id,
+                foodName: row.food_name,
+                quantity: row.quantity,
+                unit: row.unit,
+                notes: row.notes,
+                calories: row.calories,
+                protein: row.protein,
+                carbs: row.carbs,
+                fat: row.fat
+            });
+
+            meal.totals.calories += Number(row.calories || 0);
+            meal.totals.protein += Number(row.protein || 0);
+            meal.totals.carbs += Number(row.carbs || 0);
+            meal.totals.fat += Number(row.fat || 0);
+        });
+
+        res.json({
+            totals,
+            meals: Array.from(mealMap.values())
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({
