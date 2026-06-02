@@ -262,7 +262,7 @@ function renderMealShowcase(entries) {
           }
 
           return `
-            <a class="${classes.join(' ')}" href="${API_BASE_URL}/day-details?date=${encodeURIComponent(day.key)}">
+            <a class="${classes.join(' ')}" href="/day-details.html?date=${encodeURIComponent(day.key)}">
               <div class="calendar-day-date">${day.date.getDate()}</div>
               <div class="calendar-day-protein">${entry ? `${metricFormatter.format(entry.protein)} g protein` : ''}</div>
             </a>
