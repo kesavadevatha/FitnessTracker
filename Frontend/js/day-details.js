@@ -454,6 +454,8 @@ async function handleEditItemSubmit(event) {
     });
 
     if (!response.ok) {
+	  const errorData = await response.json();
+	  console.error('UPDATE ERROR:', errorData);
       throw new Error('Unable to update item.');
     }
 

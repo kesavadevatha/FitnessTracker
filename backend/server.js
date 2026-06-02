@@ -863,7 +863,7 @@ function calculateScale(food, quantity, unit) {
         throw new Error('Quantity must be greater than 0.');
     }
 
-    if (String(food.serving_size_UNIT).toLowerCase() === 'unit') {
+    if (String(food.serving_size_unit).toLowerCase() === 'unit') {
         if (normalizeUnit(unit) !== 'unit') {
             throw new Error(`${food.food_name} is set up as a quantity-based food. Please choose "unit" as the measurement.`);
         }
@@ -871,7 +871,7 @@ function calculateScale(food, quantity, unit) {
         return quantityValue / Number(food.serving_size);
     }
 
-    if (String(food.serving_size_UNIT).toLowerCase() === 'ml') {
+    if (String(food.serving_size_unit).toLowerCase() === 'ml') {
         if (normalizeUnit(unit) !== 'ml') {
             throw new Error(`${food.food_name} is set up as a volume-based food. Please choose "ml" as the measurement.`);
         }
