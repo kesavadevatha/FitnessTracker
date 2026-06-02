@@ -825,6 +825,76 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
     }
 });
 
+async function findFoodCatalogById(foodId) {
+    let conn;
+
+    try {
+        conn = await getConnection();
+
+        const result = await conn.query(
+            `
+            SELECT 
+                food_id,
+                food_name,
+                measurement_type,
+                serving_size,
+                serving_size_unit,
+                calories_per_serving,
+                protein_per_serving,
+                carbs_per_serving,
+                fat_per_serving,
+                notes
+            FROM custom.food_catalog
+            WHERE food_id = $1
+            `,
+            [foodId]
+        );
+
+        return result.rows[0] || null;
+    } finally {
+        if (conn) conn.release();
+    }
+}
+
+function calculateScale(food, quantity, unit) {
+    const quantityValue = Number(quantity);
+
+    if (!Number.isFinite(quantityValue) || quantityValue <= 0) {
+        throw new Error('Quantity must be greater than 0.');
+    }
+
+    if (String(food.serving_size_UNIT).toLowerCase() === 'unit') {
+        if (normalizeUnit(unit) !== 'unit') {
+            throw new Error(`${food.food_name} is set up as a quantity-based food. Please choose "unit" as the measurement.`);
+        }
+
+        return quantityValue / Number(food.serving_size);
+    }
+
+    if (String(food.serving_size_UNIT).toLowerCase() === 'ml') {
+        if (normalizeUnit(unit) !== 'ml') {
+            throw new Error(`${food.food_name} is set up as a volume-based food. Please choose "ml" as the measurement.`);
+        }
+
+        return quantityValue / Number(food.serving_size);
+    }
+
+    if (normalizeUnit(unit) === 'unit') {
+        throw new Error(`${food.food_name} is stored as a weight-based food. Please choose grams, kilograms, or ounces.`);
+    }
+
+    if (normalizeUnit(unit) === 'ml') {
+        throw new Error(`${food.food_name} is stored as a weight-based food. Please choose grams, kilograms, or ounces.`);
+    }
+
+    const grams = convertToGrams(quantityValue, normalizeUnit(unit));
+    return grams / Number(food.serving_size);
+}
+
+function roundTo(value, digits = 1) {
+    return Number(value.toFixed(digits));
+}
+
 app.put(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (req, res) => {
     const mealLogId = Number(req.params.mealLogId);
     const { quantity, unit } = req.body;
@@ -841,35 +911,52 @@ app.put(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (r
 
     try {
         conn = await getConnection();
-        
-        // Get the existing meal entry to recalculate macros
+
+        // Get existing meal log
         const mealResult = await conn.query(
-            `select FOOD_ID, QUANTITY, UNIT from custom.MEAL_LOG where MEAL_LOG_ID = $1 and lower(USER_ID) = lower($2)`,
-            [ mealLogId, req.user.email ]
+            `
+            SELECT food_id
+            FROM custom.meal_log
+            WHERE meal_log_id = $1
+            AND LOWER(user_id) = LOWER($2)
+            `,
+            [mealLogId, req.user.email]
         );
 
-        if (!mealResult.rows || mealResult.rows.length === 0) {
+        if (!mealResult.rows.length) {
             return res.status(404).json({ error: 'Meal log entry not found.' });
         }
 
-        const meal = mealResult.rows[0];
-        const food = await findFoodCatalogById(meal.FOOD_ID);
+        const foodId = mealResult.rows[0].food_id;
+
+        const food = await findFoodCatalogById(foodId);
 
         if (!food) {
             return res.status(404).json({ error: 'Food entry not found.' });
         }
 
-        // Calculate new macros
+        // scale calculation
         const scale = calculateScale(food, quantity, unit);
-        const newCalories = roundTo(Number(food.CALORIES_PER_SERVING) * scale, 1);
-        const newProtein = roundTo(Number(food.PROTEIN_PER_SERVING) * scale, 1);
-        const newCarbs = roundTo(Number(food.CARBS_PER_SERVING) * scale, 1);
-        const newFat = roundTo(Number(food.FAT_PER_SERVING) * scale, 1);
+
+        const newCalories = roundTo(Number(food.calories_per_serving) * scale, 1);
+        const newProtein  = roundTo(Number(food.protein_per_serving) * scale, 1);
+        const newCarbs    = roundTo(Number(food.carbs_per_serving) * scale, 1);
+        const newFat      = roundTo(Number(food.fat_per_serving) * scale, 1);
 
         await conn.query(
-            `update custom.MEAL_LOG
-             set QUANTITY = $1, UNIT = $2, CALORIES = $3, PROTEIN = $4, CARBS = $5, FAT = $6, MODIFIED_DATE = now()
-             where MEAL_LOG_ID = $7`,
+            `
+            UPDATE custom.meal_log
+            SET 
+                quantity = $1,
+                unit = $2,
+                calories = $3,
+                protein = $4,
+                carbs = $5,
+                fat = $6,
+                modified_date = NOW()
+            WHERE meal_log_id = $7
+            AND LOWER(user_id) = LOWER($8)
+            `,
             [
                 Number(quantity),
                 String(unit).toLowerCase(),
@@ -877,22 +964,19 @@ app.put(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (r
                 newProtein,
                 newCarbs,
                 newFat,
-                mealLogId
+                mealLogId,
+                req.user.email
             ]
         );
 
         res.json({ message: 'Meal entry updated successfully.' });
+
     } catch (error) {
         console.error('Error updating meal entry:', error);
         res.status(500).json({ error: error.message || 'Failed to update meal entry.' });
+
     } finally {
-        if (connection) {
-            try {
-                await conn.release();
-            } catch (closeError) {
-                console.error('Error closing DB connection:', closeError);
-            }
-        }
+        if (conn) conn.release();
     }
 });
 
@@ -918,7 +1002,7 @@ app.delete(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async
         console.error('Error deleting meal entry:', error);
         res.status(500).json({ error: 'Failed to delete meal entry.' });
     } finally {
-        if (connection) {
+        if (conn) {
             try {
                 await conn.release();
             } catch (closeError) {
