@@ -759,75 +759,104 @@ app.delete(`${API_BASE_URL}/api/food-catalog/:food_id`, async (req, res) => {
    MEAL LOG
 ===================================================== */
 
-app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
+app.post(`${API_BASE_URL}/api/meal-log`,authenticateRequest,async (req, res) => {
 
-    const conn = await getConnection();
+    let conn;
 
     try {
 
-        const {
-            food_id,
-			food_name,
-			track_date,
-			meal_name,
-			quantity,
-			unit,
-			calories,
-			protein,
-			carbs,
-			fat,
-			notes,
-			user_id
-        } = req.body;
+      const {
+        food_id,
+        track_date,
+        meal_name,
+        quantity,
+        unit,
+        notes
+      } = req.body;
 
-		console.log('POST BODY RECEIVED:', req.body);
-		
-        await conn.query(
-            `
-            INSERT INTO custom.meal_log
-            (
-                food_id,
-                food_name,
-                track_date,
-                meal_name,
-                quantity,
-                unit,
-                calories,
-                protein,
-                carbs,
-                fat,
-                notes,
-                user_id
-            )
-            VALUES
-            ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-            `,
-            [
-                food_id,
-                food_name,
-                track_date,
-                meal_name,
-                quantity,
-                unit,
-                calories,
-                protein,
-                carbs,
-                fat,
-                notes,
-                user_id
-            ]
-        );
-		
-		console.log('INSERT SUCCESS');
+      conn = await getConnection();
 
-        res.json({
-            message: 'Meal added'
+      const food = await findFoodCatalogById(Number(food_id));
+
+      if (!food) {
+        return res.status(404).json({
+          error: 'Food not found.'
         });
+      }
+
+      const scale = calculateScale(food, quantity, unit);
+
+      const calories =
+        roundTo(Number(food.calories_per_serving) * scale, 1);
+
+      const protein =
+        roundTo(Number(food.protein_per_serving) * scale, 1);
+
+      const carbs =
+        roundTo(Number(food.carbs_per_serving) * scale, 1);
+
+      const fat =
+        roundTo(Number(food.fat_per_serving) * scale, 1);
+
+      await conn.query(
+        `
+        INSERT INTO custom.meal_log
+        (
+          food_id,
+          food_name,
+          track_date,
+          meal_name,
+          quantity,
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          notes,
+          user_id
+        )
+        VALUES
+        (
+          $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+        )
+        `,
+        [
+          Number(food_id),
+          food.food_name,
+          track_date,
+          meal_name,
+          Number(quantity),
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          notes,
+          req.user.email
+        ]
+      );
+
+      res.json({
+        message: 'Meal added successfully'
+      });
+
+    } catch (error) {
+
+      console.error('Error adding meal:', error);
+
+      res.status(500).json({
+        error: error.message
+      });
 
     } finally {
-        conn.release();
+
+      if (conn) {
+        await conn.release();
+      }
+
     }
-});
+  }
+);
 
 async function findFoodCatalogById(foodId) {
     let conn;
