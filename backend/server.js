@@ -856,6 +856,22 @@ async function findFoodCatalogById(foodId) {
     }
 }
 
+function convertToGrams(amount, unit) {
+    if (unit === 'g') {
+        return amount;
+    }
+
+    if (unit === 'kg') {
+        return amount * 1000;
+    }
+
+    if (unit === 'oz') {
+        return amount * 28.3495;
+    }
+
+    throw new Error('Unsupported unit. Please use grams, kilograms, or ounces.');
+}
+
 function calculateScale(food, quantity, unit) {
     const quantityValue = Number(quantity);
 
