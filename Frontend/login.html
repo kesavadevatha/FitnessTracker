@@ -8,28 +8,53 @@
 </head>
 <body>
   <div class="auth-shell">
-    <div class="auth-card">
-      <h1>Welcome back</h1>
-      <p class="auth-subcopy">Sign in with your email and password. If you forgot your password, contact your administrator to reset it.</p>
+    <div class="auth-container">
+      <div class="auth-card">
+        <h1>Welcome back</h1>
+        <p class="auth-subcopy">Sign in with your email and password. If you forgot your password, contact your administrator to reset it.</p>
 
-      <form id="login-form">
-        <label>
-          <span>Username or Email</span>
-          <input type="text" name="email" required autocomplete="username" placeholder="admin or you@example.com" />
-        </label>
+        <form id="login-form">
+          <label>
+            <span>Username or Email</span>
+            <input type="text" name="email" required autocomplete="username" placeholder="admin or you@example.com" />
+          </label>
 
-        <label>
-          <span>Password</span>
-          <input type="password" name="password" required autocomplete="current-password" placeholder="Enter your password" />
-        </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" required autocomplete="current-password" placeholder="Enter your password" />
+          </label>
 
-        <p id="login-feedback" class="auth-feedback" aria-live="polite"></p>
+          <p id="login-feedback" class="auth-feedback" aria-live="polite"></p>
 
-        <button type="submit">Sign in</button>
-      </form>
+          <button type="submit">Sign in</button>
+        </form>
 
-	  <p class="auth-subcopy">To create account please <a href="/signup.html">Sign-Up</a></p>
-      <p class="auth-footer">Need help? Ask your administrator to reset your password.</p>
+        <p class="auth-subcopy">To create account please <a href="/signup.html">Sign-Up</a></p>
+        <p class="auth-footer">Need help? Ask your administrator to reset your password.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Track Macros</h3>
+          <p>Monitor calories, protein, carbs and fats with detailed insights.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>Set Goals</h3>
+          <p>Customize your fitness goals and plan your journey to success.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚖️</div>
+          <h3>Monitor Progress</h3>
+          <p>Log workouts, track weight and monitor your results easily.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💧</div>
+          <h3>Stay Consistent</h3>
+          <p>Build healthy habits and stay on track every single day.</p>
+        </div>
+      </div>
     </div>
   </div>
 
