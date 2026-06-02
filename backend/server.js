@@ -866,20 +866,19 @@ app.put(`${API_BASE_URL}/api/meal-log/:mealLogId`, authenticateRequest, async (r
         const newCarbs = roundTo(Number(food.CARBS_PER_SERVING) * scale, 1);
         const newFat = roundTo(Number(food.FAT_PER_SERVING) * scale, 1);
 
-        await connection.execute(
+        await conn.query(
             `update custom.MEAL_LOG
-             set QUANTITY = :quantity, UNIT = :unit, CALORIES = :calories, PROTEIN = :protein, CARBS = :carbs, FAT = :fat, MODIFIED_DATE = SYSDATE
-             where MEAL_LOG_ID = :mealLogId`,
-            {
-                mealLogId,
-                quantity: Number(quantity),
-                unit: String(unit).toLowerCase(),
-                calories: newCalories,
-                protein: newProtein,
-                carbs: newCarbs,
-                fat: newFat
-            },
-            { autoCommit: true }
+             set QUANTITY = $1, UNIT = $2, CALORIES = $3, PROTEIN = $4, CARBS = $5, FAT = $6, MODIFIED_DATE = now()
+             where MEAL_LOG_ID = $7`,
+            [
+                Number(quantity),
+                String(unit).toLowerCase(),
+                newCalories,
+                newProtein,
+                newCarbs,
+                newFat,
+                mealLogId
+            ]
         );
 
         res.json({ message: 'Meal entry updated successfully.' });
