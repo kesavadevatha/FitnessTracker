@@ -63,12 +63,16 @@ app.get('/food-catalog-browser', (req, res) => {
 });
 
 app.get('/day-details', (req, res) => {
-    //res.sendFile(path.join(PROJECT_ROOT, 'Frontend', 'day-details.html'));
-	res.sendFile(path.join(FRONTEND_ROOT, 'day-details.html'));
-});
+    const filePath = path.join(FRONTEND_ROOT, 'day-details.html');
 
-app.get('/day-details', (req, reconst FRONTEND_ROOT = path.join(PROJECT_ROOT, 'Frontend');s) => {
-    res.send('DAY DETAILS ROUTE WORKING');
+    console.log('Serving:', filePath);
+
+    res.sendFile(filePath, err => {
+        if (err) {
+            console.error(err);
+            res.status(404).send('day-details.html not found');
+        }
+    });
 });
 
 app.get('/user-details', (req, res) => {
@@ -843,6 +847,38 @@ app.get(`${API_BASE_URL}/api/tracker`, authenticateRequest, async (req, res) => 
 
 app.get('/api/login', (req, res) => {
     res.send('Login API working');
+});
+
+/* =====================================================
+   DAY DETAILS
+===================================================== */
+
+app.get('/api/day-details', authenticateRequest, async (req, res) => {
+    const { date } = req.query;
+
+    const conn = await getConnection();
+
+    try {
+        const result = await conn.query(
+            `
+            SELECT *
+            FROM custom.meal_log
+            WHERE track_date = $1
+            AND LOWER(user_id)=LOWER($2)
+            ORDER BY meal_name
+            `,
+            [date, req.user.email]
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            error: 'Failed to load day details'
+        });
+    } finally {
+        conn.release();
+    }
 });
 
 /* =====================================================
