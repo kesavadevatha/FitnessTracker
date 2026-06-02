@@ -498,20 +498,6 @@ async function handleDeleteItem(mealLogId) {
 async function handleAddItemSubmit(event) {
   console.log('ADD ITEM SUBMIT FIRED');
   event.preventDefault();
-  
-  console.log('selectedFoodId =', selectedFoodId);
-	console.log('quantity =', quantity);
-	console.log('activeAddMealName =', activeAddMealName);
-	console.log('currentDayDate =', currentDayDate);
-
-	const payload = {
-	  food_id: Number(selectedFoodId),
-	  track_date: currentDayDate,
-	  meal_name: activeAddMealName,
-	  quantity,
-	  unit: addItemUnitSelect.value,
-	  notes: addItemNotesInput.value.trim() || null
-	};
 
 	console.log('POST PAYLOAD =', payload);
 
@@ -526,6 +512,20 @@ async function handleAddItemSubmit(event) {
 
   const selectedFoodId = addItemFoodSelect.value;
   const quantity = Number(addItemQuantityInput.value);
+  
+  console.log('selectedFoodId =', selectedFoodId);
+	console.log('quantity =', quantity);
+	console.log('activeAddMealName =', activeAddMealName);
+	console.log('currentDayDate =', currentDayDate);
+
+	const payload = {
+	  food_id: Number(selectedFoodId),
+	  track_date: currentDayDate,
+	  meal_name: activeAddMealName,
+	  quantity,
+	  unit: addItemUnitSelect.value,
+	  notes: addItemNotesInput.value.trim() || null
+	};
 
   if (!selectedFoodId || !Number.isFinite(quantity) || quantity <= 0) {
     addItemFeedback.textContent = 'Please choose a food and enter a valid quantity.';
