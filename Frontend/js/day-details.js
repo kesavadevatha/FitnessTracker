@@ -609,3 +609,11 @@ editItemModal.querySelectorAll('[data-close-modal]').forEach((element) => {
 
 loadCatalogItems();
 loadDayDetails();
+
+console.log('BOTTOM OF FILE REACHED');
+
+console.log('addItemForm', addItemForm);
+
+addItemForm.addEventListener('submit', (e) => {
+  console.log('RAW SUBMIT FIRED');
+});
