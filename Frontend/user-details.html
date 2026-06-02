@@ -21,20 +21,37 @@
             <option value="">Select gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-            <option value="Other">Other</option>
-            <option value="Prefer not to say">Prefer not to say</option>
+            <option value="Prefer not to mention">Prefer not to mention</option>
           </select>
         </label>
 
-        <label>
-          <span>Weight (kg)</span>
-          <input type="number" step="0.1" min="1" name="weight" placeholder="e.g. 75" />
-        </label>
+        <div class="form-row">
+          <label>
+            <span>Weight</span>
+            <div class="split-input">
+              <input type="number" step="0.1" min="1" name="weightValue" placeholder="e.g. 75" />
+              <select name="weightUnit">
+                <option value="">Unit</option>
+                <option value="kg">kg</option>
+                <option value="lb">lb</option>
+              </select>
+            </div>
+          </label>
+        </div>
 
-        <label>
-          <span>Height (cm)</span>
-          <input type="number" step="0.1" min="1" name="height" placeholder="e.g. 175" />
-        </label>
+        <div class="form-row">
+          <label>
+            <span>Height</span>
+            <div class="split-input">
+              <input type="number" step="0.1" min="1" name="heightValue" placeholder="e.g. 175" />
+              <select name="heightUnit">
+                <option value="">Unit</option>
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+              </select>
+            </div>
+          </label>
+        </div>
 
         <label>
           <span>Date of birth</span>
@@ -42,12 +59,16 @@
         </label>
 
         <label>
-          <span>Goal</span>
+          <span>Fitness goal</span>
           <select name="goal">
             <option value="">Select your goal</option>
-            <option value="Fat loss">Fat loss</option>
-            <option value="Muscle gain">Muscle gain</option>
-            <option value="Maintenance">Maintenance</option>
+            <option value="Body recomposition">Body recomposition</option>
+            <option value="Lose Fat">Lose Fat</option>
+            <option value="Build Muscle">Build Muscle</option>
+            <option value="Lose Fat & Build Muscle">Lose Fat & Build Muscle</option>
+            <option value="Maintain Weight">Maintain Weight</option>
+            <option value="Gain Weight">Gain Weight</option>
+            <option value="Healthy Lifestyle">Healthy Lifestyle</option>
           </select>
         </label>
 

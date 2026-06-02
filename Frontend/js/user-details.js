@@ -14,7 +14,7 @@ async function initProfilePage() {
   }
 
   try {
-    const response = await auth.authFetch(`${API_BASE_URL}/api/user/profil`);
+    const response = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
     if (!response.ok) {
       const data = await response.json();
       profileFeedback.textContent = data.error || 'Unable to load profile.';

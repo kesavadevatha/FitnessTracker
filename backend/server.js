@@ -296,12 +296,22 @@ async function initTables() {
                 password_reset_required CHAR(1),
                 gender TEXT,
                 weight NUMERIC,
+				weight_unit TEXT,
                 height NUMERIC,
+				height_unit TEXT,
                 date_of_birth DATE,
                 goal TEXT,
                 created_date TIMESTAMP DEFAULT NOW(),
                 modified_date TIMESTAMP DEFAULT NOW()
             );
+        `);
+		
+		await conn.query(`
+            ALTER TABLE custom.app_user ADD COLUMN IF NOT EXISTS weight_unit TEXT;
+        `);
+
+        await conn.query(`
+            ALTER TABLE custom.app_user ADD COLUMN IF NOT EXISTS height_unit TEXT;
         `);
 
         await conn.query(`
@@ -465,6 +475,66 @@ app.post(`${API_BASE_URL}/api/register`, async (req, res) => {
     } catch (err) {
         console.error('Registration error:', err);
         res.status(500).json({ error: 'Unable to create account.' });
+    }
+});
+
+app.get(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res) => {
+    try {
+        const user = await findUserByEmail(req.user.email);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        res.json({
+            email: user.email,
+            gender: user.gender || '',
+            weight: user.weight ?? null,
+            weightUnit: user.weight_unit || '',
+            height: user.height ?? null,
+            heightUnit: user.height_unit || '',
+            dateOfBirth: user.date_of_birth ? user.date_of_birth.toISOString().slice(0, 10) : '',
+            goal: user.goal || ''
+        });
+    } catch (err) {
+        console.error('Unable to load profile:', err);
+        res.status(500).json({ error: 'Unable to load profile.' });
+    }
+});
+
+app.put(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res) => {
+    const { gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal } = req.body;
+
+    try {
+        const conn = await getConnection();
+        await conn.query(
+            `UPDATE custom.app_user
+             SET gender = $1,
+                 weight = $2,
+                 weight_unit = $3,
+                 height = $4,
+                 height_unit = $5,
+                 date_of_birth = $6,
+                 goal = $7,
+                 modified_date = NOW()
+             WHERE LOWER(user_id) = LOWER($8)`,
+            [
+                gender || null,
+                weight !== null && weight !== '' ? weight : null,
+                weightUnit || null,
+                height !== null && height !== '' ? height : null,
+                heightUnit || null,
+                dateOfBirth || null,
+                goal || null,
+                req.user.email
+            ]
+        );
+        conn.release();
+
+        res.json({ message: 'Profile updated successfully.' });
+    } catch (err) {
+        console.error('Unable to save profile:', err);
+        res.status(500).json({ error: 'Unable to save profile.' });
     }
 });
 

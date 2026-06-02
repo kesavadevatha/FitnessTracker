@@ -10,8 +10,8 @@ export const sidebarItems = [
     id: 'profile',
     label: 'My Profile',
     icon: '👤',
-    action: 'view',
-    //href: '/user-details'
+    action: 'route',
+    href: '/user-details.html'
   },
   {
     id: 'reports',
