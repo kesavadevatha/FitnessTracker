@@ -496,6 +496,7 @@ async function handleDeleteItem(mealLogId) {
 }
 
 async function handleAddItemSubmit(event) {
+  console.log('ADD ITEM SUBMIT FIRED');
   event.preventDefault();
 
   if (isSavingItem) {
