@@ -862,7 +862,7 @@ app.get('/api/login', (req, res) => {
    DAY DETAILS
 ===================================================== */
 
-app.get(`/api/day-detail`, authenticateRequest, async (req, res) => {
+app.get(`/api/day-detail`, async (req, res) => {
     const { date } = req.query;
     const conn = await getConnection();
 
