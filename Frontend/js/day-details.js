@@ -51,25 +51,6 @@ let activeAddMealName = null;
 let currentDayDate = null;
 let isSavingItem = false;
 
-const API_BASE_URL = 'https://fitnesstrackerwebservices.onrender.com';
-
-async function loadDayDetails() {
-  const response = await fetch(
-    `${API_BASE_URL}/api/day-details?date=${selectedDate}`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    }
-  );
-
-  const data = await response.json();
-
-  console.log(data);
-}
-
-loadDayDetails();
-
 function normalizeUnitForSelect(unit) {
   const normalized = String(unit || 'g').toLowerCase();
 
