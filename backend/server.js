@@ -780,6 +780,8 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
 			user_id
         } = req.body;
 
+		console.log('POST BODY RECEIVED:', req.body);
+		
         await conn.query(
             `
             INSERT INTO custom.meal_log
@@ -815,6 +817,8 @@ app.post(`${API_BASE_URL}/api/meal-log`, async (req, res) => {
                 user_id
             ]
         );
+		
+		console.log('INSERT SUCCESS');
 
         res.json({
             message: 'Meal added'
