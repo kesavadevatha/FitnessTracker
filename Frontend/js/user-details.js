@@ -24,8 +24,10 @@ async function initProfilePage() {
     const profile = await response.json();
     profileEmail.textContent = profile.email || 'Unknown user';
     profileForm.gender.value = profile.gender || '';
-    profileForm.weight.value = profile.weight ?? '';
-    profileForm.height.value = profile.height ?? '';
+    profileForm.weightValue.value = profile.weight ?? '';
+    profileForm.weightUnit.value = profile.weightUnit || '';
+    profileForm.heightValue.value = profile.height ?? '';
+    profileForm.heightUnit.value = profile.heightUnit || '';
     profileForm.dateOfBirth.value = profile.dateOfBirth || '';
     profileForm.goal.value = profile.goal || '';
   } catch (error) {
@@ -34,20 +36,38 @@ async function initProfilePage() {
   }
 }
 
-function validateProfileForm({ gender, weight, height, dateOfBirth, goal }) {
-  if (weight !== '' && (Number.isNaN(Number(weight)) || Number(weight) <= 0)) {
+function validateProfileForm({ gender, weightValue, weightUnit, heightValue, heightUnit, dateOfBirth, goal }) {
+  if (weightValue !== '' && (Number.isNaN(Number(weightValue)) || Number(weightValue) <= 0)) {
     return 'Weight must be a positive number.';
   }
 
-  if (height !== '' && (Number.isNaN(Number(height)) || Number(height) <= 0)) {
+  if (weightValue !== '' && !weightUnit) {
+    return 'Please select a weight unit.';
+  }
+
+  if (heightValue !== '' && (Number.isNaN(Number(heightValue)) || Number(heightValue) <= 0)) {
     return 'Height must be a positive number.';
+  }
+
+  if (heightValue !== '' && !heightUnit) {
+    return 'Please select a height unit.';
   }
 
   if (dateOfBirth && !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
     return 'Please enter a valid date of birth.';
   }
 
-  if (goal && !['Fat loss', 'Muscle gain', 'Maintenance'].includes(goal)) {
+  const validGoals = [
+    'Body recomposition',
+    'Lose Fat',
+    'Build Muscle',
+    'Lose Fat & Build Muscle',
+    'Maintain Weight',
+    'Gain Weight',
+    'Healthy Lifestyle'
+  ];
+
+  if (goal && !validGoals.includes(goal)) {
     return 'Please select a valid goal.';
   }
 
@@ -60,12 +80,22 @@ profileForm.addEventListener('submit', async (event) => {
 
   const formData = new FormData(profileForm);
   const gender = String(formData.get('gender') || '').trim();
-  const weightValue = String(formData.get('weight') || '').trim();
-  const heightValue = String(formData.get('height') || '').trim();
+  const weightValue = String(formData.get('weightValue') || '').trim();
+  const weightUnit = String(formData.get('weightUnit') || '').trim();
+  const heightValue = String(formData.get('heightValue') || '').trim();
+  const heightUnit = String(formData.get('heightUnit') || '').trim();
   const dateOfBirth = String(formData.get('dateOfBirth') || '').trim();
   const goal = String(formData.get('goal') || '').trim();
 
-  const validationError = validateProfileForm({ gender, weight: weightValue, height: heightValue, dateOfBirth, goal });
+  const validationError = validateProfileForm({
+    gender,
+    weightValue,
+    weightUnit,
+    heightValue,
+    heightUnit,
+    dateOfBirth,
+    goal
+  });
   if (validationError) {
     profileFeedback.textContent = validationError;
     return;
@@ -82,7 +112,9 @@ profileForm.addEventListener('submit', async (event) => {
       body: JSON.stringify({
         gender: gender || null,
         weight: weightValue ? Number(weightValue) : null,
+        weightUnit: weightUnit || null,
         height: heightValue ? Number(heightValue) : null,
+        heightUnit: heightUnit || null,
         dateOfBirth: dateOfBirth || null,
         goal: goal || null
       })
