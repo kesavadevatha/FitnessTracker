@@ -355,6 +355,14 @@ async function initTables() {
             );
         `);
 
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS custom.activity_levels (
+                value TEXT PRIMARY KEY,
+                display_text TEXT NOT NULL,
+                multiplier NUMERIC NOT NULL
+            );
+        `);
+
         console.log('Tables initialized');
 
     } finally {
@@ -388,6 +396,17 @@ async function seedData() {
             console.log('Admin user created');
         }
 
+        await conn.query(
+            `INSERT INTO custom.activity_levels (value, display_text, multiplier)
+             VALUES
+                ('sedentary', 'Sedentary (little or no exercise)', 1.2),
+                ('light', 'Lightly Active (exercise 1–3 days/week)', 1.375),
+                ('moderate', 'Moderately Active (exercise 3–5 days/week)', 1.55),
+                ('active', 'Very Active (exercise 6–7 days/week)', 1.725),
+                ('athlete', 'Athlete / Extremely Active (intense training twice daily or physical job)', 1.9)
+             ON CONFLICT (value) DO NOTHING;
+            `
+        );
     } finally {
         conn.release();
     }
@@ -400,7 +419,6 @@ async function seedData() {
 app.post(`${API_BASE_URL}/api/login`, async (req, res) => {
 //app.post(`/api/login`, async (req, res) => {
     try {
-
         const { email, password } = req.body;
 
         const user = await findUserByEmail(email);
