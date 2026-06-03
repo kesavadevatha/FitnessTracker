@@ -10,14 +10,27 @@ if (window.auth) {
   auth.requireLogin();
 }
 
+function formatInputDate(value) {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toISOString().slice(0, 10);
+}
+
 function formatValue(label, value, unit = '') {
   return `${label}: <strong>${value}${unit}</strong>`;
 }
 
-function buildCard(title, value, subtext) {
+function buildCard(title, value, subtext, icon = '') {
   return `
     <article class="metric-card">
-      <p class="metric-name">${title}</p>
+      <p class="metric-name">${icon ? `<span class="metric-icon">${icon}</span> ` : ''}${title}</p>
       <p class="metric-total">${value}</p>
       <p class="metric-meta">${subtext}</p>
     </article>
@@ -30,7 +43,7 @@ function formatNumber(value) {
 
 function getRangeFromData(data) {
   const dates = data
-    .map((entry) => String(entry.TRACK_DATE || entry.track_date || entry.date || '').trim())
+    .map((entry) => formatInputDate(String(entry.TRACK_DATE || entry.track_date || entry.date || '').trim()))
     .filter(Boolean)
     .sort();
 
@@ -139,7 +152,11 @@ function renderProgress(data, startDate, endDate) {
   const totalProtein = data.reduce((sum, item) => sum + Number(item.protein || 0), 0);
   const totalCarbs = data.reduce((sum, item) => sum + Number(item.carbs || item.carbohydrates || 0), 0);
   const totalFat = data.reduce((sum, item) => sum + Number(item.fat || 0), 0);
-  const days = new Set(data.map((entry) => String(entry.TRACK_DATE || entry.track_date || entry.date || ''))).size;
+  const days = new Set(
+    data
+      .map((entry) => formatInputDate(String(entry.TRACK_DATE || entry.track_date || entry.date || '').trim()))
+      .filter(Boolean)
+  ).size;
   const dailyTotals = summarizeByDate(data);
 
   const averageCalories = days > 0 ? formatNumber(totalCalories / days) : '0';
@@ -148,11 +165,11 @@ function renderProgress(data, startDate, endDate) {
   const averageFat = days > 0 ? formatNumber(totalFat / days) : '0';
 
   progressCards.innerHTML = `
-    ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`)}
-    ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `Average ${averageProtein} g/day`)}
-    ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `Average ${averageCarbs} g/day`)}
-    ${buildCard('Fat', `${formatNumber(totalFat)} g`, `Average ${averageFat} g/day`)}
-    ${buildCard('🔥 Streak', `${days} days`, 'Active tracking streak')}
+    ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`, '🔥')}
+    ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `Average ${averageProtein} g/day`, '🥩')}
+    ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `Average ${averageCarbs} g/day`, '🍞')}
+    ${buildCard('Fat', `${formatNumber(totalFat)} g`, `Average ${averageFat} g/day`, '🥑')}
+    ${buildCard('Streak', `${days} days`, 'Active tracking streak', '🔥')}
   `;
 
   renderReportCards(dailyTotals);

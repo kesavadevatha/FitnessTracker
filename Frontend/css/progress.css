@@ -105,6 +105,25 @@
   line-height: 1.6;
 }
 
+.metric-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.metric-card .metric-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .progress-reports-header {
   display: flex;
   justify-content: space-between;
