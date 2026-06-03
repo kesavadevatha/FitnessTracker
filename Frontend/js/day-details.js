@@ -97,11 +97,6 @@ function renderRings(data, targets) {
   
   if (!dayRingsContainer) return;
 
-  if (!targets) {
-    dayRingsContainer.innerHTML = '';
-    return;
-  }
-
   const todayCalories = safeNumber(data?.totals?.calories || 0);
   const todayProtein = safeNumber(data?.totals?.protein || 0);
   const todayCarbs = safeNumber(data?.totals?.carbs || 0);
@@ -139,6 +134,18 @@ function renderRings(data, targets) {
         </div>
       </div>
     `;
+  }
+
+  const hasTargets = Boolean(targets && (Number.isFinite(targets.targetCalories) || Number.isFinite(targets.protein?.grams) || Number.isFinite(targets.carbs?.grams) || Number.isFinite(targets.fat?.grams)));
+
+  if (!hasTargets) {
+    dayRingsContainer.innerHTML = `
+      ${createRingHTML('Calories', 0, `${Math.round(todayCalories)} kcal`, 'rgba(148,163,184,0.7)')}
+      ${createRingHTML('Protein', 0, `${Math.round(todayProtein)} g`, 'rgba(148,163,184,0.7)')}
+      ${createRingHTML('Carbs', 0, `${Math.round(todayCarbs)} g`, 'rgba(148,163,184,0.7)')}
+      ${createRingHTML('Fat', 0, `${Math.round(todayFat)} g`, 'rgba(148,163,184,0.7)')}
+    `;
+    return;
   }
 
   const pctCalories = targets.targetCalories ? (todayCalories / targets.targetCalories) * 100 : 0;
