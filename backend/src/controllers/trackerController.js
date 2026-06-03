@@ -4,17 +4,30 @@ const { MEAL_ORDER } = require('../config');
 async function getTracker(req, res) {
   const conn = await getConnection();
   const userId = req.user.email;
+  const startDate = req.query.startDate || null;
+  const endDate = req.query.endDate || null;
 
   try {
-    const result = await conn.query(
-      `
-        SELECT *
-        FROM custom.meal_log
-        WHERE LOWER(user_id) = LOWER($1)
-        ORDER BY track_date DESC
-      `,
-      [userId]
-    );
+    let query = `
+      SELECT *
+      FROM custom.meal_log
+      WHERE LOWER(user_id) = LOWER($1)
+    `;
+    const params = [userId];
+
+    if (startDate) {
+      query += ` AND track_date::date >= $${params.length + 1}`;
+      params.push(startDate);
+    }
+
+    if (endDate) {
+      query += ` AND track_date::date <= $${params.length + 1}`;
+      params.push(endDate);
+    }
+
+    query += ` ORDER BY track_date DESC`;
+
+    const result = await conn.query(query, params);
 
     res.json(result.rows);
   } catch (err) {

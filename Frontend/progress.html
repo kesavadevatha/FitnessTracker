@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress | Fitness Tracker</title>
+  <link rel="stylesheet" href="./css/auth.css" />
+  <link rel="stylesheet" href="./components/sidebar/sidebar.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside id="sidebar-root" class="sidebar-shell" aria-label="Sidebar navigation"></aside>
+
+    <main class="content-shell">
+      <section class="dashboard-view">
+        <div class="dashboard-shell">
+          <header class="dashboard-header">
+            <div>
+              <p class="eyebrow">Progress report</p>
+              <h1>Overall progress</h1>
+              <p class="subcopy">Pick a date range and review the macro and calorie totals for the selected period.</p>
+            </div>
+          </header>
+
+          <section class="report-filter-card">
+            <form id="progress-form" class="report-form">
+              <div class="form-grid-row">
+                <label>
+                  <span>Start date</span>
+                  <input type="date" name="startDate" required />
+                </label>
+                <label>
+                  <span>End date</span>
+                  <input type="date" name="endDate" required />
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="primary-btn">Fetch progress</button>
+              </div>
+            </form>
+          </section>
+
+          <section id="progress-summary" class="progress-summary">
+            <div class="progress-cards" id="progress-cards"></div>
+            <div class="progress-details" id="progress-details"></div>
+          </section>
+
+          <section class="insight-panel">
+            <div>
+              <p class="eyebrow">Progress overview</p>
+              <h2>Range-based metrics</h2>
+            </div>
+            <div class="insight-copy">
+              <p id="progress-feedback">Enter a date range and click fetch to review overall progress.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/auth.js"></script>
+  <script type="module" src="./components/sidebar/sidebar.js"></script>
+  <script src="./js/progress.js"></script>
+</body>
+</html>

@@ -59,6 +59,14 @@ module.exports = function pageRoutes(app) {
     res.sendFile(path.join(FRONTEND_ROOT, 'user-details.html'));
   });
 
+  app.get('/progress', (req, res) => {
+    res.sendFile(path.join(FRONTEND_ROOT, 'progress.html'));
+  });
+
+  app.get('/progress.html', (req, res) => {
+    res.sendFile(path.join(FRONTEND_ROOT, 'progress.html'));
+  });
+
   app.get('/index', (req, res) => {
     res.sendFile(path.join(FRONTEND_ROOT, 'index.html'));
   });
