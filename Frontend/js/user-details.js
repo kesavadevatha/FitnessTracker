@@ -34,13 +34,14 @@ async function initProfilePage() {
     profileForm.heightUnit.value = profile.heightUnit || '';
     profileForm.dateOfBirth.value = profile.dateOfBirth || '';
     profileForm.goal.value = profile.goal || '';
+    profileForm.activityLevel.value = profile.activityLevel || '';
   } catch (error) {
     console.error('Unable to load profile:', error);
     profileFeedback.textContent = 'Unable to load profile. Please refresh the page.';
   }
 }
 
-function validateProfileForm({ gender, weightValue, weightUnit, heightValue, heightUnit, dateOfBirth, goal }) {
+function validateProfileForm({ gender, weightValue, weightUnit, heightValue, heightUnit, dateOfBirth, goal, activityLevel }) {
   if (weightValue !== '' && (Number.isNaN(Number(weightValue)) || Number(weightValue) <= 0)) {
     return 'Weight must be a positive number.';
   }
@@ -71,8 +72,20 @@ function validateProfileForm({ gender, weightValue, weightUnit, heightValue, hei
     'Healthy Lifestyle'
   ];
 
+  const validActivityLevels = [
+    'sedentary',
+    'light',
+    'moderate',
+    'active',
+    'athlete'
+  ];
+
   if (goal && !validGoals.includes(goal)) {
     return 'Please select a valid goal.';
+  }
+
+  if (activityLevel && !validActivityLevels.includes(activityLevel)) {
+    return 'Please select a valid activity level.';
   }
 
   return null;
@@ -90,6 +103,7 @@ profileForm.addEventListener('submit', async (event) => {
   const heightUnit = String(formData.get('heightUnit') || '').trim();
   const dateOfBirth = String(formData.get('dateOfBirth') || '').trim();
   const goal = String(formData.get('goal') || '').trim();
+  const activityLevel = String(formData.get('activityLevel') || '').trim();
 
   const validationError = validateProfileForm({
     gender,
@@ -98,7 +112,8 @@ profileForm.addEventListener('submit', async (event) => {
     heightValue,
     heightUnit,
     dateOfBirth,
-    goal
+    goal,
+    activityLevel
   });
   if (validationError) {
     profileFeedback.textContent = validationError;
@@ -120,7 +135,8 @@ profileForm.addEventListener('submit', async (event) => {
         height: heightValue ? Number(heightValue) : null,
         heightUnit: heightUnit || null,
         dateOfBirth: dateOfBirth || null,
-        goal: goal || null
+        goal: goal || null,
+        activityLevel: activityLevel || null
       })
     });
 

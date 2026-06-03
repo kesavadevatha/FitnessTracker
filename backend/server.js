@@ -313,6 +313,10 @@ async function initTables() {
         await conn.query(`
             ALTER TABLE custom.app_user ADD COLUMN IF NOT EXISTS height_unit TEXT;
         `);
+		
+		await conn.query(`
+            ALTER TABLE custom.app_user ADD COLUMN IF NOT EXISTS activity_level TEXT;
+        `);
 
         await conn.query(`
             CREATE TABLE IF NOT EXISTS custom.food_catalog (
@@ -494,7 +498,8 @@ app.get(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res
             height: user.height ?? null,
             heightUnit: user.height_unit || '',
             dateOfBirth: user.date_of_birth ? user.date_of_birth.toISOString().slice(0, 10) : '',
-            goal: user.goal || ''
+            goal: user.goal || '',
+            activityLevel: user.activity_level || ''
         });
     } catch (err) {
         console.error('Unable to load profile:', err);
@@ -503,7 +508,12 @@ app.get(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res
 });
 
 app.put(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res) => {
-    const { gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal } = req.body;
+    const { gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal, activityLevel } = req.body;
+    const allowedActivityLevels = ['sedentary', 'light', 'moderate', 'active', 'athlete'];
+
+    if (activityLevel && !allowedActivityLevels.includes(activityLevel)) {
+        return res.status(400).json({ error: 'Please select a valid activity level.' });
+    }
 
     try {
         const conn = await getConnection();
@@ -516,8 +526,9 @@ app.put(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res
                  height_unit = $5,
                  date_of_birth = $6,
                  goal = $7,
+                 activity_level = $8,
                  modified_date = NOW()
-             WHERE LOWER(user_id) = LOWER($8)`,
+             WHERE LOWER(user_id) = LOWER($9)`,
             [
                 gender || null,
                 weight !== null && weight !== '' ? weight : null,
@@ -526,6 +537,7 @@ app.put(`${API_BASE_URL}/api/user/profile`, authenticateRequest, async (req, res
                 heightUnit || null,
                 dateOfBirth || null,
                 goal || null,
+                activityLevel || null,
                 req.user.email
             ]
         );
