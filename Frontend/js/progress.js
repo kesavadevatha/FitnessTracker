@@ -165,7 +165,7 @@ function renderProgress(data, startDate, endDate) {
   const averageFat = days > 0 ? formatNumber(totalFat / days) : '0';
 
   progressCards.innerHTML = `
-    ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`, '🔥')}
+    ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`, '⚡')}
     ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `Average ${averageProtein} g/day`, '🥩')}
     ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `Average ${averageCarbs} g/day`, '🍞')}
     ${buildCard('Fat', `${formatNumber(totalFat)} g`, `Average ${averageFat} g/day`, '🥑')}
