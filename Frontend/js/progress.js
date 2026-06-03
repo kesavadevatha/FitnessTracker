@@ -1,6 +1,5 @@
 const progressForm = document.getElementById('progress-form');
 const progressCards = document.getElementById('progress-cards');
-const progressDetails = document.getElementById('progress-details');
 const progressFeedback = document.getElementById('progress-feedback');
 const weekReportCard = document.getElementById('week-report-card');
 const bestRecordCard = document.getElementById('best-report-card');
@@ -143,25 +142,17 @@ function renderProgress(data, startDate, endDate) {
   const days = new Set(data.map((entry) => String(entry.TRACK_DATE || entry.track_date || entry.date || ''))).size;
   const dailyTotals = summarizeByDate(data);
 
-  progressCards.innerHTML = `
-    ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `from ${startDate} to ${endDate}`)}
-    ${buildCard('Total protein', `${formatNumber(totalProtein)} g`, `${days} day${days === 1 ? '' : 's'}`)}
-    ${buildCard('Total carbs', `${formatNumber(totalCarbs)} g`, `${days} day${days === 1 ? '' : 's'}`)}
-    ${buildCard('Total fat', `${formatNumber(totalFat)} g`, `${days} day${days === 1 ? '' : 's'}`)}
-  `;
-
   const averageCalories = days > 0 ? formatNumber(totalCalories / days) : '0';
   const averageProtein = days > 0 ? formatNumber(totalProtein / days) : '0';
   const averageCarbs = days > 0 ? formatNumber(totalCarbs / days) : '0';
   const averageFat = days > 0 ? formatNumber(totalFat / days) : '0';
 
-  progressDetails.innerHTML = `
-    <p>${formatValue('Range', `${startDate} → ${endDate}`)}</p>
-    <p>${formatValue('Tracked days', days)}</p>
-    <p>${formatValue('Average calories/day', `${averageCalories} kcal`)}</p>
-    <p>${formatValue('Average protein/day', `${averageProtein} g`)}</p>
-    <p>${formatValue('Average carbs/day', `${averageCarbs} g`)}</p>
-    <p>${formatValue('Average fat/day', `${averageFat} g`)}</p>
+  progressCards.innerHTML = `
+    ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`)}
+    ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `Average ${averageProtein} g/day`)}
+    ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `Average ${averageCarbs} g/day`)}
+    ${buildCard('Fat', `${formatNumber(totalFat)} g`, `Average ${averageFat} g/day`)}
+    ${buildCard('🔥 Streak', `${days} days`, 'Active tracking streak')}
   `;
 
   renderReportCards(dailyTotals);
@@ -221,7 +212,6 @@ async function fetchProgress(startDate, endDate) {
     console.error('Progress fetch failed:', error);
     progressFeedback.textContent = error.message;
     progressCards.innerHTML = '';
-    progressDetails.innerHTML = '';
     return [];
   }
 }
