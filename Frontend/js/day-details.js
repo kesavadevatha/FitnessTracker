@@ -1,7 +1,6 @@
 const dayTitle = document.getElementById('day-title');
 const dayCopy = document.getElementById('day-copy');
 const dayRingsContainer = document.getElementById('day-rings-container');
-const daySummaryGrid = document.getElementById('day-summary-grid');
 const mealTabs = document.getElementById('meal-tabs');
 const mealPanel = document.getElementById('meal-panel');
 const addItemModal = document.getElementById('add-item-modal');
@@ -89,6 +88,38 @@ function normalizeUnitForSelect(unit) {
 function safeNumber(value) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function normalizeWeightKg(weight, unit) {
+  const parsedWeight = safeNumber(weight);
+  if (!parsedWeight) {
+    return 0;
+  }
+
+  const normalizedUnit = String(unit || '').trim().toLowerCase();
+  if (['lb', 'lbs', 'pound', 'pounds'].includes(normalizedUnit)) {
+    return parsedWeight * 0.45359237;
+  }
+
+  return parsedWeight;
+}
+
+function normalizeHeightCm(height, unit) {
+  const parsedHeight = safeNumber(height);
+  if (!parsedHeight) {
+    return 0;
+  }
+
+  const normalizedUnit = String(unit || '').trim().toLowerCase();
+  if (['in', 'inch', 'inches'].includes(normalizedUnit)) {
+    return parsedHeight * 2.54;
+  }
+
+  if (['ft', 'foot', 'feet'].includes(normalizedUnit)) {
+    return parsedHeight * 30.48;
+  }
+
+  return parsedHeight;
 }
 
 function renderRings(data, targets) {
@@ -247,47 +278,6 @@ function normalizeMeals(rows) {
   });
 
   return Array.from(mealMap.values());
-}
-
-function renderSummary(data) {
-  const totals = data?.totals || {
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0
-  };
-  const summaryCards = [
-    {
-      label: 'Calories',
-      value: `${currencyFormatter.format(data.totals.calories)} kcal`,
-      note: 'Total calories for the selected day'
-    },
-    {
-      label: 'Protein',
-      value: `${metricFormatter.format(data.totals.protein)} g`,
-      note: 'Protein consumed across all meals'
-    },
-    {
-      label: 'Carbs',
-      value: `${metricFormatter.format(data.totals.carbs)} g`,
-      note: 'Carbs tracked for the day'
-    },
-    {
-      label: 'Fat',
-      value: `${metricFormatter.format(data.totals.fat)} g`,
-      note: 'Fat tracked for the day'
-    }
-  ];
-
-  if (!daySummaryGrid) return;
-  
-  daySummaryGrid.innerHTML = summaryCards.map((card) => `
-    <article class="summary-card">
-      <span class="summary-label">${card.label}</span>
-      <p class="summary-value">${card.value}</p>
-      <p class="summary-note">${card.note}</p>
-    </article>
-  `).join('');
 }
 
 function renderMealPanels(data) {
@@ -695,8 +685,8 @@ async function loadDayDetails() {
       if (profileResp.ok) {
         const profile = await profileResp.json();
         
-        const weightKg = safeNumber(profile.weight_kg || profile.weightKg);
-        const heightCm = safeNumber(profile.height_cm || profile.heightCm);
+        const weightKg = normalizeWeightKg(profile.weight ?? profile.weight_kg ?? profile.weightKg, profile.weightUnit || profile.weight_unit);
+        const heightCm = normalizeHeightCm(profile.height ?? profile.height_cm ?? profile.heightCm, profile.heightUnit || profile.height_unit);
         
         const dob = profile.dateOfBirth || profile.date_of_birth || null;
         let age = 30;
@@ -732,13 +722,13 @@ async function loadDayDetails() {
 
     // ✅ RENDER RINGS WITH TARGETS
     renderRings(data, targets);
-    renderSummary(data);
     renderMealPanels(data);
 
   } catch (error) {
     console.error(error);
 
-    dayCopy.textContent = 'Unable to load this day’s meal details right now.';    dayRingsContainer.innerHTML = '';    daySummaryGrid.innerHTML = '';
+    dayCopy.textContent = 'Unable to load this day’s meal details right now.';
+    dayRingsContainer.innerHTML = '';
     mealTabs.innerHTML = '';
     mealPanel.innerHTML = `
       <div class="meal-panel-card">
