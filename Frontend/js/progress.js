@@ -4,6 +4,8 @@ const progressDetails = document.getElementById('progress-details');
 const progressFeedback = document.getElementById('progress-feedback');
 const weekReportCard = document.getElementById('week-report-card');
 const bestRecordCard = document.getElementById('best-report-card');
+const startDateInput = progressForm.querySelector('input[name="startDate"]');
+const endDateInput = progressForm.querySelector('input[name="endDate"]');
 
 if (window.auth) {
   auth.requireLogin();
@@ -25,6 +27,29 @@ function buildCard(title, value, subtext) {
 
 function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
+}
+
+function getRangeFromData(data) {
+  const dates = data
+    .map((entry) => String(entry.TRACK_DATE || entry.track_date || entry.date || '').trim())
+    .filter(Boolean)
+    .sort();
+
+  if (!dates.length) {
+    return null;
+  }
+
+  return {
+    startDate: dates[0],
+    endDate: dates[dates.length - 1],
+  };
+}
+
+function setRangeInputs(startDate, endDate) {
+  if (startDateInput && endDateInput) {
+    startDateInput.value = startDate;
+    endDateInput.value = endDate;
+  }
 }
 
 function summarizeByDate(data) {
@@ -164,7 +189,15 @@ function validateRange(startDate, endDate) {
 
 async function fetchProgress(startDate, endDate) {
   try {
-    const response = await auth.authFetch(`${API_BASE_URL}/api/tracker?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`);
+    const url = new URL(`${API_BASE_URL}/api/tracker`);
+    if (startDate) {
+      url.searchParams.set('startDate', startDate);
+    }
+    if (endDate) {
+      url.searchParams.set('endDate', endDate);
+    }
+
+    const response = await auth.authFetch(url.toString());
     if (!response.ok) {
       const data = await response.json();
       throw new Error(data.error || `Unable to fetch progress (${response.status})`);
@@ -175,13 +208,27 @@ async function fetchProgress(startDate, endDate) {
       throw new Error('Unexpected progress response.');
     }
 
-    renderProgress(data, startDate, endDate);
+    const rawRange = getRangeFromData(data);
+    if (rawRange && !startDate && !endDate) {
+      setRangeInputs(rawRange.startDate, rawRange.endDate);
+      startDate = rawRange.startDate;
+      endDate = rawRange.endDate;
+    }
+
+    renderProgress(data, startDate || 'All available', endDate || 'All available');
+    return data;
   } catch (error) {
     console.error('Progress fetch failed:', error);
     progressFeedback.textContent = error.message;
     progressCards.innerHTML = '';
     progressDetails.innerHTML = '';
+    return [];
   }
+}
+
+async function loadInitialProgress() {
+  progressFeedback.textContent = 'Loading available progress...';
+  await fetchProgress();
 }
 
 progressForm.addEventListener('submit', async (event) => {
@@ -201,3 +248,5 @@ progressForm.addEventListener('submit', async (event) => {
   progressFeedback.textContent = 'Fetching progress...';
   await fetchProgress(startDate, endDate);
 });
+
+loadInitialProgress();
