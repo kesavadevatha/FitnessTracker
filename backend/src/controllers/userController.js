@@ -24,30 +24,55 @@ async function getProfile(req, res) {
   }
 }
 
-function validateProfileData({ weight, height, dateOfBirth, activityLevel }) {
+function validateProfileData({ gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal, activityLevel }) {
   const errors = [];
+
+  if (!gender) {
+    errors.push('Gender is required.');
+  }
 
   const weightValue = weight === null || weight === undefined || weight === ''
     ? null
     : Number(weight);
-  if (weightValue !== null) {
-    if (!Number.isFinite(weightValue) || weightValue <= 0) {
-      errors.push('Weight must be a positive number.');
-    }
+  if (weightValue === null) {
+    errors.push('Weight is required.');
+  } else if (!Number.isFinite(weightValue) || weightValue <= 0) {
+    errors.push('Weight must be a positive number.');
+  }
+
+  if (!weightUnit) {
+    errors.push('Weight unit is required.');
+  } else if (!['kg', 'lb'].includes(String(weightUnit).toLowerCase())) {
+    errors.push('Weight unit must be kg or lb.');
   }
 
   const heightValue = height === null || height === undefined || height === ''
     ? null
     : Number(height);
-  if (heightValue !== null) {
-    if (!Number.isFinite(heightValue)) {
-      errors.push('Height must be a valid number.');
-    } else if (heightValue < 10 || heightValue > 300) {
+  if (heightValue === null) {
+    errors.push('Height is required.');
+  } else if (!Number.isFinite(heightValue)) {
+    errors.push('Height must be a valid number.');
+  }
+
+  if (!heightUnit) {
+    errors.push('Height unit is required.');
+  } else {
+    const unit = String(heightUnit).toLowerCase();
+    if (unit === 'cm' && (heightValue < 10 || heightValue > 300)) {
       errors.push('Height must be between 10 cm and 300 cm.');
+    }
+    if (unit === 'in' && (heightValue < 4 || heightValue > 118)) {
+      errors.push('Height must be between 4 in and 118 in.');
+    }
+    if (!['cm', 'in'].includes(unit)) {
+      errors.push('Height unit must be cm or in.');
     }
   }
 
-  if (dateOfBirth) {
+  if (!dateOfBirth) {
+    errors.push('Date of birth is required.');
+  } else {
     const dob = new Date(dateOfBirth);
     const today = new Date();
     const maxPast = new Date();
@@ -62,6 +87,10 @@ function validateProfileData({ weight, height, dateOfBirth, activityLevel }) {
     }
   }
 
+  if (!goal) {
+    errors.push('Fitness goal is required.');
+  }
+
   const allowedActivityLevels = ['sedentary', 'light', 'moderate', 'active', 'athlete'];
   if (activityLevel && !allowedActivityLevels.includes(activityLevel)) {
     errors.push('Please select a valid activity level.');
@@ -73,7 +102,7 @@ function validateProfileData({ weight, height, dateOfBirth, activityLevel }) {
 async function updateProfile(req, res) {
   const { gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal, activityLevel } = req.body;
 
-  const validationErrors = validateProfileData({ weight, height, dateOfBirth, activityLevel });
+  const validationErrors = validateProfileData({ gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal, activityLevel });
   if (validationErrors.length > 0) {
     return res.status(400).json({ error: validationErrors.join(' ') });
   }

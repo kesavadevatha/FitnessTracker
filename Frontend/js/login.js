@@ -42,8 +42,27 @@ loginForm.addEventListener('submit', async (event) => {
       window.location.href = `/reset-password.html`;
       return;
     }
-	
-	window.location.href = `/index.html`;
+
+    try {
+      const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+      if (profileResponse.ok) {
+        const profile = await profileResponse.json();
+        const missingProfileField = !profile.gender || !profile.weight || !profile.weightUnit || !profile.height || !profile.heightUnit || !profile.dateOfBirth || !profile.goal;
+        if (missingProfileField) {
+          window.location.href = `/user-details.html`;
+          return;
+        }
+      } else {
+        window.location.href = `/user-details.html`;
+        return;
+      }
+    } catch (error) {
+      console.error('Unable to verify profile:', error);
+      window.location.href = `/user-details.html`;
+      return;
+    }
+
+    window.location.href = `/index.html`;
   } catch (error) {
     console.error('Login failed:', error);
     loginFeedback.textContent = 'Unable to sign in. Please try again later.';
