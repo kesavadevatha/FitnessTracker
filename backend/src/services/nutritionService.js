@@ -17,13 +17,13 @@ const GOAL_CALORIE_ADJUST = {
 };
 
 const PROTEIN_G_PER_KG = {
-  'lose fat': 2.2,
-  'build muscle': 2.0,
-  'gain weight': 1.8,
-  'body recomposition': 2.2,
-  'lose fat & build muscle': 2.3,
-  'maintain weight': 1.8,
-  'healthy lifestyle': 1.6
+  'lose fat': 1.6,
+  'build muscle': 1.4,
+  'gain weight': 1.2,
+  'body recomposition': 1.6,
+  'lose fat & build muscle': 1.5,
+  'maintain weight': 1.2,
+  'healthy lifestyle': 1.0
 };
 
 const FAT_G_PER_KG = 0.8;
