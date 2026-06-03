@@ -24,12 +24,58 @@ async function getProfile(req, res) {
   }
 }
 
+function validateProfileData({ weight, height, dateOfBirth, activityLevel }) {
+  const errors = [];
+
+  const weightValue = weight === null || weight === undefined || weight === ''
+    ? null
+    : Number(weight);
+  if (weightValue !== null) {
+    if (!Number.isFinite(weightValue) || weightValue <= 0) {
+      errors.push('Weight must be a positive number.');
+    }
+  }
+
+  const heightValue = height === null || height === undefined || height === ''
+    ? null
+    : Number(height);
+  if (heightValue !== null) {
+    if (!Number.isFinite(heightValue)) {
+      errors.push('Height must be a valid number.');
+    } else if (heightValue < 10 || heightValue > 300) {
+      errors.push('Height must be between 10 cm and 300 cm.');
+    }
+  }
+
+  if (dateOfBirth) {
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    const maxPast = new Date();
+    maxPast.setFullYear(today.getFullYear() - 100);
+
+    if (Number.isNaN(dob.getTime())) {
+      errors.push('Date of birth must be a valid date.');
+    } else if (dob > today) {
+      errors.push('Date of birth cannot be in the future.');
+    } else if (dob < maxPast) {
+      errors.push('Date of birth cannot be more than 100 years ago.');
+    }
+  }
+
+  const allowedActivityLevels = ['sedentary', 'light', 'moderate', 'active', 'athlete'];
+  if (activityLevel && !allowedActivityLevels.includes(activityLevel)) {
+    errors.push('Please select a valid activity level.');
+  }
+
+  return errors;
+}
+
 async function updateProfile(req, res) {
   const { gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal, activityLevel } = req.body;
-  const allowedActivityLevels = ['sedentary', 'light', 'moderate', 'active', 'athlete'];
 
-  if (activityLevel && !allowedActivityLevels.includes(activityLevel)) {
-    return res.status(400).json({ error: 'Please select a valid activity level.' });
+  const validationErrors = validateProfileData({ weight, height, dateOfBirth, activityLevel });
+  if (validationErrors.length > 0) {
+    return res.status(400).json({ error: validationErrors.join(' ') });
   }
 
   try {
