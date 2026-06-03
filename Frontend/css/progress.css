@@ -162,3 +162,36 @@
 .report-card-list strong {
   color: var(--text);
 }
+
+/* Progress rings layout */
+.rings-section {
+  display: grid;
+  gap: 12px;
+}
+.rings-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+  align-items: center;
+}
+.progress-ring-card {
+  background: linear-gradient(180deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+  border: 1px solid rgba(148,163,184,0.08);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+.progress-ring { display:block; }
+.progress-ring-label { margin-top: 8px; }
+.progress-ring-percent { font-size: 1.25rem; font-weight: 700; color: var(--text); }
+.progress-ring-title { color: var(--muted); margin-top: 6px; }
+.progress-ring-sub { color: var(--accent); margin-top: 6px; font-weight:700 }
+
+@media (max-width:640px) {
+  .rings-container { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
