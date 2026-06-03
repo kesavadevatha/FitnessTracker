@@ -221,19 +221,7 @@ function renderEmptyState() {
   `;
   dataStatus.textContent = 'No intake data available yet.';
   dateRange.textContent = 'No tracked dates';
-  summaryText.textContent = 'Add your first intake entry to begin monitoring your calorie and macro totals.';
-}
-
-function renderTodayEmptyState() {
-  metricsGrid.innerHTML = `
-    <div class="empty-state">
-      No intake recorded for today. Log your first meal to see today's progress.
-    </div>
-  `;
-  dataStatus.textContent = 'No intake recorded for today.';
-  const today = new Date();
-  dateRange.textContent = today.toLocaleDateString();
-  summaryText.textContent = 'Track today’s calories, protein, carbs, and fat to stay on target.';
+  summaryText.textContent = 'Add your first intake entry to begin monitoring your average calories, protein, carbs, and fat.';
 }
 
 function renderMealShowcase(entries) {
@@ -289,81 +277,88 @@ function renderCards(entries) {
   renderMealShowcase(entries);
 
   const dailyEntries = groupTrackerEntries(entries);
-  const todayKey = formatDateKey(new Date());
-  const todayEntry = dailyEntries.find((entry) => entry.TRACK_DATE === todayKey) || {
-    TRACK_DATE: todayKey,
-    calories: 0,
-    protein: 0,
-    carbohydrates: 0,
-    fat: 0,
-    entry_count: 0
-  };
 
   if (!dailyEntries.length) {
     renderEmptyState();
     return;
   }
 
-  const todayCalories = safeNumber(todayEntry.calories);
-  const todayProtein = safeNumber(todayEntry.protein);
-  const todayCarbs = safeNumber(todayEntry.carbohydrates);
-  const todayFat = safeNumber(todayEntry.fat);
-  const mealsToday = todayEntry.entry_count || 0;
-  const todayDate = new Date(todayKey);
-  const dateLabel = todayDate.toLocaleDateString();
+  const totals = dailyEntries.reduce(
+    (acc, entry) => {
+      acc.calories += safeNumber(entry.calories);
+      acc.protein += safeNumber(entry.protein);
+      acc.carbs += safeNumber(entry.carbohydrates);
+      acc.fat += safeNumber(entry.fat);
+      return acc;
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  const dayCount = dailyEntries.length;
+  const avgCalories = totals.calories / dayCount;
+  const avgProtein = totals.protein / dayCount;
+  const avgCarbs = totals.carbs / dayCount;
+  const avgFat = totals.fat / dayCount;
+
+  const firstDate = new Date(dailyEntries[0].TRACK_DATE);
+  const lastDate = new Date(dailyEntries[dailyEntries.length - 1].TRACK_DATE);
+  const dateLabel = `${firstDate.toLocaleDateString()} to ${lastDate.toLocaleDateString()}`;
 
   metricsGrid.innerHTML = `
     <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🔥</span>Calories</p>
-      <p class="metric-total">${formatUnit('Calories', todayCalories)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">${mealsToday === 0 ? 'No meals logged today' : `${mealsToday} meal${mealsToday === 1 ? '' : 's'} today`}</p>
+      <p class="metric-name">Calories</p>
+      <p class="metric-total">${formatUnit('Calories', totals.calories)}</p>
+      <p class="metric-average">Avg ${formatUnit('Calories', avgCalories)}/day</p>
+      <p class="metric-meta">Tracked across ${dayCount} days</p>
     </article>
     <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🥩</span>Protein</p>
-      <p class="metric-total">${formatUnit('Protein', todayProtein)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">Current day intake</p>
+      <p class="metric-name">Protein</p>
+      <p class="metric-total">${formatUnit('Protein', totals.protein)}</p>
+      <p class="metric-average">Avg ${formatUnit('Protein', avgProtein)}/day</p>
+      <p class="metric-meta">Target-based monitoring</p>
     </article>
     <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🍞</span>Carbs</p>
-      <p class="metric-total">${formatUnit('Carbs', todayCarbs)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">Current day intake</p>
+      <p class="metric-name">Carbs</p>
+      <p class="metric-total">${formatUnit('Carbs', totals.carbs)}</p>
+      <p class="metric-average">Avg ${formatUnit('Carbs', avgCarbs)}/day</p>
+      <p class="metric-meta">Macro balance snapshot</p>
     </article>
     <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🥑</span>Fat</p>
-      <p class="metric-total">${formatUnit('Fat', todayFat)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">Current day intake</p>
+      <p class="metric-name">Fat</p>
+      <p class="metric-total">${formatUnit('Fat', totals.fat)}</p>
+      <p class="metric-average">Avg ${formatUnit('Fat', avgFat)}/day</p>
+      <p class="metric-meta">Daily intake summary</p>
     </article>
   `;
 
-  dataStatus.textContent = mealsToday > 0
-    ? 'Displaying today’s intake progress.'
-    : 'No intake recorded for today.';
-  dateRange.textContent = dateLabel;
+  const daysCard = document.createElement('article');
+  daysCard.className = 'metric-card';
+  daysCard.innerHTML = `
+    <p class="metric-name">Tracking days</p>
+    <p class="metric-total">${dayCount}</p>
+    <p class="metric-average">${dayCount === 1 ? '1 day recorded' : `${dayCount} days recorded`}</p>
+    <p class="metric-meta">${dateLabel}</p>
+  `;
 
-  if (mealsToday === 0) {
-    summaryText.textContent = 'No intake logged for today yet. Add a meal to see today’s nutrition progress.';
-  } else {
-    summaryText.textContent = `Today’s intake totals are ${metricFormatter.format(todayCalories)} kcal, ${metricFormatter.format(todayProtein)} g protein, ${metricFormatter.format(todayCarbs)} g carbs, and ${metricFormatter.format(todayFat)} g fat.`;
-  }
+  metricsGrid.appendChild(daysCard);
+  dataStatus.textContent = `${dayCount} day${dayCount === 1 ? '' : 's'} of intake available.`;
+  dateRange.textContent = dateLabel;
+  summaryText.textContent = `Across ${dayCount} tracked day${dayCount === 1 ? '' : 's'}, your average daily intake is ${metricFormatter.format(avgCalories)} kcal, ${metricFormatter.format(avgProtein)} g protein, ${metricFormatter.format(avgCarbs)} g carbs, and ${metricFormatter.format(avgFat)} g fat.`;
 
   if (reportTrackedDays) {
-    reportTrackedDays.textContent = `${mealsToday}`;
+    reportTrackedDays.textContent = `${dayCount}`;
   }
 
   if (reportAverageCalories) {
-    reportAverageCalories.textContent = `${formatUnit('Calories', todayCalories)}`;
+    reportAverageCalories.textContent = `${formatUnit('Calories', avgCalories)}`;
   }
 
   if (reportAverageProtein) {
-    reportAverageProtein.textContent = `${formatUnit('Protein', todayProtein)}`;
+    reportAverageProtein.textContent = `${formatUnit('Protein', avgProtein)}`;
   }
 
   if (reportCarbsFat) {
-    reportCarbsFat.textContent = `${formatUnit('Carbs', todayCarbs)} / ${formatUnit('Fat', todayFat)}`;
+    reportCarbsFat.textContent = `${formatUnit('Carbs', avgCarbs)} / ${formatUnit('Fat', avgFat)}`;
   }
 }
 
