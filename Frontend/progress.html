@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Progress | Fitness Tracker</title>
   <link rel="stylesheet" href="./css/auth.css" />
+  <link rel="stylesheet" href="./css/fitness-dashboard.css" />
+  <link rel="stylesheet" href="./css/progress.css" />
   <link rel="stylesheet" href="./components/sidebar/sidebar.css" />
 </head>
 <body>
@@ -13,46 +15,93 @@
 
     <main class="content-shell">
       <section class="dashboard-view">
-        <div class="dashboard-shell">
-          <header class="dashboard-header">
+        <div class="progress-page-main">
+          <section class="dashboard-header">
             <div>
               <p class="eyebrow">Progress report</p>
               <h1>Overall progress</h1>
-              <p class="subcopy">Pick a date range and review the macro and calorie totals for the selected period.</p>
+              <p class="subcopy">Review your daily macros and calories, then compare them with weekly and best-record summaries.</p>
             </div>
-          </header>
-
-          <section class="report-filter-card">
-            <form id="progress-form" class="report-form">
-              <div class="form-grid-row">
-                <label>
-                  <span>Start date</span>
-                  <input type="date" name="startDate" required />
-                </label>
-                <label>
-                  <span>End date</span>
-                  <input type="date" name="endDate" required />
-                </label>
-              </div>
-
-              <div class="form-actions">
-                <button type="submit" class="primary-btn">Fetch progress</button>
-              </div>
-            </form>
           </section>
 
-          <section id="progress-summary" class="progress-summary">
-            <div class="progress-cards" id="progress-cards"></div>
-            <div class="progress-details" id="progress-details"></div>
+          <section class="progress-hero">
+            <div class="progress-summary-panel">
+              <div class="progress-dashboard-cards" id="progress-cards">
+                <article class="metric-card">
+                  <p class="metric-name">Total calories</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Select a range to update this value.</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">Protein</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Select a range to update this value.</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">Carbs</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Select a range to update this value.</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">Fat</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Select a range to update this value.</p>
+                </article>
+              </div>
+
+              <div class="progress-summary-details" id="progress-details">
+                <p class="metric-meta">Range: —</p>
+                <p class="metric-meta">Tracked days: —</p>
+                <p class="metric-meta">Average intake per day: —</p>
+              </div>
+            </div>
+
+            <div class="report-filter-card">
+              <form id="progress-form" class="report-form progress-toolbar">
+                <div class="form-grid-row">
+                  <label>
+                    <span>Start date</span>
+                    <input type="date" name="startDate" required />
+                  </label>
+                  <label>
+                    <span>End date</span>
+                    <input type="date" name="endDate" required />
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="primary-btn">Fetch progress</button>
+                </div>
+              </form>
+              <p id="progress-feedback" class="progress-feedback">Enter a date range and click fetch to review overall progress.</p>
+            </div>
           </section>
 
-          <section class="insight-panel">
-            <div>
-              <p class="eyebrow">Progress overview</p>
-              <h2>Range-based metrics</h2>
+          <section class="reports-section">
+            <div class="progress-reports-header">
+              <div>
+                <p class="eyebrow">Reports</p>
+                <h2>Latest insights</h2>
+              </div>
             </div>
-            <div class="insight-copy">
-              <p id="progress-feedback">Enter a date range and click fetch to review overall progress.</p>
+            <div class="reports-grid">
+              <article class="report-card" id="week-report-card">
+                <h3 class="report-card-title">Past week progress report</h3>
+                <div class="report-card-list">
+                  <p><strong>Total calories:</strong> —</p>
+                  <p><strong>Total protein:</strong> —</p>
+                  <p><strong>Total carbs:</strong> —</p>
+                  <p><strong>Total fat:</strong> —</p>
+                </div>
+              </article>
+              <article class="report-card" id="best-report-card">
+                <h3 class="report-card-title">All time best records</h3>
+                <div class="report-card-list">
+                  <p><strong>Highest calories/day:</strong> —</p>
+                  <p><strong>Highest protein/day:</strong> —</p>
+                  <p><strong>Highest carbs/day:</strong> —</p>
+                  <p><strong>Highest fat/day:</strong> —</p>
+                </div>
+              </article>
             </div>
           </section>
         </div>
