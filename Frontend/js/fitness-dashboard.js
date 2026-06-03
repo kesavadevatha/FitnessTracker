@@ -306,7 +306,9 @@ function renderCards(entries) {
     return totals;
   }, { TRACK_DATE: todayKey, calories: 0, protein: 0, carbohydrates: 0, fat: 0, entry_count: 0 });
 
-  if (!entries.length) {
+  // If no entries AND no targets, show empty state. 
+  // If targets exist, render rings even if no entries (showing 0% progress)
+  if (!entries.length && !targets) {
     renderEmptyState();
     return;
   }
@@ -329,7 +331,7 @@ function renderCards(entries) {
       const dash = (pct / 100) * circumference;
 
       const iconMap = {
-        'Calories': '🔥',
+        'Calories': '⚡',
         'Protein': '🥩',
         'Carbs': '🍞',
         'Fat': '🥑'
