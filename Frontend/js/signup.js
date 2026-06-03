@@ -43,7 +43,7 @@ registerForm.addEventListener('submit', async (event) => {
     }
 
     auth.setAuth(data.token, data.user);
-    window.location.href = APP_ROUTES.dashboard;
+    window.location.href = '/user-details.html';
   } catch (error) {
     console.error('Registration failed:', error);
     registerFeedback.textContent = 'Unable to create account. Please try again later.';

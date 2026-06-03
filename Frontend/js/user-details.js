@@ -42,24 +42,72 @@ async function initProfilePage() {
 }
 
 function validateProfileForm({ gender, weightValue, weightUnit, heightValue, heightUnit, dateOfBirth, goal, activityLevel }) {
-  if (weightValue !== '' && (Number.isNaN(Number(weightValue)) || Number(weightValue) <= 0)) {
+  if (!gender) {
+    return 'Gender is required.';
+  }
+
+  if (weightValue === '') {
+    return 'Weight is required.';
+  }
+
+  const parsedWeight = Number(weightValue);
+  if (Number.isNaN(parsedWeight) || parsedWeight <= 0) {
     return 'Weight must be a positive number.';
   }
 
-  if (weightValue !== '' && !weightUnit) {
+  if (!weightUnit) {
     return 'Please select a weight unit.';
   }
 
-  if (heightValue !== '' && (Number.isNaN(Number(heightValue)) || Number(heightValue) <= 0)) {
+  if (heightValue === '') {
+    return 'Height is required.';
+  }
+
+  const parsedHeight = Number(heightValue);
+  if (Number.isNaN(parsedHeight) || parsedHeight <= 0) {
     return 'Height must be a positive number.';
   }
 
-  if (heightValue !== '' && !heightUnit) {
+  if (!heightUnit) {
     return 'Please select a height unit.';
   }
 
-  if (dateOfBirth && !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
+  const heightUnitNormalized = heightUnit.toLowerCase();
+  if (heightUnitNormalized === 'cm' && (parsedHeight < 10 || parsedHeight > 300)) {
+    return 'Height must be between 10 cm and 300 cm.';
+  }
+
+  if (heightUnitNormalized === 'in' && (parsedHeight < 4 || parsedHeight > 118)) {
+    return 'Height must be between 4 in and 118 in.';
+  }
+
+  if (!dateOfBirth) {
+    return 'Date of birth is required.';
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) {
     return 'Please enter a valid date of birth.';
+  }
+
+  const dob = new Date(dateOfBirth);
+  const today = new Date();
+  const maxPast = new Date();
+  maxPast.setFullYear(today.getFullYear() - 100);
+
+  if (Number.isNaN(dob.getTime())) {
+    return 'Please enter a valid date of birth.';
+  }
+
+  if (dob > today) {
+    return 'Date of birth cannot be in the future.';
+  }
+
+  if (dob < maxPast) {
+    return 'Date of birth cannot be more than 100 years ago.';
+  }
+
+  if (!goal) {
+    return 'Fitness goal is required.';
   }
 
   const validGoals = [
@@ -80,7 +128,7 @@ function validateProfileForm({ gender, weightValue, weightUnit, heightValue, hei
     'athlete'
   ];
 
-  if (goal && !validGoals.includes(goal)) {
+  if (!validGoals.includes(goal)) {
     return 'Please select a valid goal.';
   }
 
