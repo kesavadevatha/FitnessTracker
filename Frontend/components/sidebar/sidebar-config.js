@@ -20,13 +20,7 @@ export const sidebarItems = [
     action: 'route',
     href: '/progress.html'
   },
-  {
-    id: 'progress-rings',
-    label: 'Progress Rings',
-    icon: '📊',
-    action: 'route',
-    href: '/progress-rings.html'
-  },
+  // progress-rings removed
   {
     id: 'admin',
     label: 'Admin',

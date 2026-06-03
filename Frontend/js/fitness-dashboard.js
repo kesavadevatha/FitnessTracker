@@ -328,6 +328,15 @@ function renderCards(entries) {
       const circumference = 2 * Math.PI * radius;
       const dash = (pct / 100) * circumference;
 
+      const iconMap = {
+        'Calories': '🔥',
+        'Protein': '🥩',
+        'Carbs': '🍞',
+        'Fat': '🥑'
+      };
+
+      const icon = iconMap[label] || '';
+
       return `
         <div class="progress-ring-card">
           <svg class="progress-ring" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
@@ -339,7 +348,7 @@ function renderCards(entries) {
           </svg>
           <div class="progress-ring-label">
             <div class="progress-ring-percent">${pct}%</div>
-            <div class="progress-ring-title">${label}</div>
+            <div class="progress-ring-title"><span class="metric-icon">${icon}</span> ${label}</div>
             <div class="progress-ring-sub">${valueLabel}</div>
           </div>
         </div>
