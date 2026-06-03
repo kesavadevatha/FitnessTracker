@@ -1,0 +1,137 @@
+const { findUserByEmail, createUser, updateUserPassword, saveUserProfile } = require('../services/userService');
+
+async function getProfile(req, res) {
+  try {
+    const user = await findUserByEmail(req.user.email);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.json({
+      email: user.email,
+      gender: user.gender || '',
+      weight: user.weight ?? null,
+      weightUnit: user.weight_unit || '',
+      height: user.height ?? null,
+      heightUnit: user.height_unit || '',
+      dateOfBirth: user.date_of_birth ? user.date_of_birth.toISOString().slice(0, 10) : '',
+      goal: user.goal || '',
+      activityLevel: user.activity_level || ''
+    });
+  } catch (err) {
+    console.error('Unable to load profile:', err);
+    res.status(500).json({ error: 'Unable to load profile.' });
+  }
+}
+
+async function updateProfile(req, res) {
+  const { gender, weight, weightUnit, height, heightUnit, dateOfBirth, goal, activityLevel } = req.body;
+  const allowedActivityLevels = ['sedentary', 'light', 'moderate', 'active', 'athlete'];
+
+  if (activityLevel && !allowedActivityLevels.includes(activityLevel)) {
+    return res.status(400).json({ error: 'Please select a valid activity level.' });
+  }
+
+  try {
+    await saveUserProfile(req.user.email, {
+      gender,
+      weight,
+      weightUnit,
+      height,
+      heightUnit,
+      dateOfBirth,
+      goal,
+      activityLevel
+    });
+
+    res.json({ message: 'Profile updated successfully.' });
+  } catch (err) {
+    console.error('Unable to save profile:', err);
+    res.status(500).json({ error: 'Unable to save profile.' });
+  }
+}
+
+async function getCurrentUser(req, res) {
+  try {
+    const user = await findUserByEmail(req.query.email);
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+async function createUserHandler(req, res) {
+  const { email, password, isAdmin } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
+  let conn = null;
+  try {
+    conn = await require('../db').getConnection();
+    const countResult = await conn.query(`select count(*) as total from custom.app_user`);
+    const userCount = Number(countResult.rows?.[0]?.total || 0);
+
+    let authUser = null;
+    const authorization = String(req.headers.authorization || '').trim();
+    const token = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
+    if (token) {
+      const payload = require('../utils/auth').verifyAuthToken(token);
+      if (payload && payload.email) {
+        authUser = payload;
+      }
+    }
+
+    if (userCount > 0 && (!authUser || !authUser.isAdmin)) {
+      return res.status(403).json({ error: 'Admin access is required to create additional users.' });
+    }
+
+    const shouldCreateAdmin = userCount === 0 ? true : Boolean(isAdmin);
+    const requiresPasswordReset = userCount > 0;
+
+    await createUser(email, password, shouldCreateAdmin, requiresPasswordReset);
+
+    res.status(201).json({
+      message: 'User created successfully.',
+      email: String(email).trim().toLowerCase(),
+      isAdmin: shouldCreateAdmin
+    });
+  } catch (error) {
+    console.error('Error creating user account:', error);
+    res.status(500).json({ error: 'Failed to create user account.' });
+  } finally {
+    if (conn) {
+      conn.release();
+    }
+  }
+}
+
+async function changePassword(req, res) {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: 'New password is required.' });
+  }
+
+  try {
+    const success = await updateUserPassword(req.user.email, password, false);
+    if (!success) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.json({ message: 'Password changed successfully.' });
+  } catch (error) {
+    console.error('Error updating user password:', error);
+    res.status(500).json({ error: 'Unable to update password.' });
+  }
+}
+
+module.exports = {
+  getProfile,
+  updateProfile,
+  getCurrentUser,
+  createUser: createUserHandler,
+  changePassword
+};
