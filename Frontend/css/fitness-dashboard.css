@@ -512,6 +512,30 @@ body {
   font-size: 0.8rem;
 }
 
+.metric-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+  font-size: 1.1rem;
+  line-height: 1;
+  font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.metric-card .metric-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .insight-panel {
   display: flex;
   justify-content: space-between;

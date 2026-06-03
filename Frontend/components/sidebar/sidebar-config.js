@@ -15,9 +15,10 @@ export const sidebarItems = [
   },
   {
     id: 'reports',
-    label: 'Reports',
-    icon: '◧',
-    action: 'view'
+    label: 'Progress',
+    icon: '↗',
+    action: 'route',
+    href: '/progress.html'
   },
   {
     id: 'admin',

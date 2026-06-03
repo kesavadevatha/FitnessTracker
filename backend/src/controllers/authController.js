@@ -1,0 +1,73 @@
+const { findUserByEmail, createUser } = require('../services/userService');
+const { hashPassword, createAuthToken } = require('../utils/auth');
+
+async function login(req, res) {
+  try {
+    const { email, password } = req.body;
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid login' });
+    }
+
+    const incomingHash = hashPassword(password);
+    if (incomingHash !== user.password_hash) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    const token = createAuthToken({
+      email: user.user_id,
+      isAdmin: user.is_admin === 'Y'
+    });
+
+    res.json({
+      token,
+      user: {
+        email: user.email,
+        isAdmin: user.is_admin === 'Y',
+        passwordResetRequired: user.password_reset_required === 'Y'
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+async function register(req, res) {
+  try {
+    const { email, password, confirmPassword } = req.body;
+    if (!email || !password || !confirmPassword) {
+      return res.status(400).json({ error: 'Email, password and confirm password are required.' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match.' });
+    }
+
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'A user with that email already exists.' });
+    }
+
+    await createUser(email, password, false, false);
+    const token = createAuthToken({ email: email.toLowerCase(), isAdmin: false });
+
+    res.status(201).json({
+      token,
+      user: {
+        email: email.toLowerCase(),
+        isAdmin: false,
+        passwordResetRequired: false
+      }
+    });
+  } catch (err) {
+    console.error('Registration error:', err);
+    res.status(500).json({ error: 'Unable to create account.' });
+  }
+}
+
+module.exports = {
+  login,
+  register
+};
