@@ -1,5 +1,6 @@
 const dayTitle = document.getElementById('day-title');
 const dayCopy = document.getElementById('day-copy');
+const dayRingsContainer = document.getElementById('day-rings-container');
 const daySummaryGrid = document.getElementById('day-summary-grid');
 const mealTabs = document.getElementById('meal-tabs');
 const mealPanel = document.getElementById('meal-panel');
@@ -58,6 +59,100 @@ let catalogItems = [];
 let activeAddMealName = null;
 let currentDayDate = null;
 let isSavingItem = false;
+
+function normalizeUnitForSelect(unit) {
+  const normalized = String(unit || 'g').toLowerCase();
+
+  if (['g', 'gram', 'grams'].includes(normalized)) {
+    return 'g';
+  }
+
+  if (['kg', 'kilogram', 'kilograms'].includes(normalized)) {
+    return 'kg';
+  }
+
+  if (['oz', 'ounce', 'ounces'].includes(normalized)) {
+    return 'oz';
+  }
+
+  if (['ml', 'milliliter', 'milliliters'].includes(normalized)) {
+    return 'ml';
+  }
+
+  if (['unit', 'units', 'quantity'].includes(normalized)) {
+    return 'unit';
+  }
+
+  return 'g';
+}
+
+function safeNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function renderRings(data, targets) {
+  // data has totals: { calories, protein, carbs, fat }
+  // targets has: { targetCalories, protein: { grams }, carbs: { grams }, fat: { grams } }
+  
+  if (!dayRingsContainer) return;
+
+  if (!targets) {
+    dayRingsContainer.innerHTML = '';
+    return;
+  }
+
+  const todayCalories = safeNumber(data?.totals?.calories || 0);
+  const todayProtein = safeNumber(data?.totals?.protein || 0);
+  const todayCarbs = safeNumber(data?.totals?.carbs || 0);
+  const todayFat = safeNumber(data?.totals?.fat || 0);
+
+  function createRingHTML(label, percent, valueLabel, color = 'var(--accent)') {
+    const pct = Math.max(0, Math.min(100, Math.round(percent)));
+    const radius = 56;
+    const stroke = 12;
+    const circumference = 2 * Math.PI * radius;
+    const dash = (pct / 100) * circumference;
+
+    const iconMap = {
+      'Calories': '🔥',
+      'Protein': '🥩',
+      'Carbs': '🍞',
+      'Fat': '🥑'
+    };
+
+    const icon = iconMap[label] || '';
+
+    return `
+      <div class="progress-ring-card">
+        <svg class="progress-ring" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+          <g transform="translate(70,70)">
+            <circle r="${radius}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${stroke}" />
+            <circle r="${radius}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round"
+              stroke-dasharray="${dash} ${circumference - dash}" transform="rotate(-90)" />
+          </g>
+        </svg>
+        <div class="progress-ring-label">
+          <div class="progress-ring-percent">${pct}%</div>
+          <div class="progress-ring-title"><span class="metric-icon">${icon}</span> ${label}</div>
+          <div class="progress-ring-sub">${valueLabel}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  const pctCalories = targets.targetCalories ? (todayCalories / targets.targetCalories) * 100 : 0;
+  const pctProtein = targets.protein?.grams ? (todayProtein / targets.protein.grams) * 100 : 0;
+  const pctCarbs = targets.carbs?.grams ? (todayCarbs / targets.carbs.grams) * 100 : 0;
+  const pctFat = targets.fat?.grams ? (todayFat / targets.fat.grams) * 100 : 0;
+
+  dayRingsContainer.innerHTML = `
+    ${createRingHTML('Calories', pctCalories, `${Math.round(todayCalories)} / ${targets.targetCalories} kcal`, 'var(--accent)')}
+    ${createRingHTML('Protein', pctProtein, `${Math.round(todayProtein)} / ${targets.protein?.grams || 0} g`, 'var(--accent-2)')}
+    ${createRingHTML('Carbs', pctCarbs, `${Math.round(todayCarbs)} / ${targets.carbs?.grams || 0} g`, 'var(--success)')}
+    ${createRingHTML('Fat', pctFat, `${Math.round(todayFat)} / ${targets.fat?.grams || 0} g`, 'var(--danger)')}
+  `;
+}
 
 function normalizeUnitForSelect(unit) {
   const normalized = String(unit || 'g').toLowerCase();
@@ -586,15 +681,57 @@ async function loadDayDetails() {
 
     console.log("DAY DETAILS RESPONSE:", data);
 
-    // ✅ DIRECT USE (NO NORMALIZATION)
+    // Fetch user profile and targets for progress rings
+    let targets = null;
+    try {
+      const profileResp = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+      if (profileResp.ok) {
+        const profile = await profileResp.json();
+        
+        const weightKg = safeNumber(profile.weight_kg || profile.weightKg);
+        const heightCm = safeNumber(profile.height_cm || profile.heightCm);
+        
+        const dob = profile.dateOfBirth || profile.date_of_birth || null;
+        let age = 30;
+        if (dob) {
+          const yy = new Date(dob);
+          if (!Number.isNaN(yy.getTime())) {
+            age = new Date().getFullYear() - yy.getFullYear();
+          }
+        }
+
+        const payload = {
+          sex: (profile.gender || profile.sex || 'male'),
+          weightKg: weightKg,
+          heightCm: heightCm,
+          age,
+          activityLevel: profile.activityLevel || profile.activity || 'sedentary',
+          goal: profile.goal || 'maintain weight'
+        };
+
+        const targetsResp = await auth.authFetch(`${API_BASE_URL}/api/targets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (targetsResp.ok) {
+          targets = await targetsResp.json();
+        }
+      }
+    } catch (err) {
+      console.error('Targets/profile fetch failed:', err);
+    }
+
+    // ✅ RENDER RINGS WITH TARGETS
+    renderRings(data, targets);
     renderSummary(data);
     renderMealPanels(data);
 
   } catch (error) {
     console.error(error);
 
-    dayCopy.textContent = 'Unable to load this day’s meal details right now.';
-    daySummaryGrid.innerHTML = '';
+    dayCopy.textContent = 'Unable to load this day’s meal details right now.';    dayRingsContainer.innerHTML = '';    daySummaryGrid.innerHTML = '';
     mealTabs.innerHTML = '';
     mealPanel.innerHTML = `
       <div class="meal-panel-card">
