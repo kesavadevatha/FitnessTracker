@@ -4,6 +4,7 @@ const userController = require('../controllers/userController');
 const foodController = require('../controllers/foodController');
 const mealController = require('../controllers/mealController');
 const trackerController = require('../controllers/trackerController');
+const nutritionController = require('../controllers/nutritionController');
 const { authenticateRequest } = require('../utils/auth');
 
 const router = express.Router();
@@ -29,5 +30,8 @@ router.get('/api/tracker', authenticateRequest, trackerController.getTracker);
 router.get('/api/login', trackerController.loginStatus);
 router.get('/api/day-detail', trackerController.getAdminDayDetail);
 router.get('/api/day-details', authenticateRequest, trackerController.getDayDetails);
+
+// Nutrition targets
+router.post('/api/targets', nutritionController.calculateTargets);
 
 module.exports = router;
