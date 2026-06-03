@@ -1,9 +1,9 @@
 const ACTIVITY_FACTORS = {
-  sedentary: 1.2,
-  light: 1.375,
-  moderate: 1.55,
-  active: 1.725,
-  athlete: 1.9
+  sedentary: 1.15,
+  light: 1.3,
+  moderate: 1.5,
+  active: 1.7,
+  athlete: 1.85
 };
 
 const GOAL_CALORIE_ADJUST = {
