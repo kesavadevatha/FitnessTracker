@@ -314,25 +314,25 @@ function renderCards(entries) {
 
   metricsGrid.innerHTML = `
     <article class="metric-card">
-      <p class="metric-name">Calories</p>
+      <p class="metric-name"><span class="metric-icon">🔥</span>Calories</p>
       <p class="metric-total">${formatUnit('Calories', todayCalories)}</p>
       <p class="metric-average">Today's total</p>
       <p class="metric-meta">${mealsToday === 0 ? 'No meals logged today' : `${mealsToday} meal${mealsToday === 1 ? '' : 's'} today`}</p>
     </article>
     <article class="metric-card">
-      <p class="metric-name">Protein</p>
+      <p class="metric-name"><span class="metric-icon">🥩</span>Protein</p>
       <p class="metric-total">${formatUnit('Protein', todayProtein)}</p>
       <p class="metric-average">Today's total</p>
       <p class="metric-meta">Current day intake</p>
     </article>
     <article class="metric-card">
-      <p class="metric-name">Carbs</p>
+      <p class="metric-name"><span class="metric-icon">🍞</span>Carbs</p>
       <p class="metric-total">${formatUnit('Carbs', todayCarbs)}</p>
       <p class="metric-average">Today's total</p>
       <p class="metric-meta">Current day intake</p>
     </article>
     <article class="metric-card">
-      <p class="metric-name">Fat</p>
+      <p class="metric-name"><span class="metric-icon">🥑</span>Fat</p>
       <p class="metric-total">${formatUnit('Fat', todayFat)}</p>
       <p class="metric-average">Today's total</p>
       <p class="metric-meta">Current day intake</p>
