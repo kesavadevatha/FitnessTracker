@@ -18,6 +18,8 @@ const API_ENDPOINTS = {
   mealLog: `${API_BASE_URL}/api/meal-log`
 };
 
+API_ENDPOINTS.targets = `${API_BASE_URL}/api/targets`;
+
 if (window.auth) {
   auth.requireLogin();
 }
@@ -288,63 +290,102 @@ function renderMealShowcase(entries) {
 function renderCards(entries) {
   renderMealShowcase(entries);
 
+  // renderCards may be called with entries and a pre-fetched targets object
+  // If targets are not available, we'll render plain metric cards as before.
+  const args = Array.from(arguments);
+  const targets = args.length > 1 ? args[1] : null;
+
   const todayKey = formatDateKey(new Date());
   const todayEntries = entries.filter((entry) => getTrackerDateKey(entry.TRACK_DATE) === todayKey);
-  const todayEntry = todayEntries.reduce((totals, entry) => ({
-    TRACK_DATE: todayKey,
-    calories: totals.calories + safeNumber(entry.calories),
-    protein: totals.protein + safeNumber(entry.protein),
-    carbohydrates: totals.carbohydrates + safeNumber(entry.carbohydrates ?? entry.CARBS),
-    fat: totals.fat + safeNumber(entry.fat),
-    entry_count: totals.entry_count + 1
-  }), {
-    TRACK_DATE: todayKey,
-    calories: 0,
-    protein: 0,
-    carbohydrates: 0,
-    fat: 0,
-    entry_count: 0
-  });
+  const todayTotals = todayEntries.reduce((totals, entry) => {
+    totals.calories += safeNumber(entry.calories);
+    totals.protein += safeNumber(entry.protein);
+    totals.carbohydrates += safeNumber(entry.carbohydrates ?? entry.CARBS);
+    totals.fat += safeNumber(entry.fat);
+    totals.entry_count += 1;
+    return totals;
+  }, { TRACK_DATE: todayKey, calories: 0, protein: 0, carbohydrates: 0, fat: 0, entry_count: 0 });
 
   if (!entries.length) {
     renderEmptyState();
     return;
   }
 
-  const todayCalories = safeNumber(todayEntry.calories);
-  const todayProtein = safeNumber(todayEntry.protein);
-  const todayCarbs = safeNumber(todayEntry.carbohydrates);
-  const todayFat = safeNumber(todayEntry.fat);
-  const mealsToday = todayEntry.entry_count || 0;
+  const todayCalories = safeNumber(todayTotals.calories);
+  const todayProtein = safeNumber(todayTotals.protein);
+  const todayCarbs = safeNumber(todayTotals.carbohydrates);
+  const todayFat = safeNumber(todayTotals.fat);
+  const mealsToday = todayTotals.entry_count || 0;
   const todayDate = new Date(todayKey);
   const dateLabel = todayDate.toLocaleDateString();
 
-  metricsGrid.innerHTML = `
-    <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🔥</span>Calories</p>
-      <p class="metric-total">${formatUnit('Calories', todayCalories)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">${mealsToday === 0 ? 'No meals logged today' : `${mealsToday} meal${mealsToday === 1 ? '' : 's'} today`}</p>
-    </article>
-    <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🥩</span>Protein</p>
-      <p class="metric-total">${formatUnit('Protein', todayProtein)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">Current day intake</p>
-    </article>
-    <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🍞</span>Carbs</p>
-      <p class="metric-total">${formatUnit('Carbs', todayCarbs)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">Current day intake</p>
-    </article>
-    <article class="metric-card">
-      <p class="metric-name"><span class="metric-icon">🥑</span>Fat</p>
-      <p class="metric-total">${formatUnit('Fat', todayFat)}</p>
-      <p class="metric-average">Today's total</p>
-      <p class="metric-meta">Current day intake</p>
-    </article>
-  `;
+  // If targets exist, render progress rings for each macro and calories
+  if (targets) {
+    function createRingHTML(label, percent, valueLabel, color = 'var(--accent)') {
+      const pct = Math.max(0, Math.min(100, Math.round(percent)));
+      const radius = 56;
+      const stroke = 12;
+      const circumference = 2 * Math.PI * radius;
+      const dash = (pct / 100) * circumference;
+
+      return `
+        <div class="progress-ring-card">
+          <svg class="progress-ring" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+            <g transform="translate(70,70)">
+              <circle r="${radius}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${stroke}" />
+              <circle r="${radius}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round"
+                stroke-dasharray="${dash} ${circumference - dash}" transform="rotate(-90)" />
+            </g>
+          </svg>
+          <div class="progress-ring-label">
+            <div class="progress-ring-percent">${pct}%</div>
+            <div class="progress-ring-title">${label}</div>
+            <div class="progress-ring-sub">${valueLabel}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    const pctCalories = targets.targetCalories ? (todayCalories / targets.targetCalories) * 100 : 0;
+    const pctProtein = targets.protein?.grams ? (todayProtein / targets.protein.grams) * 100 : 0;
+    const pctCarbs = targets.carbs?.grams ? (todayCarbs / targets.carbs.grams) * 100 : 0;
+    const pctFat = targets.fat?.grams ? (todayFat / targets.fat.grams) * 100 : 0;
+
+    metricsGrid.innerHTML = `
+      ${createRingHTML('Calories', pctCalories, `${Math.round(todayCalories)} / ${targets.targetCalories} kcal`, 'var(--accent)')}
+      ${createRingHTML('Protein', pctProtein, `${Math.round(todayProtein)} / ${targets.protein?.grams || 0} g`, 'var(--accent-2)')}
+      ${createRingHTML('Carbs', pctCarbs, `${Math.round(todayCarbs)} / ${targets.carbs?.grams || 0} g`, 'var(--success)')}
+      ${createRingHTML('Fat', pctFat, `${Math.round(todayFat)} / ${targets.fat?.grams || 0} g`, 'var(--danger)')}
+    `;
+  } else {
+    // fallback to legacy metric cards when targets not available
+    metricsGrid.innerHTML = `
+      <article class="metric-card">
+        <p class="metric-name"><span class="metric-icon">🔥</span>Calories</p>
+        <p class="metric-total">${formatUnit('Calories', todayCalories)}</p>
+        <p class="metric-average">Today's total</p>
+        <p class="metric-meta">${mealsToday === 0 ? 'No meals logged today' : `${mealsToday} meal${mealsToday === 1 ? '' : 's'} today`}</p>
+      </article>
+      <article class="metric-card">
+        <p class="metric-name"><span class="metric-icon">🥩</span>Protein</p>
+        <p class="metric-total">${formatUnit('Protein', todayProtein)}</p>
+        <p class="metric-average">Today's total</p>
+        <p class="metric-meta">Current day intake</p>
+      </article>
+      <article class="metric-card">
+        <p class="metric-name"><span class="metric-icon">🍞</span>Carbs</p>
+        <p class="metric-total">${formatUnit('Carbs', todayCarbs)}</p>
+        <p class="metric-average">Today's total</p>
+        <p class="metric-meta">Current day intake</p>
+      </article>
+      <article class="metric-card">
+        <p class="metric-name"><span class="metric-icon">🥑</span>Fat</p>
+        <p class="metric-total">${formatUnit('Fat', todayFat)}</p>
+        <p class="metric-average">Today's total</p>
+        <p class="metric-meta">Current day intake</p>
+      </article>
+    `;
+  }
 
   dataStatus.textContent = mealsToday > 0
     ? 'Displaying today’s intake progress.'
@@ -387,7 +428,50 @@ async function loadTrackerData() {
 	console.log("TRACKER DATA:", entries);
 	const normalizedEntries = entries.map(normalizeTrackerEntry);
     trackerEntriesCache = normalizedEntries;
-    renderCards(normalizedEntries);
+      // attempt to fetch user profile and targets to render progress rings
+      try {
+        const profileResp = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+        let targets = null;
+
+        if (profileResp.ok) {
+          const profile = await profileResp.json();
+
+          const weightKg = Number(profile.weight) || 0;
+          const heightCm = Number(profile.height) || 0;
+          const dob = profile.dateOfBirth || profile.date_of_birth || null;
+          let age = 30;
+          if (dob) {
+            const yy = new Date(dob);
+            if (!Number.isNaN(yy.getTime())) {
+              age = new Date().getFullYear() - yy.getFullYear();
+            }
+          }
+
+          const payload = {
+            sex: (profile.gender || profile.sex || 'male'),
+            weightKg: weightKg,
+            heightCm: heightCm,
+            age,
+            activityLevel: profile.activityLevel || profile.activity || 'sedentary',
+            goal: profile.goal || 'maintain weight'
+          };
+
+          const targetsResp = await auth.authFetch(API_ENDPOINTS.targets, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (targetsResp.ok) {
+            targets = await targetsResp.json();
+          }
+        }
+
+        renderCards(normalizedEntries, targets);
+      } catch (err) {
+        console.error('Targets/profile fetch failed:', err);
+        renderCards(normalizedEntries);
+      }
   } catch (error) {
     console.error(error);
     dataStatus.textContent = 'Unable to load intake history right now.';
