@@ -450,16 +450,18 @@ function renderCatalog(items) {
 
     return `
       <article class="catalog-card">
-        <div class="catalog-card-header">
-          <h2>${escapeHtml(food.food_name)}</h2>
+        <div class="catalog-card-top">
+          <div class="catalog-card-title-section">
+            <h2 class="catalog-card-title">${escapeHtml(food.food_name)}</h2>
+          </div>
+          <button type="button" class="action-icon-btn action-add" data-add-meal data-food-id="${escapeHtml(food.food_id)}" aria-label="Add ${escapeHtml(food.food_name)} to meal" title="Add to meal">🍽</button>
         </div>
-        <div class="catalog-macros">
-          <div class="macro-pill"><span>Calories</span><strong>${escapeHtml(food.calories_per_serving)}</strong></div>
-          <div class="macro-pill"><span>Protein</span><strong>${escapeHtml(food.protein_per_serving)} g</strong></div>
-          <div class="macro-pill"><span>Carbs</span><strong>${escapeHtml(food.carbs_per_serving)} g</strong></div>
-          <div class="macro-pill"><span>Fat</span><strong>${escapeHtml(food.fat_per_serving)} g</strong></div>
+        <div class="catalog-macros-inline">
+          <span class="macro-inline"><span class="macro-icon">⚡</span> ${escapeHtml(food.calories_per_serving)}</span>
+          <span class="macro-inline"><span class="macro-icon">🥩</span> ${escapeHtml(food.protein_per_serving)}g</span>
+          <span class="macro-inline"><span class="macro-icon">🍞</span> ${escapeHtml(food.carbs_per_serving)}g</span>
+          <span class="macro-inline"><span class="macro-icon">🥑</span> ${escapeHtml(food.fat_per_serving)}g</span>
         </div>
-        <button type="button" class="action-icon-btn action-add action-top-right" data-add-meal data-food-id="${escapeHtml(food.food_id)}" aria-label="Add ${escapeHtml(food.food_name)} to meal" title="Add to meal">🍽</button>
         ${isOwner ? `
           <div class="catalog-actions">
             <button type="button" class="action-icon-btn action-edit" data-edit-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Edit ${escapeHtml(food.food_name)}" title="Edit">✎</button>
