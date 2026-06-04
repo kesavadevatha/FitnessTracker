@@ -178,3 +178,49 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+.modal[aria-hidden="false"] {
+  display: flex;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+}
+.modal-panel {
+  position: relative;
+  max-width: 820px;
+  width: 100%;
+  margin: 24px;
+  z-index: 61;
+}
+.modal .food-catalog-form {
+  border-radius: 14px;
+  padding: 20px;
+}
+.close-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

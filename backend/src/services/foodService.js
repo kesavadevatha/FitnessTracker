@@ -21,11 +21,13 @@ async function getFoodCatalog(search = '') {
   }
 }
 
-async function addFood(foodData) {
+async function addFood(foodData, userEmail) {
   const conn = await getConnection();
 
   try {
-    await conn.query(
+    await conn.query('BEGIN');
+
+    const result = await conn.query(
       `
         INSERT INTO custom.food_catalog
         (
@@ -40,6 +42,7 @@ async function addFood(foodData) {
           notes
         )
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        RETURNING food_id
       `,
       [
         foodData.food_name,
@@ -53,6 +56,24 @@ async function addFood(foodData) {
         foodData.notes
       ]
     );
+
+    const newId = result.rows?.[0]?.food_id;
+
+    if (userEmail && newId) {
+      await conn.query(
+        `
+          INSERT INTO custom.food_catalog_used (food_id, user_email)
+          VALUES ($1, $2)
+        `,
+        [newId, String(userEmail).trim().toLowerCase()]
+      );
+    }
+
+    await conn.query('COMMIT');
+    return newId;
+  } catch (err) {
+    await conn.query('ROLLBACK');
+    throw err;
   } finally {
     conn.release();
   }

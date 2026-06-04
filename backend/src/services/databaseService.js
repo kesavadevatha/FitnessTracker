@@ -48,6 +48,15 @@ async function initTables() {
     `);
 
     await conn.query(`
+      CREATE TABLE IF NOT EXISTS custom.food_catalog_used (
+        id SERIAL PRIMARY KEY,
+        food_id INT REFERENCES custom.food_catalog(food_id) ON DELETE CASCADE,
+        user_email TEXT,
+        created_date TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS custom.meal_log (
         meal_log_id SERIAL PRIMARY KEY,
         food_id INT,

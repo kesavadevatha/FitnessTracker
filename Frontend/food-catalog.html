@@ -19,10 +19,17 @@
             <h1>Food Catalog</h1>
             <p class="subcopy">Add the foods you cook or eat often so the intake page can calculate macros from your own database.</p>
           </div>
+          <div class="header-actions">
+            <button id="open-add-item" class="primary-btn">Add Item</button>
+          </div>
         </div>
 
         <div class="entry-grid">
-          <form id="food-catalog-form" class="food-catalog-form">
+          <div id="add-food-modal" class="modal" aria-hidden="true">
+            <div class="modal-backdrop"></div>
+            <div class="modal-panel" role="dialog" aria-modal="true">
+              <button id="close-add-item" class="secondary-btn close-btn" aria-label="Close">×</button>
+              <form id="food-catalog-form" class="food-catalog-form">
             <label>
               <span>Food name</span>
               <input type="text" id="food-name" name="food_name" placeholder="e.g. White rice" required />
@@ -84,7 +91,9 @@
             </div>
 
             <p id="catalog-status" class="form-status" aria-live="polite"></p>
-          </form>
+              </form>
+            </div>
+          </div>
 
           <aside class="catalog-help-card">
             <p class="eyebrow">How to use it</p>

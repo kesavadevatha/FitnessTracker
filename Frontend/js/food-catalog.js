@@ -2,6 +2,10 @@ const form = document.getElementById('food-catalog-form');
 const status = document.getElementById('catalog-status');
 const measurement_type = document.getElementById('measurement-type');
 
+const openBtn = document.getElementById('open-add-item');
+const closeBtn = document.getElementById('close-add-item');
+const modal = document.getElementById('add-food-modal');
+
 const serving_size = document.getElementById('serving-size');
 const serving_size_unit = document.getElementById('serving-size-unit');
 
@@ -30,6 +34,23 @@ function syncServingDefaults() {
 }
 
 measurement_type.addEventListener('change', syncServingDefaults);
+
+function openModal() {
+  if (!modal) return;
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  syncServingDefaults();
+}
+
+function closeModal() {
+  if (!modal) return;
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+if (openBtn) openBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+if (closeBtn) closeBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
+if (modal) modal.addEventListener('click', (e) => { if (e.target === modal.querySelector('.modal-backdrop')) closeModal(); });
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -83,9 +104,9 @@ form.addEventListener('submit', async (event) => {
     }
 
     status.textContent = `Saved "${payload.food_name}". Available in Food Intake now.`;
-
     form.reset();
     syncServingDefaults();
+    closeModal();
   } catch (error) {
     console.error(error);
     status.textContent = error.message || 'Something went wrong while saving.';

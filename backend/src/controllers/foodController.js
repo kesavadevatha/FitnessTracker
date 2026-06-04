@@ -14,8 +14,9 @@ async function getFoodCatalog(req, res) {
 
 async function addFood(req, res) {
   try {
-    await foodService.addFood(req.body);
-    res.json({ message: 'Food added' });
+    const userEmail = req.user && req.user.email;
+    const newId = await foodService.addFood(req.body, userEmail);
+    res.json({ message: 'Food added', food_id: newId });
   } catch (err) {
     console.error('Unable to add food:', err);
     res.status(500).json({ error: 'Unable to add food.' });
