@@ -9,8 +9,11 @@ async function getFoodCatalog(search = '', userEmail = null) {
         SELECT DISTINCT fc.*
         FROM custom.food_catalog fc
         WHERE ($1 = '' OR LOWER(fc.food_name) LIKE LOWER('%' || $1 || '%'))
-          and fc.user_id in ('admin',$2);
-        ORDER BY food_name
+          AND (
+            LOWER(fc.user_id) = LOWER('admin')
+            OR LOWER(fc.user_id) = LOWER($2)
+          )
+        ORDER BY fc.food_name
       `,
       [search, userEmail || '']
     );
@@ -24,47 +27,39 @@ async function addFood(foodData, userEmail) {
   const conn = await getConnection();
 
   try {
-    await conn.query('BEGIN');
+    const result = await conn.query(
+      `
+        INSERT INTO custom.food_catalog
+        (
+          food_name,
+          measurement_type,
+          serving_size,
+          serving_size_unit,
+          calories_per_serving,
+          protein_per_serving,
+          carbs_per_serving,
+          fat_per_serving,
+          notes,
+          user_id
+        )
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+        RETURNING food_id
+      `,
+      [
+        foodData.food_name,
+        foodData.measurement_type,
+        foodData.serving_size,
+        foodData.serving_size_unit,
+        foodData.calories_per_serving,
+        foodData.protein_per_serving,
+        foodData.carbs_per_serving,
+        foodData.fat_per_serving,
+        foodData.notes,
+        String(userEmail || 'admin').trim().toLowerCase()
+      ]
+    );
 
-    if (userEmail) {
-      const result = await conn.query(
-        `
-          INSERT INTO custom.food_catalog
-          (
-            food_name,
-            measurement_type,
-            serving_size,
-            serving_size_unit,
-            calories_per_serving,
-            protein_per_serving,
-            carbs_per_serving,
-            fat_per_serving,
-            notes,
-            user_id
-          )
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,&10)
-          RETURNING food_id
-        `,
-        [
-          foodData.food_name,
-          foodData.measurement_type,
-          foodData.serving_size,
-          foodData.serving_size_unit,
-          foodData.calories_per_serving,
-          foodData.protein_per_serving,
-          foodData.carbs_per_serving,
-          foodData.fat_per_serving,
-          foodData.notes,
-          String(userEmail).trim().toLowerCase()
-        ]
-      );
-    }
-
-    await conn.query('COMMIT');
-    return newId;
-  } catch (err) {
-    await conn.query('ROLLBACK');
-    throw err;
+    return result.rows?.[0]?.food_id;
   } finally {
     conn.release();
   }
@@ -131,7 +126,7 @@ async function findFoodCatalogById(foodId, userEmail = null) {
   const conn = await getConnection();
 
   try {
-    const baseSelect = `
+    let query = `
       SELECT
         fc.food_id,
         fc.food_name,
@@ -144,23 +139,19 @@ async function findFoodCatalogById(foodId, userEmail = null) {
         fc.fat_per_serving,
         fc.notes
       FROM custom.food_catalog fc
+      WHERE fc.food_id = $1
     `;
 
-    let query;
     const params = [foodId];
 
     if (userEmail) {
-      query = `${baseSelect}
-        JOIN custom.food_catalog_used fcu ON fcu.food_id = fc.food_id
-        LEFT JOIN custom.app_user au ON LOWER(au.email) = LOWER(fcu.user_email)
-        WHERE fc.food_id = $1
-          AND (LOWER(fcu.user_email) = LOWER($2) OR au.is_admin = 'Y')
+      query += `
+        AND (
+          LOWER(fc.user_id) = LOWER('admin')
+          OR LOWER(fc.user_id) = LOWER($2)
+        )
       `;
       params.push(userEmail);
-    } else {
-      query = `${baseSelect}
-        WHERE fc.food_id = $1
-      `;
     }
 
     const result = await conn.query(query, params);
