@@ -4,12 +4,27 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  function createRingHTML(label, percent, valueLabel, color = 'var(--accent)') {
+  function getProgressRingColor(metricType, percentage) {
+    const ranges = metricType === 'protein' 
+      ? global.PROGRESS_RING_CONFIG.protein.ranges 
+      : global.PROGRESS_RING_CONFIG.macro.ranges;
+
+    for (const range of ranges) {
+      if (percentage >= range.min && percentage < range.max) {
+        return range.color;
+      }
+    }
+
+    return ranges[ranges.length - 1].color;
+  }
+
+  function createRingHTML(label, percent, valueLabel, metricType = 'macro') {
     const pct = Math.max(0, Math.min(100, Math.round(percent)));
     const radius = 56;
     const stroke = 12;
     const circumference = 2 * Math.PI * radius;
     const dash = (pct / 100) * circumference;
+    const ringColor = getProgressRingColor(metricType, percent);
 
     const iconMap = {
       'Calories': '⚡',
@@ -25,7 +40,7 @@
         <svg class="progress-ring" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
           <g transform="translate(70,70)">
             <circle r="${radius}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${stroke}" />
-            <circle r="${radius}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round"
+            <circle r="${radius}" fill="none" stroke="${ringColor}" stroke-width="${stroke}" stroke-linecap="round"
               stroke-dasharray="${dash} ${circumference - dash}" transform="rotate(-90)" />
           </g>
         </svg>
@@ -58,10 +73,10 @@
 
     if (!hasTargets) {
       container.innerHTML = `
-        ${createRingHTML('Calories', 0, `${Math.round(todayCalories)} kcal`, 'rgba(148,163,184,0.7)')}
-        ${createRingHTML('Protein', 0, `${Math.round(todayProtein)} g`, 'rgba(148,163,184,0.7)')}
-        ${createRingHTML('Carbs', 0, `${Math.round(todayCarbs)} g`, 'rgba(148,163,184,0.7)')}
-        ${createRingHTML('Fat', 0, `${Math.round(todayFat)} g`, 'rgba(148,163,184,0.7)')}
+        ${createRingHTML('Calories', 0, `${Math.round(todayCalories)} kcal`, 'macro')}
+        ${createRingHTML('Protein', 0, `${Math.round(todayProtein)} g`, 'protein')}
+        ${createRingHTML('Carbs', 0, `${Math.round(todayCarbs)} g`, 'macro')}
+        ${createRingHTML('Fat', 0, `${Math.round(todayFat)} g`, 'macro')}
       `;
       return;
     }
@@ -72,10 +87,10 @@
     const pctFat = targets.fat?.grams ? (todayFat / targets.fat.grams) * 100 : 0;
 
     container.innerHTML = `
-      ${createRingHTML('Calories', pctCalories, `${Math.round(todayCalories)} / ${targets.targetCalories} kcal`, 'var(--accent)')}
-      ${createRingHTML('Protein', pctProtein, `${Math.round(todayProtein)} / ${targets.protein?.grams || 0} g`, 'var(--accent-2)')}
-      ${createRingHTML('Carbs', pctCarbs, `${Math.round(todayCarbs)} / ${targets.carbs?.grams || 0} g`, 'var(--success)')}
-      ${createRingHTML('Fat', pctFat, `${Math.round(todayFat)} / ${targets.fat?.grams || 0} g`, 'var(--danger)')}
+      ${createRingHTML('Calories', pctCalories, `${Math.round(todayCalories)} / ${targets.targetCalories} kcal`, 'macro')}
+      ${createRingHTML('Protein', pctProtein, `${Math.round(todayProtein)} / ${targets.protein?.grams || 0} g`, 'protein')}
+      ${createRingHTML('Carbs', pctCarbs, `${Math.round(todayCarbs)} / ${targets.carbs?.grams || 0} g`, 'macro')}
+      ${createRingHTML('Fat', pctFat, `${Math.round(todayFat)} / ${targets.fat?.grams || 0} g`, 'macro')}
     `;
   }
 
