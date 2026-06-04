@@ -8,14 +8,9 @@ async function getFoodCatalog(search = '', userEmail = null) {
       `
         SELECT DISTINCT fc.*
         FROM custom.food_catalog fc
-        JOIN custom.food_catalog_used fcu ON fcu.food_id = fc.food_id
-        LEFT JOIN custom.app_user au ON LOWER(au.email) = LOWER(fcu.user_email)
         WHERE ($1 = '' OR LOWER(fc.food_name) LIKE LOWER('%' || $1 || '%'))
-          AND (
-            LOWER(fcu.user_email) = LOWER($2)
-            OR au.is_admin = 'Y'
-          )
-        ORDER BY fc.food_name
+          and fc.user_id in ('admin',$2);
+        ORDER BY food_name
       `,
       [search, userEmail || '']
     );
@@ -31,45 +26,37 @@ async function addFood(foodData, userEmail) {
   try {
     await conn.query('BEGIN');
 
-    const result = await conn.query(
-      `
-        INSERT INTO custom.food_catalog
-        (
-          food_name,
-          measurement_type,
-          serving_size,
-          serving_size_unit,
-          calories_per_serving,
-          protein_per_serving,
-          carbs_per_serving,
-          fat_per_serving,
-          notes
-        )
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-        RETURNING food_id
-      `,
-      [
-        foodData.food_name,
-        foodData.measurement_type,
-        foodData.serving_size,
-        foodData.serving_size_unit,
-        foodData.calories_per_serving,
-        foodData.protein_per_serving,
-        foodData.carbs_per_serving,
-        foodData.fat_per_serving,
-        foodData.notes
-      ]
-    );
-
-    const newId = result.rows?.[0]?.food_id;
-
-    if (userEmail && newId) {
-      await conn.query(
+    if (userEmail) {
+      const result = await conn.query(
         `
-          INSERT INTO custom.food_catalog_used (food_id, user_email)
-          VALUES ($1, $2)
+          INSERT INTO custom.food_catalog
+          (
+            food_name,
+            measurement_type,
+            serving_size,
+            serving_size_unit,
+            calories_per_serving,
+            protein_per_serving,
+            carbs_per_serving,
+            fat_per_serving,
+            notes,
+            user_id
+          )
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,&10)
+          RETURNING food_id
         `,
-        [newId, String(userEmail).trim().toLowerCase()]
+        [
+          foodData.food_name,
+          foodData.measurement_type,
+          foodData.serving_size,
+          foodData.serving_size_unit,
+          foodData.calories_per_serving,
+          foodData.protein_per_serving,
+          foodData.carbs_per_serving,
+          foodData.fat_per_serving,
+          foodData.notes,
+          String(userEmail).trim().toLowerCase()
+        ]
       );
     }
 
