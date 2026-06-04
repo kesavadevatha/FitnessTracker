@@ -17,7 +17,7 @@ router.get('/api/me', userController.getCurrentUser);
 router.post('/api/users', userController.createUser);
 router.put('/api/user/password', authenticateRequest, userController.changePassword);
 
-router.get('/api/food-catalog', authenticateRequest, foodController.getFoodCatalog);
+router.get('/api/food-catalog', foodController.getFoodCatalog);
 router.post('/api/food-catalog', authenticateRequest, foodController.addFood);
 router.put('/api/food-catalog/:food_id', authenticateRequest, foodController.updateFood);
 router.delete('/api/food-catalog/:food_id', authenticateRequest, foodController.deleteFood);
