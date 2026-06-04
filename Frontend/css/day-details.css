@@ -449,7 +449,7 @@ body {
   }
 }
 
-/* --- Progress Ring Styles --- */
+/* --- Progress Battery Styles --- */
 .rings-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -473,19 +473,108 @@ body {
 
 .progress-ring { display:block; }
 
+.battery-graphic {
+  position: relative;
+  width: 140px;
+  max-width: 100%;
+}
+
+.battery-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.battery-svg .battery-shell {
+  fill: none;
+  stroke: rgba(255,255,255,0.16);
+  stroke-width: 3;
+}
+
+.battery-svg .battery-cap,
+.battery-svg .battery-fill-bg,
+.battery-svg .battery-liquid rect,
+.battery-svg .wave {
+  fill: currentColor;
+}
+
+.battery-svg .battery-fill-bg {
+  opacity: 0.16;
+}
+
+.battery-svg .battery-liquid rect {
+  opacity: 0.92;
+}
+
+.battery-svg .wave {
+  opacity: 0.42;
+  animation: battery-wave 3.4s linear infinite;
+}
+
+.battery-svg .wave-front {
+  opacity: 0.72;
+  animation-duration: 4s;
+  animation-direction: reverse;
+}
+
+.battery-center-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.battery-center-label .progress-ring-percent {
+  font-size: 1.3rem;
+}
+
 .progress-ring-label { margin-top: 8px; }
 
 .progress-ring-percent { font-size: 1.25rem; font-weight: 700; color: var(--text); }
 
-.progress-ring-title { color: var(--muted); margin-top: 6px; }
+.progress-ring-title { color: var(--muted); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 0.35rem; }
 
 .progress-ring-sub { color: var(--accent); margin-top: 6px; font-weight:700; }
+
+.battery-card { color: var(--battery-color, #3b82f6); }
+.battery-card.battery-calories { --battery-color: #3b82f6; }
+.battery-card.battery-protein { --battery-color: #ef4444; }
+.battery-card.battery-carbs { --battery-color: #f97316; }
+.battery-card.battery-fat { --battery-color: #22c55e; }
+
+.battery-card.battery-highlight .battery-shell {
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.18));
+}
+
+.battery-card.battery-warning .battery-shell {
+  stroke: rgba(245,158,11,0.9);
+  filter: drop-shadow(0 0 12px rgba(245,158,11,0.24));
+}
+
+.battery-card.battery-overflow .battery-shell {
+  stroke: rgba(239,68,68,0.95);
+  filter: drop-shadow(0 0 18px rgba(239,68,68,0.35));
+}
+
+.battery-card.battery-warning .wave-front,
+.battery-card.battery-warning .wave-back,
+.battery-card.battery-overflow .wave-front,
+.battery-card.battery-overflow .wave-back {
+  opacity: 0.85;
+}
 
 .metric-icon { 
   font-family: "Segoe UI Symbol", "Apple Color Emoji", sans-serif;
   font-size: 1.1em;
   margin-right: 6px;
   display: inline-block;
+}
+
+@keyframes battery-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(-24px); }
 }
 
 @media (max-width:640px) {

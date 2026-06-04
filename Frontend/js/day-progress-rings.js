@@ -4,38 +4,27 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  function getProgressRingColor(metricType, percentage) {
-    // Access from global window object where config is exposed
-    const config = typeof window !== 'undefined' && window.PROGRESS_RING_CONFIG 
-      ? window.PROGRESS_RING_CONFIG 
-      : {};
-    
-    const ranges = metricType === 'protein' 
-      ? config.protein?.ranges 
-      : config.macro?.ranges;
-
-    if (!ranges || !Array.isArray(ranges)) {
-      return 'rgba(148,163,184,0.7)';
-    }
-
-    for (const range of ranges) {
-      if (percentage >= range.min && percentage < range.max) {
-        return range.color;
-      }
-    }
-
-    return ranges[ranges.length - 1]?.color || 'rgba(148,163,184,0.7)';
+  function getBatteryStateClass(percent) {
+    if (percent >= 120) return 'battery-overflow';
+    if (percent >= 100) return 'battery-warning';
+    if (percent >= 80) return 'battery-highlight';
+    return 'battery-normal';
   }
 
-  function createRingHTML(label, percent, valueLabel, metricType = 'macro') {
+  function getMetricColorClass(label) {
+    return `battery-${String(label || '').toLowerCase()}`;
+  }
+
+  function createBatteryHTML(label, percent, valueLabel) {
     const raw = safeNumber(percent);
-    const displayPct = Math.round(raw); // show exact percentage (can be >100)
-    const drawPct = Math.max(0, Math.min(100, raw)); // cap arc drawing at 100%
-    const radius = 56;
-    const stroke = 12;
-    const circumference = 2 * Math.PI * radius;
-    const dash = (drawPct / 100) * circumference;
-    const ringColor = getProgressRingColor(metricType, raw);
+    const displayPct = Math.round(raw);
+    const clampedPercent = Math.max(0, Math.min(200, raw));
+    const fillHeight = (clampedPercent / 100) * 156;
+    const fillOffset = Math.round(12 + 156 - fillHeight);
+    const stateClass = getBatteryStateClass(raw);
+    const metricClass = getMetricColorClass(label);
+    const sanitizedId = String(label || 'metric').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const clipPathId = `battery-clip-${sanitizedId}`;
 
     const iconMap = {
       'Calories': '⚡',
@@ -47,21 +36,44 @@
     const icon = iconMap[label] || '';
 
     return `
-      <div class="progress-ring-card">
-        <svg class="progress-ring" width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
-          <g transform="translate(70,70)">
-            <circle r="${radius}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${stroke}" />
-            <circle r="${radius}" fill="none" stroke="${ringColor}" stroke-width="${stroke}" stroke-linecap="round"
-              stroke-dasharray="${dash} ${circumference - dash}" transform="rotate(-90)" />
-          </g>
-        </svg>
+      <div class="progress-ring-card battery-card ${metricClass} ${stateClass}">
+        <div class="battery-graphic">
+          <svg class="progress-ring battery-svg" viewBox="0 0 80 190" aria-hidden="true" role="img">
+            <defs>
+              <clipPath id="${clipPathId}">
+                <rect x="16" y="12" width="48" height="156" rx="12" ry="12" />
+              </clipPath>
+            </defs>
+
+            <rect class="battery-shell" x="16" y="12" width="48" height="156" rx="12" ry="12" />
+            <rect class="battery-cap" x="28" y="0" width="24" height="10" rx="3" ry="3" />
+
+            <g clip-path="url(#${clipPathId})">
+              <rect class="battery-fill-bg" x="16" y="12" width="48" height="156" />
+              <g class="battery-liquid" transform="translate(0, ${fillOffset})">
+                <rect x="16" y="0" width="48" height="156" />
+                <path class="wave wave-back" d="M16 28 C24 20 32 36 40 28 S56 20 64 28 S72 36 80 28 V 156 H 16 Z" />
+                <path class="wave wave-front" d="M16 26 C24 18 32 34 40 26 S56 18 64 26 S72 34 80 26 V 156 H 16 Z" />
+              </g>
+            </g>
+          </svg>
+          <div class="battery-center-label">
+            <div class="progress-ring-percent">${displayPct}%</div>
+          </div>
+        </div>
         <div class="progress-ring-label">
-          <div class="progress-ring-percent">${displayPct}%</div>
           <div class="progress-ring-title"><span class="metric-icon">${icon}</span> ${label}</div>
           <div class="progress-ring-sub">${valueLabel}</div>
         </div>
       </div>
     `;
+  }
+
+  function formatValueLabel(consumed, target, unit) {
+    if (!Number.isFinite(target) || target <= 0) {
+      return `${Math.round(consumed)} ${unit}`;
+    }
+    return `${Math.round(consumed)} / ${Math.round(target)} ${unit}`;
   }
 
   function renderProgressRings(container, totals = {}, targets = {}) {
@@ -84,24 +96,29 @@
 
     if (!hasTargets) {
       container.innerHTML = `
-        ${createRingHTML('Calories', 0, `${Math.round(todayCalories)} kcal`, 'macro')}
-        ${createRingHTML('Protein', 0, `${Math.round(todayProtein)} g`, 'protein')}
-        ${createRingHTML('Carbs', 0, `${Math.round(todayCarbs)} g`, 'macro')}
-        ${createRingHTML('Fat', 0, `${Math.round(todayFat)} g`, 'macro')}
+        ${createBatteryHTML('Calories', 0, formatValueLabel(todayCalories, 0, 'kcal'))}
+        ${createBatteryHTML('Protein', 0, formatValueLabel(todayProtein, 0, 'g'))}
+        ${createBatteryHTML('Carbs', 0, formatValueLabel(todayCarbs, 0, 'g'))}
+        ${createBatteryHTML('Fat', 0, formatValueLabel(todayFat, 0, 'g'))}
       `;
       return;
     }
 
-    const pctCalories = targets.targetCalories ? (todayCalories / targets.targetCalories) * 100 : 0;
-    const pctProtein = targets.protein?.grams ? (todayProtein / targets.protein.grams) * 100 : 0;
-    const pctCarbs = targets.carbs?.grams ? (todayCarbs / targets.carbs.grams) * 100 : 0;
-    const pctFat = targets.fat?.grams ? (todayFat / targets.fat.grams) * 100 : 0;
+    const targetCalories = safeNumber(targets.targetCalories);
+    const targetProtein = safeNumber(targets.protein?.grams);
+    const targetCarbs = safeNumber(targets.carbs?.grams);
+    const targetFat = safeNumber(targets.fat?.grams);
+
+    const pctCalories = targetCalories ? (todayCalories / targetCalories) * 100 : 0;
+    const pctProtein = targetProtein ? (todayProtein / targetProtein) * 100 : 0;
+    const pctCarbs = targetCarbs ? (todayCarbs / targetCarbs) * 100 : 0;
+    const pctFat = targetFat ? (todayFat / targetFat) * 100 : 0;
 
     container.innerHTML = `
-      ${createRingHTML('Calories', pctCalories, `${Math.round(targets.targetCalories - todayCalories)} kcal more to go`, 'macro')}
-      ${createRingHTML('Protein', pctProtein, `${Math.round(targets.protein?.grams || 0 - todayProtein)} g more to go`, 'protein')}
-      ${createRingHTML('Carbs', pctCarbs, `${Math.round(targets.carbs?.grams || 0 - todayCarbs)} g more to go`, 'macro')}
-      ${createRingHTML('Fat', pctFat, `${Math.round(targets.fat?.grams || 0 - todayFat)} g more to go`, 'macro')}
+      ${createBatteryHTML('Calories', pctCalories, formatValueLabel(todayCalories, targetCalories, 'kcal'))}
+      ${createBatteryHTML('Protein', pctProtein, formatValueLabel(todayProtein, targetProtein, 'g'))}
+      ${createBatteryHTML('Carbs', pctCarbs, formatValueLabel(todayCarbs, targetCarbs, 'g'))}
+      ${createBatteryHTML('Fat', pctFat, formatValueLabel(todayFat, targetFat, 'g'))}
     `;
   }
 
