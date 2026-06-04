@@ -185,6 +185,14 @@ function analyzeMacroIntake({
     fat: calculateMacroRating(intake.fat, target.fat)
   };
 
+  // Calculate percentage completion for each macro
+  const percentages = {
+    calories: round((intake.calories / target.calories) * 100, 1),
+    protein: round((intake.protein / target.protein) * 100, 1),
+    carbs: round((intake.carbs / target.carbs) * 100, 1),
+    fat: round((intake.fat / target.fat) * 100, 1)
+  };
+
   // Overall rating: average of all macro ratings
   const overallRating = round(
     (ratings.calories + ratings.protein + ratings.carbs + ratings.fat) / 4,
@@ -195,6 +203,7 @@ function analyzeMacroIntake({
     intake,
     target,
     remaining,
+    percentages,
     ratings,
     overallRating
   };
