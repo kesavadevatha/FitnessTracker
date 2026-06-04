@@ -94,5 +94,108 @@ function calculateTargets({ sex, weightKg, heightCm, age, activityLevel, goal })
 }
 
 module.exports = {
-  calculateTargets
+  calculateTargets,
+  analyzeMacroIntake
 };
+
+function analyzeMacroIntake({
+  intakeCalories = 0,
+  targetCalories = 2000,
+  intakeProtein = 0,
+  targetProtein = 100,
+  intakeCarbs = 0,
+  targetCarbs = 250,
+  intakeFat = 0,
+  targetFat = 65
+}) {
+  // Validate inputs
+  const intake = {
+    calories: Math.max(0, Number(intakeCalories) || 0),
+    protein: Math.max(0, Number(intakeProtein) || 0),
+    carbs: Math.max(0, Number(intakeCarbs) || 0),
+    fat: Math.max(0, Number(intakeFat) || 0)
+  };
+
+  const target = {
+    calories: Math.max(1, Number(targetCalories) || 2000),
+    protein: Math.max(1, Number(targetProtein) || 100),
+    carbs: Math.max(1, Number(targetCarbs) || 250),
+    fat: Math.max(1, Number(targetFat) || 65)
+  };
+
+  // Calculate remaining
+  const remaining = {
+    calories: Math.max(0, target.calories - intake.calories),
+    protein: Math.max(0, target.protein - intake.protein),
+    carbs: Math.max(0, target.carbs - intake.carbs),
+    fat: Math.max(0, target.fat - intake.fat)
+  };
+
+  // Calculate ratings (0-10 scale)
+  // Ideal: 100% of target
+  // Rating penalizes both under-intake and over-intake
+  function calculateMacroRating(intakeVal, targetVal) {
+    if (targetVal <= 0) return 10;
+    
+    const percentage = (intakeVal / targetVal) * 100;
+    
+    if (percentage >= 90 && percentage <= 110) {
+      // Excellent: 90-110% is considered perfect
+      return 10;
+    }
+    
+    if (percentage >= 75 && percentage < 90) {
+      // Good: 75-90%
+      return 8;
+    }
+    
+    if (percentage > 110 && percentage <= 125) {
+      // Good: 110-125% (slightly over)
+      return 8;
+    }
+    
+    if (percentage >= 60 && percentage < 75) {
+      // Fair: 60-75%
+      return 6;
+    }
+    
+    if (percentage > 125 && percentage <= 150) {
+      // Fair: 125-150% (moderately over)
+      return 6;
+    }
+    
+    if (percentage >= 50 && percentage < 60) {
+      // Poor: 50-60%
+      return 4;
+    }
+    
+    if (percentage > 150 && percentage <= 175) {
+      // Poor: 150-175% (significantly over)
+      return 4;
+    }
+    
+    // Very poor: below 50% or above 175%
+    return 2;
+  }
+
+  const ratings = {
+    calories: calculateMacroRating(intake.calories, target.calories),
+    protein: calculateMacroRating(intake.protein, target.protein),
+    carbs: calculateMacroRating(intake.carbs, target.carbs),
+    fat: calculateMacroRating(intake.fat, target.fat)
+  };
+
+  // Overall rating: average of all macro ratings
+  const overallRating = round(
+    (ratings.calories + ratings.protein + ratings.carbs + ratings.fat) / 4,
+    1
+  );
+
+  return {
+    intake,
+    target,
+    remaining,
+    ratings,
+    overallRating
+  };
+}

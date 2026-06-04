@@ -33,5 +33,7 @@ router.get('/api/day-details', authenticateRequest, trackerController.getDayDeta
 
 // Nutrition targets
 router.post('/api/targets', nutritionController.calculateTargets);
+router.post('/api/macro-analysis', nutritionController.analyzeMacroIntake);
+router.get('/api/macro-analysis', nutritionController.analyzeMacroIntake);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { calculateTargets } = require('../services/nutritionService');
+const { calculateTargets, analyzeMacroIntake } = require('../services/nutritionService');
 
 async function calculateTargetsHandler(req, res) {
   try {
@@ -22,6 +22,30 @@ async function calculateTargetsHandler(req, res) {
   }
 }
 
+async function analyzeMacroIntakeHandler(req, res) {
+  try {
+    const payload = req.body || req.query || {};
+
+    const data = {
+      intakeCalories: Number(payload.intakeCalories || payload.caloriesIntake || 0),
+      targetCalories: Number(payload.targetCalories || payload.caloriesTarget || 2000),
+      intakeProtein: Number(payload.intakeProtein || payload.proteinIntake || 0),
+      targetProtein: Number(payload.targetProtein || payload.proteinTarget || 100),
+      intakeCarbs: Number(payload.intakeCarbs || payload.carbsIntake || 0),
+      targetCarbs: Number(payload.targetCarbs || payload.carbsTarget || 250),
+      intakeFat: Number(payload.intakeFat || payload.fatIntake || 0),
+      targetFat: Number(payload.targetFat || payload.fatTarget || 65)
+    };
+
+    const result = analyzeMacroIntake(data);
+    res.json(result);
+  } catch (err) {
+    console.error('Macro analysis error:', err.message || err);
+    res.status(400).json({ error: err.message || 'Invalid input' });
+  }
+}
+
 module.exports = {
-  calculateTargets: calculateTargetsHandler
+  calculateTargets: calculateTargetsHandler,
+  analyzeMacroIntake: analyzeMacroIntakeHandler
 };
