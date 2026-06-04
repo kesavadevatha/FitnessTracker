@@ -19,8 +19,8 @@
     const raw = safeNumber(percent);
     const displayPct = Math.round(raw);
     const clampedPercent = Math.max(0, Math.min(200, raw));
-    const fillHeight = (clampedPercent / 100) * 156;
-    const fillOffset = Math.round(12 + 156 - fillHeight);
+    const fillHeight = (clampedPercent / 100) * 78;
+    const fillOffset = Math.round(6 + 78 - fillHeight);
     const stateClass = getBatteryStateClass(raw);
     const metricClass = getMetricColorClass(label);
     const sanitizedId = String(label || 'metric').toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -37,33 +37,35 @@
 
     return `
       <div class="progress-ring-card battery-card ${metricClass} ${stateClass}">
-        <div class="battery-graphic">
-          <svg class="progress-ring battery-svg" viewBox="0 0 80 190" aria-hidden="true" role="img">
-            <defs>
-              <clipPath id="${clipPathId}">
-                <rect x="16" y="12" width="48" height="156" rx="12" ry="12" />
-              </clipPath>
-            </defs>
+        <div class="battery-wrapper">
+          <div class="battery-graphic">
+            <svg class="progress-ring battery-svg" viewBox="0 0 40 100" aria-hidden="true" role="img">
+              <defs>
+                <clipPath id="${clipPathId}">
+                  <rect x="8" y="6" width="24" height="78" rx="6" ry="6" />
+                </clipPath>
+              </defs>
 
-            <rect class="battery-shell" x="16" y="12" width="48" height="156" rx="12" ry="12" />
-            <rect class="battery-cap" x="28" y="0" width="24" height="10" rx="3" ry="3" />
+              <rect class="battery-shell" x="8" y="6" width="24" height="78" rx="6" ry="6" />
+              <rect class="battery-cap" x="14" y="0" width="12" height="5" rx="2" ry="2" />
 
-            <g clip-path="url(#${clipPathId})">
-              <rect class="battery-fill-bg" x="16" y="12" width="48" height="156" />
-              <g class="battery-liquid" transform="translate(0, ${fillOffset})">
-                <rect x="16" y="0" width="48" height="156" />
-                <path class="wave wave-back" d="M16 28 C24 20 32 36 40 28 S56 20 64 28 S72 36 80 28 V 156 H 16 Z" />
-                <path class="wave wave-front" d="M16 26 C24 18 32 34 40 26 S56 18 64 26 S72 34 80 26 V 156 H 16 Z" />
+              <g clip-path="url(#${clipPathId})">
+                <rect class="battery-fill-bg" x="8" y="6" width="24" height="78" />
+                <g class="battery-liquid" transform="translate(0, ${fillOffset})">
+                  <rect x="8" y="0" width="24" height="78" />
+                  <path class="wave wave-back" d="M8 14 C12 10 16 18 20 14 S28 10 32 14 S36 18 40 14 V 78 H 8 Z" />
+                  <path class="wave wave-front" d="M8 13 C12 9 16 17 20 13 S28 9 32 13 S36 17 40 13 V 78 H 8 Z" />
+                </g>
               </g>
-            </g>
-          </svg>
-          <div class="battery-center-label">
-            <div class="progress-ring-percent">${displayPct}%</div>
+            </svg>
+            <div class="battery-center-label">
+              <div class="progress-ring-percent">${displayPct}%</div>
+            </div>
           </div>
-        </div>
-        <div class="progress-ring-label">
-          <div class="progress-ring-title"><span class="metric-icon">${icon}</span> ${label}</div>
-          <div class="progress-ring-sub">${valueLabel}</div>
+          <div class="battery-info">
+            <div class="battery-title"><span class="metric-icon">${icon}</span> ${label}</div>
+            <div class="battery-value">${valueLabel}</div>
+          </div>
         </div>
       </div>
     `;

@@ -462,21 +462,26 @@ body {
   background: linear-gradient(180deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
   border: 1px solid rgba(148,163,184,0.08);
   border-radius: 18px;
-  padding: 18px;
+  padding: 12px;
   display: flex;
-  gap: 12px;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  text-align: center;
+  min-height: auto;
+}
+
+.battery-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
 }
 
 .progress-ring { display:block; }
 
 .battery-graphic {
   position: relative;
-  width: 140px;
-  max-width: 100%;
+  width: 60px;
+  flex-shrink: 0;
 }
 
 .battery-svg {
@@ -488,7 +493,7 @@ body {
 .battery-svg .battery-shell {
   fill: none;
   stroke: rgba(255,255,255,0.16);
-  stroke-width: 3;
+  stroke-width: 1.5;
 }
 
 .battery-svg .battery-cap,
@@ -527,7 +532,33 @@ body {
 }
 
 .battery-center-label .progress-ring-percent {
-  font-size: 1.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.battery-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.battery-title {
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.battery-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  word-break: break-word;
 }
 
 .progress-ring-label { margin-top: 8px; }
@@ -544,18 +575,26 @@ body {
 .battery-card.battery-carbs { --battery-color: #f97316; }
 .battery-card.battery-fat { --battery-color: #22c55e; }
 
-.battery-card.battery-highlight .battery-shell {
-  filter: drop-shadow(0 0 10px rgba(255,255,255,0.18));
+.battery-card.battery-highlight .battery-svg .battery-shell {
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.18));
 }
 
-.battery-card.battery-warning .battery-shell {
+.battery-card.battery-warning .battery-svg .battery-shell {
   stroke: rgba(245,158,11,0.9);
-  filter: drop-shadow(0 0 12px rgba(245,158,11,0.24));
+  filter: drop-shadow(0 0 8px rgba(245,158,11,0.24));
 }
 
-.battery-card.battery-overflow .battery-shell {
+.battery-card.battery-warning .battery-value {
+  color: rgba(245,158,11,0.95);
+}
+
+.battery-card.battery-overflow .battery-svg .battery-shell {
   stroke: rgba(239,68,68,0.95);
-  filter: drop-shadow(0 0 18px rgba(239,68,68,0.35));
+  filter: drop-shadow(0 0 12px rgba(239,68,68,0.35));
+}
+
+.battery-card.battery-overflow .battery-value {
+  color: rgba(239,68,68,0.95);
 }
 
 .battery-card.battery-warning .wave-front,
