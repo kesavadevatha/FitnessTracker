@@ -1,6 +1,6 @@
 const { getConnection } = require('../db');
 
-async function getFoodCatalog(search = '') {
+async function getFoodCatalog(search = '', userEmail = null) {
   const conn = await getConnection();
 
   try {

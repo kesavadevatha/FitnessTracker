@@ -6,7 +6,7 @@ async function addMeal(userEmail, mealData) {
   const conn = await getConnection();
 
   try {
-    const food = await foodService.findFoodCatalogById(Number(mealData.food_id));
+    const food = await foodService.findFoodCatalogById(Number(mealData.food_id), userEmail);
     if (!food) {
       const error = new Error('Food not found.');
       error.status = 404;
@@ -79,7 +79,7 @@ async function updateMeal(mealLogId, userEmail, quantity, unit) {
     }
 
     const foodId = mealResult.rows[0].food_id;
-    const food = await foodService.findFoodCatalogById(foodId);
+    const food = await foodService.findFoodCatalogById(foodId, userEmail);
 
     if (!food) {
       const error = new Error('Food entry not found.');
