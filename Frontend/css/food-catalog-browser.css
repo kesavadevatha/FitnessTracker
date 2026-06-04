@@ -139,7 +139,7 @@ body {
 .catalog-card-title {
   margin: 0;
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.3;
   color: var(--text-main);
   word-break: break-word;
@@ -151,26 +151,31 @@ body {
   text-overflow: ellipsis;
 }
 
-.catalog-macros-inline {
+.catalog-macros-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 12px;
+  padding: 6px 0;
+}
+
+.macro-item {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 8px 0;
+  align-items: center;
+  gap: 6px;
   font-size: 0.95rem;
 }
 
-.macro-inline {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--text-main);
-  font-weight: 600;
-  white-space: nowrap;
+.macro-icon {
+  font-size: 0.9rem;
+  opacity: 0.65;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
-.macro-icon {
-  font-size: 1.05rem;
-  display: inline-block;
+.macro-value {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .catalog-meta {

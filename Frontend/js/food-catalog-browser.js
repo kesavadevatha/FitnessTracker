@@ -456,11 +456,11 @@ function renderCatalog(items) {
           </div>
           <button type="button" class="action-icon-btn action-add" data-add-meal data-food-id="${escapeHtml(food.food_id)}" aria-label="Add ${escapeHtml(food.food_name)} to meal" title="Add to meal">🍽</button>
         </div>
-        <div class="catalog-macros-inline">
-          <span class="macro-inline"><span class="macro-icon">⚡</span> ${escapeHtml(food.calories_per_serving)}</span>
-          <span class="macro-inline"><span class="macro-icon">🥩</span> ${escapeHtml(food.protein_per_serving)}g</span>
-          <span class="macro-inline"><span class="macro-icon">🍞</span> ${escapeHtml(food.carbs_per_serving)}g</span>
-          <span class="macro-inline"><span class="macro-icon">🥑</span> ${escapeHtml(food.fat_per_serving)}g</span>
+        <div class="catalog-macros-grid">
+          <div class="macro-item"><span class="macro-icon">⚡</span><span class="macro-value">${escapeHtml(food.calories_per_serving)}</span></div>
+          <div class="macro-item"><span class="macro-icon">🥩</span><span class="macro-value">${escapeHtml(food.protein_per_serving)}g</span></div>
+          <div class="macro-item"><span class="macro-icon">🍞</span><span class="macro-value">${escapeHtml(food.carbs_per_serving)}g</span></div>
+          <div class="macro-item"><span class="macro-icon">🥑</span><span class="macro-value">${escapeHtml(food.fat_per_serving)}g</span></div>
         </div>
         ${isOwner ? `
           <div class="catalog-actions">
