@@ -451,13 +451,8 @@ function renderCatalog(items) {
     return `
       <article class="catalog-card">
         <div class="catalog-card-header">
-          <div>
-            <h2>${escapeHtml(food.food_name)}</h2>
-            <p class="catalog-meta">Type: ${food.measurement_type === 'unit' ? 'quantity' : 'weight'} · Serving: ${formatServing(food)}</p>
-          </div>
-          <span class="badge">${food.measurement_type === 'unit' ? 'quantity' : 'weight'}</span>
+          <h2>${escapeHtml(food.food_name)}</h2>
         </div>
-        <p class="catalog-meta">${escapeHtml(food.notes || 'No note added.')}</p>
         <div class="catalog-macros">
           <div class="macro-pill"><span>Calories</span><strong>${escapeHtml(food.calories_per_serving)}</strong></div>
           <div class="macro-pill"><span>Protein</span><strong>${escapeHtml(food.protein_per_serving)} g</strong></div>
