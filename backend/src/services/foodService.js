@@ -6,14 +6,18 @@ async function getFoodCatalog(search = '') {
   try {
     const result = await conn.query(
       `
-        SELECT *
-        FROM custom.food_catalog
-        WHERE $1 = ''
-          OR LOWER(food_name)
-          LIKE LOWER('%' || $1 || '%')
-        ORDER BY food_name
+        SELECT DISTINCT fc.*
+        FROM custom.food_catalog fc
+        JOIN custom.food_catalog_used fcu ON fcu.food_id = fc.food_id
+        LEFT JOIN custom.app_user au ON LOWER(au.email) = LOWER(fcu.user_email)
+        WHERE ($1 = '' OR LOWER(fc.food_name) LIKE LOWER('%' || $1 || '%'))
+          AND (
+            LOWER(fcu.user_email) = LOWER($2)
+            OR au.is_admin = 'Y'
+          )
+        ORDER BY fc.food_name
       `,
-      [search]
+      [search, userEmail || '']
     );
     return result.rows;
   } finally {
@@ -136,28 +140,43 @@ async function deleteFood(foodId) {
   }
 }
 
-async function findFoodCatalogById(foodId) {
+async function findFoodCatalogById(foodId, userEmail = null) {
   const conn = await getConnection();
 
   try {
-    const result = await conn.query(
-      `
-        SELECT 
-          food_id,
-          food_name,
-          measurement_type,
-          serving_size,
-          serving_size_unit,
-          calories_per_serving,
-          protein_per_serving,
-          carbs_per_serving,
-          fat_per_serving,
-          notes
-        FROM custom.food_catalog
-        WHERE food_id = $1
-      `,
-      [foodId]
-    );
+    const baseSelect = `
+      SELECT
+        fc.food_id,
+        fc.food_name,
+        fc.measurement_type,
+        fc.serving_size,
+        fc.serving_size_unit,
+        fc.calories_per_serving,
+        fc.protein_per_serving,
+        fc.carbs_per_serving,
+        fc.fat_per_serving,
+        fc.notes
+      FROM custom.food_catalog fc
+    `;
+
+    let query;
+    const params = [foodId];
+
+    if (userEmail) {
+      query = `${baseSelect}
+        JOIN custom.food_catalog_used fcu ON fcu.food_id = fc.food_id
+        LEFT JOIN custom.app_user au ON LOWER(au.email) = LOWER(fcu.user_email)
+        WHERE fc.food_id = $1
+          AND (LOWER(fcu.user_email) = LOWER($2) OR au.is_admin = 'Y')
+      `;
+      params.push(userEmail);
+    } else {
+      query = `${baseSelect}
+        WHERE fc.food_id = $1
+      `;
+    }
+
+    const result = await conn.query(query, params);
 
     return result.rows[0] || null;
   } finally {

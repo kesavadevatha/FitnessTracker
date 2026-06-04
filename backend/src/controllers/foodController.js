@@ -2,9 +2,10 @@ const foodService = require('../services/foodService');
 
 async function getFoodCatalog(req, res) {
   const search = req.query.search || '';
+  const userEmail = req.user && req.user.email;
 
   try {
-    const foods = await foodService.getFoodCatalog(search);
+    const foods = await foodService.getFoodCatalog(search, userEmail);
     res.json(foods);
   } catch (err) {
     console.error('Unable to load food catalog:', err);

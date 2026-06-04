@@ -161,15 +161,15 @@ function buildEditModal(food) {
       notes: formData.get('notes') || ''
     };
 
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/food-catalog/${food.food_id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }
-      );
+      try {
+        const response = await auth.authFetch(
+          `${API_BASE_URL}/api/food-catalog/${food.food_id}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }
+        );
 
       const data = await response.json();
 
@@ -406,7 +406,7 @@ function attachActionHandlers() {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/food-catalog/${food.food_id}`, {
+        const response = await auth.authFetch(`${API_BASE_URL}/api/food-catalog/${food.food_id}`, {
           method: 'DELETE'
         });
 
@@ -475,7 +475,7 @@ async function loadCatalog(searchTerm = '') {
   showStatus('Loading catalog...');
 
   try {
-    const response = await fetch(
+    const response = await auth.authFetch(
       `${API_BASE_URL}/api/food-catalog${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ''}`
     );
 
