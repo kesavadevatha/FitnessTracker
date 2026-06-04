@@ -141,7 +141,7 @@ function renderRings(data, targets) {
     const dash = (pct / 100) * circumference;
 
     const iconMap = {
-      'Calories': '🔥',
+      'Calories': '⚡',
       'Protein': '🥩',
       'Carbs': '🍞',
       'Fat': '🥑'
