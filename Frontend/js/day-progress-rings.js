@@ -28,12 +28,14 @@
   }
 
   function createRingHTML(label, percent, valueLabel, metricType = 'macro') {
-    const pct = Math.max(0, Math.min(100, Math.round(percent)));
+    const raw = safeNumber(percent);
+    const displayPct = Math.round(raw); // show exact percentage (can be >100)
+    const drawPct = Math.max(0, Math.min(100, raw)); // cap arc drawing at 100%
     const radius = 56;
     const stroke = 12;
     const circumference = 2 * Math.PI * radius;
-    const dash = (pct / 100) * circumference;
-    const ringColor = getProgressRingColor(metricType, percent);
+    const dash = (drawPct / 100) * circumference;
+    const ringColor = getProgressRingColor(metricType, raw);
 
     const iconMap = {
       'Calories': '⚡',
@@ -54,7 +56,7 @@
           </g>
         </svg>
         <div class="progress-ring-label">
-          <div class="progress-ring-percent">${pct}%</div>
+          <div class="progress-ring-percent">${displayPct}%</div>
           <div class="progress-ring-title"><span class="metric-icon">${icon}</span> ${label}</div>
           <div class="progress-ring-sub">${valueLabel}</div>
         </div>
