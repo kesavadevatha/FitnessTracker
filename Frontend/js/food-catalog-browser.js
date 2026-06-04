@@ -3,8 +3,11 @@ const status = document.getElementById('catalog-status');
 const results = document.getElementById('catalog-results');
 const addItemButton = document.getElementById('open-add-item');
 
+let currentUserEmail = '';
+
 if (window.auth) {
   auth.requireLogin();
+  currentUserEmail = String(auth.getAuthUser()?.email || '').toLowerCase();
 }
 
 let currentCatalog = [];
@@ -442,29 +445,35 @@ function renderCatalog(items) {
     return;
   }
 
-  results.innerHTML = items.map((food) => `
-    <article class="catalog-card">
-      <div class="catalog-card-header">
-        <div>
-          <h2>${escapeHtml(food.food_name)}</h2>
-          <p class="catalog-meta">Type: ${food.measurement_type === 'unit' ? 'quantity' : 'weight'} · Serving: ${formatServing(food)}</p>
+  results.innerHTML = items.map((food) => {
+    const isOwner = String(food.user_id || '').toLowerCase() === currentUserEmail;
+
+    return `
+      <article class="catalog-card">
+        <div class="catalog-card-header">
+          <div>
+            <h2>${escapeHtml(food.food_name)}</h2>
+            <p class="catalog-meta">Type: ${food.measurement_type === 'unit' ? 'quantity' : 'weight'} · Serving: ${formatServing(food)}</p>
+          </div>
+          <span class="badge">${food.measurement_type === 'unit' ? 'quantity' : 'weight'}</span>
         </div>
-        <span class="badge">${food.measurement_type === 'unit' ? 'quantity' : 'weight'}</span>
-      </div>
-      <p class="catalog-meta">${escapeHtml(food.notes || 'No note added.')}</p>
-      <div class="catalog-macros">
-        <div class="macro-pill"><span>Calories</span><strong>${escapeHtml(food.calories_per_serving)}</strong></div>
-        <div class="macro-pill"><span>Protein</span><strong>${escapeHtml(food.protein_per_serving)} g</strong></div>
-        <div class="macro-pill"><span>Carbs</span><strong>${escapeHtml(food.carbs_per_serving)} g</strong></div>
-        <div class="macro-pill"><span>Fat</span><strong>${escapeHtml(food.fat_per_serving)} g</strong></div>
-      </div>
-      <button type="button" class="action-icon-btn action-add action-top-right" data-add-meal data-food-id="${escapeHtml(food.food_id)}" aria-label="Add ${escapeHtml(food.food_name)} to meal" title="Add to meal">🍽</button>
-      <div class="catalog-actions">
-        <button type="button" class="action-icon-btn action-edit" data-edit-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Edit ${escapeHtml(food.food_name)}" title="Edit">✎</button>
-        <button type="button" class="action-icon-btn action-delete" data-delete-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Delete ${escapeHtml(food.food_name)}" title="Delete">🗑</button>
-      </div>
-    </article>
-  `).join('');
+        <p class="catalog-meta">${escapeHtml(food.notes || 'No note added.')}</p>
+        <div class="catalog-macros">
+          <div class="macro-pill"><span>Calories</span><strong>${escapeHtml(food.calories_per_serving)}</strong></div>
+          <div class="macro-pill"><span>Protein</span><strong>${escapeHtml(food.protein_per_serving)} g</strong></div>
+          <div class="macro-pill"><span>Carbs</span><strong>${escapeHtml(food.carbs_per_serving)} g</strong></div>
+          <div class="macro-pill"><span>Fat</span><strong>${escapeHtml(food.fat_per_serving)} g</strong></div>
+        </div>
+        <button type="button" class="action-icon-btn action-add action-top-right" data-add-meal data-food-id="${escapeHtml(food.food_id)}" aria-label="Add ${escapeHtml(food.food_name)} to meal" title="Add to meal">🍽</button>
+        ${isOwner ? `
+          <div class="catalog-actions">
+            <button type="button" class="action-icon-btn action-edit" data-edit-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Edit ${escapeHtml(food.food_name)}" title="Edit">✎</button>
+            <button type="button" class="action-icon-btn action-delete" data-delete-food data-food-id="${escapeHtml(food.food_id)}" aria-label="Delete ${escapeHtml(food.food_name)}" title="Delete">🗑</button>
+          </div>
+        ` : ''}
+      </article>
+    `;
+  }).join('');
 
   attachActionHandlers();
 }
