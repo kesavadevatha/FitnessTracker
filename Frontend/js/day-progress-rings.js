@@ -98,10 +98,10 @@
     const pctFat = targets.fat?.grams ? (todayFat / targets.fat.grams) * 100 : 0;
 
     container.innerHTML = `
-      ${createRingHTML('Calories', pctCalories, `${Math.round(todayCalories)} Kcal Completed / ${Math.round(targets.targetCalories - todayCalories)} kcal more to go`, 'macro')}
-      ${createRingHTML('Protein', pctProtein, `${Math.round(todayProtein)} g Completed / ${Math.round(targets.protein?.grams || 0 - todayProtein)} g more to go`, 'protein')}
-      ${createRingHTML('Carbs', pctCarbs, `${Math.round(todayCarbs)} g Completed / ${Math.round(targets.carbs?.grams || 0 - todayCarbs)} g more to go`, 'macro')}
-      ${createRingHTML('Fat', pctFat, `${Math.round(todayFat)} g Completed / ${Math.round(targets.fat?.grams || 0 - todayFat)} g more to go`, 'macro')}
+      ${createRingHTML('Calories', pctCalories, `${Math.round(targets.targetCalories - todayCalories)} kcal more to go`, 'macro')}
+      ${createRingHTML('Protein', pctProtein, `${Math.round(targets.protein?.grams || 0 - todayProtein)} g more to go`, 'protein')}
+      ${createRingHTML('Carbs', pctCarbs, `${Math.round(targets.carbs?.grams || 0 - todayCarbs)} g more to go`, 'macro')}
+      ${createRingHTML('Fat', pctFat, `${Math.round(targets.fat?.grams || 0 - todayFat)} g more to go`, 'macro')}
     `;
   }
 
