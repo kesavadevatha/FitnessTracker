@@ -1,6 +1,7 @@
 const searchInput = document.getElementById('catalog-search');
 const status = document.getElementById('catalog-status');
 const results = document.getElementById('catalog-results');
+const addItemButton = document.getElementById('open-add-item');
 
 if (window.auth) {
   auth.requireLogin();
@@ -85,6 +86,13 @@ function openModal(title, bodyHtml, submitLabel, onSubmit) {
 
   document.body.appendChild(modal);
   activeModal = modal;
+}
+
+if (addItemButton) {
+  addItemButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    buildAddFoodModal();
+  });
 }
 
 /* -------------------- EDIT FOOD -------------------- */
@@ -236,9 +244,9 @@ function buildMealModal(food) {
     const formData = new FormData(form);
 
     const payload = {
-      foodId: food.food_id,
-      trackDate: formData.get('trackDate'),
-      mealName: formData.get('mealName'),
+      food_id: food.food_id,
+      track_date: formData.get('trackDate'),
+      meal_name: formData.get('mealName'),
       quantity: formData.get('quantity'),
       unit: formData.get('unit'),
       notes: formData.get('notes') || ''
@@ -264,6 +272,114 @@ function buildMealModal(food) {
       showStatus(error.message, true);
     }
   });
+}
+
+function buildAddFoodModal() {
+  const body = `
+    <label>
+      <span>Food name</span>
+      <input type="text" name="food_name" placeholder="e.g. White rice" required />
+    </label>
+    <label>
+      <span>Measurement type</span>
+      <select name="measurement_type" id="add-measurement-type" required>
+        <option value="g">Weight-based (grams)</option>
+        <option value="unit">Quantity-based (units)</option>
+      </select>
+    </label>
+    <div class="form-row">
+      <label>
+        <span>Serving size</span>
+        <input type="number" name="serving_size" id="add-serving-size" min="1" step="0.1" value="100" required />
+      </label>
+      <label>
+        <span>Serving size unit</span>
+        <select name="serving_size_unit" id="add-serving-size-unit" required>
+          <option value="g">grams</option>
+          <option value="ml">ml</option>
+          <option value="kg">kg</option>
+          <option value="oz">oz</option>
+          <option value="unit">units</option>
+        </select>
+      </label>
+    </div>
+    <div class="macro-grid modal-macro-grid">
+      <label>
+        <span>Calories per serving</span>
+        <input type="number" name="calories_per_serving" min="0" step="0.1" value="0" required />
+      </label>
+      <label>
+        <span>Protein per serving</span>
+        <input type="number" name="protein_per_serving" min="0" step="0.1" value="0" required />
+      </label>
+      <label>
+        <span>Carbs per serving</span>
+        <input type="number" name="carbs_per_serving" min="0" step="0.1" value="0" required />
+      </label>
+      <label>
+        <span>Fat per serving</span>
+        <input type="number" name="fat_per_serving" min="0" step="0.1" value="0" required />
+      </label>
+    </div>
+    <label>
+      <span>Notes</span>
+      <textarea name="notes" rows="4" placeholder="Optional notes about this food entry"></textarea>
+    </label>
+  `;
+
+  openModal('Add new food item', body, 'Save food', async (form) => {
+    const formData = new FormData(form);
+
+    const payload = {
+      food_name: formData.get('food_name'),
+      measurement_type: formData.get('measurement_type'),
+      serving_size: formData.get('serving_size'),
+      serving_size_unit: formData.get('serving_size_unit'),
+      calories_per_serving: formData.get('calories_per_serving'),
+      protein_per_serving: formData.get('protein_per_serving'),
+      carbs_per_serving: formData.get('carbs_per_serving'),
+      fat_per_serving: formData.get('fat_per_serving'),
+      notes: formData.get('notes') || ''
+    };
+
+    try {
+      const response = await auth.authFetch(`${API_BASE_URL}/api/food-catalog`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to save food entry.');
+      }
+
+      showStatus(`Added ${payload.food_name} to your catalog.`);
+      closeModal();
+      await loadCatalog(searchInput.value.trim());
+    } catch (error) {
+      showStatus(error.message, true);
+    }
+  });
+
+  const typeField = activeModal.querySelector('#add-measurement-type');
+  const servingInput = activeModal.querySelector('#add-serving-size');
+  const servingUnitField = activeModal.querySelector('#add-serving-size-unit');
+
+  function syncServingDefaults() {
+    if (typeField.value === 'unit') {
+      servingInput.value = '1';
+      servingUnitField.value = 'unit';
+      return;
+    }
+
+    servingInput.value = '100';
+    servingUnitField.value = 'g';
+  }
+
+  typeField.addEventListener('change', syncServingDefaults);
+  syncServingDefaults();
 }
 
 /* -------------------- RENDER -------------------- */
