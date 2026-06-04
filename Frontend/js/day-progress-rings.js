@@ -5,9 +5,18 @@
   }
 
   function getProgressRingColor(metricType, percentage) {
+    // Access from global window object where config is exposed
+    const config = typeof window !== 'undefined' && window.PROGRESS_RING_CONFIG 
+      ? window.PROGRESS_RING_CONFIG 
+      : {};
+    
     const ranges = metricType === 'protein' 
-      ? global.PROGRESS_RING_CONFIG.protein.ranges 
-      : global.PROGRESS_RING_CONFIG.macro.ranges;
+      ? config.protein?.ranges 
+      : config.macro?.ranges;
+
+    if (!ranges || !Array.isArray(ranges)) {
+      return 'rgba(148,163,184,0.7)';
+    }
 
     for (const range of ranges) {
       if (percentage >= range.min && percentage < range.max) {
@@ -15,7 +24,7 @@
       }
     }
 
-    return ranges[ranges.length - 1].color;
+    return ranges[ranges.length - 1]?.color || 'rgba(148,163,184,0.7)';
   }
 
   function createRingHTML(label, percent, valueLabel, metricType = 'macro') {

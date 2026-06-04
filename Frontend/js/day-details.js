@@ -655,14 +655,14 @@ async function loadDayDetails() {
     renderMealPanels(data);
 
   } catch (error) {
-    console.error(error);
+    console.error('LoadDayDetails error:', error);
 
-    dayCopy.textContent = 'Unable to load this day’s meal details right now.';
+    dayCopy.textContent = 'Unable to load this day\u2019s meal details right now.';
     dayRingsContainer.innerHTML = '';
     mealTabs.innerHTML = '';
     mealPanel.innerHTML = `
       <div class="meal-panel-card">
-        <p class="empty-state">Unable to load the selected day’s meal details.</p>
+        <p class="empty-state">Unable to load the selected day's meal details. ${error.message || 'Please try again.'}</p>
       </div>
     `;
   }

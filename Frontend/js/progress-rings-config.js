@@ -26,27 +26,12 @@ const PROGRESS_RING_CONFIG = {
   }
 };
 
-/**
- * Get color for a progress ring based on metric type and percentage
- * @param {string} metricType - 'protein', 'calories', 'carbs', or 'fat'
- * @param {number} percentage - The progress percentage (0-100+)
- * @returns {string} - CSS color string
- */
-function getProgressRingColor(metricType, percentage) {
-  const ranges = metricType === 'protein' 
-    ? PROGRESS_RING_CONFIG.protein.ranges 
-    : PROGRESS_RING_CONFIG.macro.ranges;
-
-  for (const range of ranges) {
-    if (percentage >= range.min && percentage < range.max) {
-      return range.color;
-    }
-  }
-
-  return ranges[ranges.length - 1].color;
+// Expose on global window object for use in other files
+if (typeof window !== 'undefined') {
+  window.PROGRESS_RING_CONFIG = PROGRESS_RING_CONFIG;
 }
 
 // Export for use in other files
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { PROGRESS_RING_CONFIG, getProgressRingColor };
+  module.exports = { PROGRESS_RING_CONFIG };
 }
