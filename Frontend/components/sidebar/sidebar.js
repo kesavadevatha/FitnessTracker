@@ -11,6 +11,14 @@ sidebarRoot.classList.add('collapsed');
 const dashboardView = document.getElementById('dashboard-view');
 const reportsView = document.getElementById('reports-view');
 let currentView = dashboardView ? 'dashboard' : 'food-intake';
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('theme', theme);
+}
+
+applyTheme(currentTheme);
 
 function toggleView(viewId) {
   if (!dashboardView || !reportsView) {
@@ -72,6 +80,9 @@ function renderSidebar() {
             <span>Control panel</span>
           </div>
         </div>
+        <button class="sidebar-theme-toggle" type="button" aria-label="Toggle color theme">
+          ${currentTheme === 'dark' ? '☀️' : '🌙'}
+        </button>
       </div>
 
       <nav class="sidebar-nav" aria-label="Sidebar">
@@ -125,6 +136,15 @@ function renderSidebar() {
     sidebarRoot.classList.toggle('collapsed');
     renderSidebar();
   });
+
+  const themeButton = sidebarRoot.querySelector('.sidebar-theme-toggle');
+  if (themeButton) {
+    themeButton.addEventListener('click', () => {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(currentTheme);
+      renderSidebar();
+    });
+  }
 
   sidebarRoot.querySelectorAll('.sidebar-link').forEach((button) => {
     button.addEventListener('click', () => {
