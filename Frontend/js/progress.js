@@ -10,6 +10,21 @@ if (window.auth) {
   auth.requireLogin();
 }
 
+let userTargetDailyCalorie = 2000; // default fallback
+
+async function fetchUserTargetCalorie() {
+  try {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/user`);
+    if (!response.ok) {
+      return;
+    }
+    const userData = await response.json();
+    userTargetDailyCalorie = userData.targetDailyCalorie || userData.target_daily_calorie || 2000;
+  } catch (error) {
+    console.error('Failed to fetch user target calorie:', error);
+  }
+}
+
 function formatInputDate(value) {
   if (!value) {
     return '';
@@ -240,12 +255,17 @@ function renderProgress(data, startDate, endDate) {
   const averageCarbs = days > 0 ? formatNumber(totalCarbs / days) : '0';
   const averageFat = days > 0 ? formatNumber(totalFat / days) : '0';
 
+  const totalTargetCalories = days * userTargetDailyCalorie;
+  const totalDeficit = totalTargetCalories - totalCalories;
+  const averageDeficit = days > 0 ? formatNumber(totalDeficit / days) : '0';
+
   progressCards.innerHTML = `
     ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`, '⚡')}
     ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `Average ${averageProtein} g/day`, '🥩')}
     ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `Average ${averageCarbs} g/day`, '🍞')}
     ${buildCard('Fat', `${formatNumber(totalFat)} g`, `Average ${averageFat} g/day`, '🥑')}
     ${buildCard('Streak', `${days} days`, 'Active tracking streak', '🔥')}
+    ${buildCard('Maintained Calorie Deficit', `${formatNumber(totalDeficit)} kcal`, `Average ${averageDeficit} kcal/day deficit`, '⬇️')}
   `;
 
   renderReportCards(dailyTotals);
@@ -311,6 +331,7 @@ async function fetchProgress(startDate, endDate) {
 
 async function loadInitialProgress() {
   progressFeedback.textContent = 'Loading available progress...';
+  await fetchUserTargetCalorie();
   await fetchProgress();
 }
 
