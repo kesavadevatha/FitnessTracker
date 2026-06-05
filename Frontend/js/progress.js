@@ -132,6 +132,34 @@ function renderReportCards(dailyTotals) {
     return dayScore > currentBestScore ? day : best;
   }, null);
 
+  const bestCaloriesDay = dailyTotals.reduce((best, day) => {
+    if (!best) {
+      return day;
+    }
+    return day.calories > best.calories ? day : best;
+  }, null);
+  
+  const bestProteinDay = dailyTotals.reduce((best, day) => {
+    if (!best) {
+      return day;
+    }
+    return day.protein > best.protein ? day : best;
+  }, null);
+
+  const bestCarbsDay = dailyTotals.reduce((best, day) => {
+    if (!best) {
+      return day;
+    }
+    return day.carbs > best.carbs ? day : best;
+  }, null);
+
+  const bestFatDay = dailyTotals.reduce((best, day) => {
+    if (!best) {
+      return day;
+    }
+    return day.fat > best.fat ? day : best;
+  }, null);
+
   weekReportCard.innerHTML = buildReportBlock('Past week progress report', [
     ['Total calories', `${formatNumber(weekTotals.calories)} kcal`],
     ['Total protein', `${formatNumber(weekTotals.protein)} g`],
@@ -140,10 +168,10 @@ function renderReportCards(dailyTotals) {
   ]);
 
   bestRecordCard.innerHTML = buildReportBlock('All time best records', [
-    ['Highest calories/day', `${formatNumber(bestDay.calories)} kcal`],
-    ['Highest protein/day', `${formatNumber(bestDay.protein)} g`],
-    ['Highest carbs/day', `${formatNumber(bestDay.carbs)} g`],
-    ['Highest fat/day', `${formatNumber(bestDay.fat)} g`],
+    ['Highest calories/day', `${formatNumber(bestCaloriesDay.calories)} kcal on ${bestCaloriesDay.date}`],
+    ['Highest protein/day', `${formatNumber(bestProteinDay.protein)} g on ${bestProteinDay.date}`],
+    ['Highest carbs/day', `${formatNumber(bestCarbsDay.carbs)} g on ${bestCarbsDay.date}`],
+    ['Highest fat/day', `${formatNumber(bestFatDay.fat)} g on ${bestFatDay.date}`],
   ]);
 }
 
