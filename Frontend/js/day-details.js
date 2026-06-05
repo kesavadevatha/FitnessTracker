@@ -61,16 +61,28 @@ let activeAddMealName = null;
 let currentDayDate = null;
 let isSavingItem = false;
 
+function parseDateStringAsLocal(dateString) {
+  const [year, month, day] = String(dateString).split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function localDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getPreviousDay(dateString) {
-  const date = new Date(`${dateString}T00:00:00`);
+  const date = parseDateStringAsLocal(dateString);
   date.setDate(date.getDate() - 1);
-  return date.toISOString().slice(0, 10);
+  return localDateString(date);
 }
 
 function getNextDay(dateString) {
-  const date = new Date(`${dateString}T00:00:00`);
+  const date = parseDateStringAsLocal(dateString);
   date.setDate(date.getDate() + 1);
-  return date.toISOString().slice(0, 10);
+  return localDateString(date);
 }
 
 function navigateToDay(dateString) {
@@ -175,7 +187,7 @@ function formatDateLabel(dateString) {
     return 'Selected day';
   }
 
-  const date = new Date(`${dateString}T00:00:00`);
+  const date = parseDateStringAsLocal(dateString);
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
