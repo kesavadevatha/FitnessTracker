@@ -97,9 +97,11 @@ function buildReportBlock(title, rows) {
 }
 
 function buildMetricCardGrid(title, rows) {
+  // enforce an explicit 2x2 grid in the returned HTML (inline fallback) and ensure
+  // the value is presented prominently. CSS still controls the final look.
   return `
     <h3 class="report-card-title">${title}</h3>
-    <div class="report-item-grid">
+    <div class="report-item-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;grid-auto-rows:1fr;">
       ${rows
         .map(([label, value]) => {
           const [icon, ...labelText] = String(label).split(' ');
@@ -109,7 +111,7 @@ function buildMetricCardGrid(title, rows) {
                 <span class="report-item-icon">${icon}</span>
                 <span class="report-item-name">${labelText.join(' ')}</span>
               </div>
-              <div class="report-item-value">${value}</div>
+              <div class="report-item-value" aria-hidden="false">${value}</div>
             </div>
           `;
         })
