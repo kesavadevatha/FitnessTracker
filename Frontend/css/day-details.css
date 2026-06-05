@@ -82,6 +82,39 @@ body {
   background: transparent;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-arrow-btn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-arrow-btn:hover {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.nav-arrow-btn:active {
+  transform: translateY(0);
+}
+
 .day-summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

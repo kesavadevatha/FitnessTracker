@@ -22,6 +22,8 @@ const editItemUnitSelect = document.getElementById('edit-item-unit');
 const editItemFeedback = document.getElementById('edit-item-feedback');
 const editItemSubmitButton = document.getElementById('edit-item-submit-btn');
 const closeEditItemModalButton = document.getElementById('close-edit-item-modal');
+const prevDayBtn = document.getElementById('prev-day-btn');
+const nextDayBtn = document.getElementById('next-day-btn');
 const MEAL_ORDER = [
   'Morning drink',
   'Breakfast',
@@ -58,6 +60,25 @@ let catalogItems = [];
 let activeAddMealName = null;
 let currentDayDate = null;
 let isSavingItem = false;
+
+function getPreviousDay(dateString) {
+  const date = new Date(`${dateString}T00:00:00`);
+  date.setDate(date.getDate() - 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function getNextDay(dateString) {
+  const date = new Date(`${dateString}T00:00:00`);
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
+
+function navigateToDay(dateString) {
+  const url = new URL(window.location);
+  url.searchParams.set('date', dateString);
+  window.history.pushState({}, '', url.toString());
+  loadDayDetails();
+}
 
 function normalizeUnitForSelect(unit) {
   const normalized = String(unit || 'g').toLowerCase();
@@ -680,6 +701,22 @@ closeEditItemModalButton.addEventListener('click', closeEditItemModal);
 editItemModal.querySelectorAll('[data-close-modal]').forEach((element) => {
   element.addEventListener('click', closeEditItemModal);
 });
+
+if (prevDayBtn) {
+  prevDayBtn.addEventListener('click', () => {
+    if (currentDayDate) {
+      navigateToDay(getPreviousDay(currentDayDate));
+    }
+  });
+}
+
+if (nextDayBtn) {
+  nextDayBtn.addEventListener('click', () => {
+    if (currentDayDate) {
+      navigateToDay(getNextDay(currentDayDate));
+    }
+  });
+}
 
 loadCatalogItems();
 loadDayDetails();

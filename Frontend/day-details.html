@@ -19,7 +19,11 @@
             <h1 id="day-title">Daily meal details</h1>
             <p id="day-copy" class="subcopy">Loading the selected day...</p>
           </div>
-          <a href="/index.html" class="secondary-btn">Back to dashboard</a>
+          <div class="header-actions">
+            <button id="prev-day-btn" class="nav-arrow-btn nav-arrow-left" type="button" aria-label="Previous day" title="Previous day">←</button>
+            <a href="/index.html" class="secondary-btn">Back to dashboard</a>
+            <button id="next-day-btn" class="nav-arrow-btn nav-arrow-right" type="button" aria-label="Next day" title="Next day">→</button>
+          </div>
         </div>
 
         <div id="day-rings-container" class="rings-container" aria-live="polite"></div>
