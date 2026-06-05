@@ -144,7 +144,7 @@ function buildWeekMetricGrid(title, rows) {
 
 function renderReportCards(dailyTotals) {
   if (dailyTotals.length === 0) {
-    weekReportCard.innerHTML = buildWeekMetricGrid('Past Week Progress', [
+    weekReportCard.innerHTML = buildWeekMetricGrid('📈 Past Week Progress', [
       ['⚡ Total calories', '—'],
       ['🥩 Total protein', '—'],
       ['🍞 Total carbs', '—'],
@@ -208,7 +208,7 @@ function renderReportCards(dailyTotals) {
     return day.fat > best.fat ? day : best;
   }, null);
 
-  weekReportCard.innerHTML = buildWeekMetricGrid('Past Week Progress', [
+  weekReportCard.innerHTML = buildWeekMetricGrid('📈 Past Week Progress', [
     ['⚡ Total calories', `${formatNumber(weekTotals.calories)} kcal`],
     ['🥩 Total protein', `${formatNumber(weekTotals.protein)} g`],
     ['🍞 Total carbs', `${formatNumber(weekTotals.carbs)} g`],
