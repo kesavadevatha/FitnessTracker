@@ -186,10 +186,6 @@
   width: 100%;
 }
 
-.week-panel {
-  /* slightly lighter container to pair with the best-records card */
-}
-
 .report-item-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(220px, 1fr));

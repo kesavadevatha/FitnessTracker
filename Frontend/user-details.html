@@ -6,10 +6,14 @@
   <title>Profile | Fitness Tracker</title>
   <link rel="stylesheet" href="./css/auth.css" />
   <link rel="stylesheet" href="./css/fitness-dashboard.css" />
+  <link rel="stylesheet" href="./components/sidebar/sidebar.css" />
 </head>
 <body>
-  <div class="auth-shell">
-    <div class="auth-card">
+  <div class="app-shell">
+    <aside id="sidebar-root" class="sidebar-shell" aria-label="Sidebar navigation"></aside>
+    <main class="content-shell">
+      <div class="auth-shell">
+        <div class="auth-card">
       <div class="profile-header">
         <div>
           <h1>🏃 My Profile</h1>
@@ -120,11 +124,13 @@
           <button type="submit">Save details</button>
         </div>
       </form>
-    </div>
+        </div>
+    </main>
   </div>
 
   <script src="./js/config.js"></script>
   <script src="./js/auth.js"></script>
   <script src="./js/user-details.js"></script>
+  <script type="module" src="./components/sidebar/sidebar.js"></script>
 </body>
 </html>
