@@ -42,11 +42,11 @@ function formatValue(label, value, unit = '') {
   return `${label}: <strong>${value}${unit}</strong>`;
 }
 
-function buildCard(title, value, subtext, icon = '') {
+function buildCard(title, value, valSubText = '', subtext, icon = '') {
   return `
     <article class="metric-card">
       <p class="metric-name">${icon ? `<span class="metric-icon">${icon}</span> ` : ''}${title}</p>
-      <p class="metric-total">${value}</p>
+      <p class="metric-total">${value}</p><p class="metric-meta">${valSubText}</p>
       <p class="metric-meta">${subtext}</p>
     </article>
   `;
@@ -260,6 +260,7 @@ function renderProgress(data, startDate, endDate) {
   const averageDeficit = days > 0 ? formatNumber(totalDeficit / days) : '0';
 
   progressCards.innerHTML = `
+    ${buildCard('Total calories', `${averageCalories}`, 'Average kcal/day', `${formatNumber(totalCalories)} kcal`, '⚡')}
     ${buildCard('Total calories', `${formatNumber(totalCalories)} kcal`, `Average ${averageCalories} kcal/day`, '⚡')}
     ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `Average ${averageProtein} g/day`, '🥩')}
     ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `Average ${averageCarbs} g/day`, '🍞')}
