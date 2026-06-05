@@ -88,9 +88,11 @@ function summarizeByDate(data) {
 function buildReportBlock(title, rows) {
   return `
     <h3 class="report-card-title">${title}</h3>
-    <div class="report-card-list">
-      ${rows.map(([label, value]) => `<p><strong>${label}:</strong> ${value}</p>`).join('')}
-    </div>
+    <table class="report-table">
+      <tbody>
+        ${rows.map(([label, value]) => `<tr><td class="report-label">${label}</td><td class="report-value">${value}</td></tr>`).join('')}
+      </tbody>
+    </table>
   `;
 }
 
