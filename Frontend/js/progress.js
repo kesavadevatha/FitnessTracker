@@ -96,6 +96,24 @@ function buildReportBlock(title, rows) {
   `;
 }
 
+function buildMetricCardGrid(title, rows) {
+  return `
+    <h3 class="report-card-title">${title}</h3>
+    <div class="report-item-grid">
+      ${rows
+        .map(
+          ([label, value]) => `
+            <div class="report-item-card">
+              <div class="report-item-label">${label}</div>
+              <div class="report-item-value">${value}</div>
+            </div>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
 function renderReportCards(dailyTotals) {
   if (dailyTotals.length === 0) {
     weekReportCard.innerHTML = buildReportBlock('Past week progress report', [
@@ -104,7 +122,7 @@ function renderReportCards(dailyTotals) {
       ['Total carbs', '—'],
       ['Total fat', '—'],
     ]);
-    bestRecordCard.innerHTML = buildReportBlock('All time best records', [
+    bestRecordCard.innerHTML = buildMetricCardGrid('All time best records', [
       ['Highest calories/day', '—'],
       ['Highest protein/day', '—'],
       ['Highest carbs/day', '—'],
@@ -169,7 +187,7 @@ function renderReportCards(dailyTotals) {
     ['Total fat', `${formatNumber(weekTotals.fat)} g`],
   ]);
 
-  bestRecordCard.innerHTML = buildReportBlock('All time best records', [
+  bestRecordCard.innerHTML = buildMetricCardGrid('All time best records', [
     ['Highest calories/day', `${formatNumber(bestCaloriesDay.calories)} kcal`],
     ['Highest protein/day', `${formatNumber(bestProteinDay.protein)} g`],
     ['Highest carbs/day', `${formatNumber(bestCarbsDay.carbs)} g`],
