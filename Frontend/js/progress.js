@@ -120,13 +120,35 @@ function buildMetricCardGrid(title, rows) {
   `;
 }
 
+function buildWeekMetricGrid(title, rows) {
+  return `
+    <h3 class="report-card-title">${title}</h3>
+    <div class="report-item-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;grid-auto-rows:1fr;">
+      ${rows
+        .map(([label, value]) => {
+          const [icon, ...labelText] = String(label).split(' ');
+          return `
+            <div class="report-item-card">
+              <div class="report-item-label">
+                <span class="report-item-icon">${icon}</span>
+                <span class="report-item-name">${labelText.join(' ')}</span>
+              </div>
+              <div class="report-item-value">${value}</div>
+            </div>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
+}
+
 function renderReportCards(dailyTotals) {
   if (dailyTotals.length === 0) {
-    weekReportCard.innerHTML = buildReportBlock('Past week progress report', [
-      ['Total calories', '—'],
-      ['Total protein', '—'],
-      ['Total carbs', '—'],
-      ['Total fat', '—'],
+    weekReportCard.innerHTML = buildWeekMetricGrid('Past Week Progress', [
+      ['⚡ Total calories', '—'],
+      ['🥩 Total protein', '—'],
+      ['🍞 Total carbs', '—'],
+      ['🥑 Total fat', '—'],
     ]);
     bestRecordCard.innerHTML = buildMetricCardGrid('🏆 All Time Best Records', [
       ['⚡ Highest calories', '—'],
@@ -186,11 +208,11 @@ function renderReportCards(dailyTotals) {
     return day.fat > best.fat ? day : best;
   }, null);
 
-  weekReportCard.innerHTML = buildReportBlock('Past week progress report', [
-    ['Total calories', `${formatNumber(weekTotals.calories)} kcal`],
-    ['Total protein', `${formatNumber(weekTotals.protein)} g`],
-    ['Total carbs', `${formatNumber(weekTotals.carbs)} g`],
-    ['Total fat', `${formatNumber(weekTotals.fat)} g`],
+  weekReportCard.innerHTML = buildWeekMetricGrid('Past Week Progress', [
+    ['⚡ Total calories', `${formatNumber(weekTotals.calories)} kcal`],
+    ['🥩 Total protein', `${formatNumber(weekTotals.protein)} g`],
+    ['🍞 Total carbs', `${formatNumber(weekTotals.carbs)} g`],
+    ['🥑 Total fat', `${formatNumber(weekTotals.fat)} g`],
   ]);
 
   bestRecordCard.innerHTML = buildMetricCardGrid('🏆 All Time Best Records', [
