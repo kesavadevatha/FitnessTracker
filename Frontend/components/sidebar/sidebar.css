@@ -21,21 +21,6 @@
   --sidebar-logout-hover: rgba(56, 189, 248, 0.28);
 }
 
-:root[data-theme='light'] {
-  --sidebar-bg: linear-gradient(180deg, rgba(244, 247, 255, 0.98), rgba(248, 250, 255, 0.95));
-  --sidebar-border: rgba(148, 163, 184, 0.22);
-  --sidebar-panel: rgba(255, 255, 255, 0.94);
-  --sidebar-link-hover: rgba(56, 189, 248, 0.12);
-  --sidebar-link-active: linear-gradient(135deg, rgba(56, 189, 248, 0.16), rgba(139, 92, 246, 0.14));
-  --sidebar-text: #0f172a;
-  --sidebar-muted: #475569;
-  --sidebar-brand-bg: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(139, 92, 246, 0.18));
-  --sidebar-button-bg: rgba(255, 255, 255, 0.94);
-  --sidebar-button-border: rgba(148, 163, 184, 0.22);
-  --sidebar-button-text: #0f172a;
-  --sidebar-logout-bg: rgba(56, 189, 248, 0.16);
-  --sidebar-logout-hover: rgba(56, 189, 248, 0.24);
-}
 
 .sidebar-shell {
   width: 100%;
@@ -93,8 +78,7 @@
   color: var(--sidebar-muted);
 }
 
-.sidebar-toggle,
-.sidebar-theme-toggle {
+.sidebar-toggle {
   border: 1px solid var(--sidebar-button-border);
   border-radius: 999px;
   background: var(--sidebar-button-bg);
@@ -104,16 +88,7 @@
   transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.sidebar-theme-toggle {
-  min-width: 48px;
-  height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar-toggle:hover,
-.sidebar-theme-toggle:hover {
+.sidebar-toggle:hover {
   transform: translateY(-1px);
 }
 

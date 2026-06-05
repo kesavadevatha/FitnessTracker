@@ -11,18 +11,6 @@
   --shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
 }
 
-:root[data-theme='light'] {
-  --bg: #f8fafc;
-  --panel: rgba(255, 255, 255, 0.92);
-  --panel-strong: #f1f5f9;
-  --border: rgba(148, 163, 184, 0.22);
-  --text: #0f172a;
-  --muted: #475569;
-  --accent: #0ea5e9;
-  --accent-2: #7c3aed;
-  --success: #16a34a;
-  --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
-}
 
 * {
   box-sizing: border-box;
