@@ -257,9 +257,9 @@
 }
 
 .report-item-value {
-  color: #ffffff;
+  color: rgb(195, 146, 23);
   font-family: 'Outfit', 'Montserrat', sans-serif;
-  font-size: 2rem;
+  font-size: 400px;
   font-weight: 800;
   line-height: 1.1;
 }

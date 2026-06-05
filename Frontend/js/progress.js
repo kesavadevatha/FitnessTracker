@@ -111,7 +111,7 @@ function buildMetricCardGrid(title, rows) {
                 <span class="report-item-icon">${icon}</span>
                 <span class="report-item-name">${labelText.join(' ')}</span>
               </div>
-              <div class="report-item-value" aria-hidden="false">${value}</div>
+              <div class="report-item-value" aria-hidden="false">   ${value}</div>
             </div>
           `;
         })
