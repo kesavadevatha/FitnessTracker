@@ -15,7 +15,7 @@
     return `battery-${String(label || '').toLowerCase()}`;
   }
 
-  function createBatteryHTML(label, percent, valueLabel) {
+  function createBatteryHTML(label, percent, valueLabel, remainingLabel) {
     const raw = safeNumber(percent);
     const displayPct = Math.round(raw);
     const clampedPercent = Math.max(0, Math.min(200, raw));
@@ -65,6 +65,7 @@
           <div class="battery-info">
             <div class="battery-title"><span class="metric-icon">${icon}</span> ${label}</div>
             <div class="battery-value">${valueLabel}</div>
+            <div class="battery-value">${remainingLabel}</div>
           </div>
         </div>
       </div>
@@ -76,6 +77,13 @@
       return `${Math.round(consumed)} ${unit}`;
     }
     return `${Math.round(consumed)} / ${Math.round(target)} ${unit}`;
+  }
+
+  function formatRemainingTarget(consumed, target, unit) {
+    if (!Number.isFinite(target) || target <= 0) {
+      return `${Math.round(consumed)} ${unit}`;
+    }
+    return `${Math.round(target) - Math.round(consumed)} ${unit}`;
   }
 
   function renderProgressRings(container, totals = {}, targets = {}) {
@@ -98,10 +106,10 @@
 
     if (!hasTargets) {
       container.innerHTML = `
-        ${createBatteryHTML('Calories', 0, formatValueLabel(todayCalories, 0, 'kcal'))}
-        ${createBatteryHTML('Protein', 0, formatValueLabel(todayProtein, 0, 'g'))}
-        ${createBatteryHTML('Carbs', 0, formatValueLabel(todayCarbs, 0, 'g'))}
-        ${createBatteryHTML('Fat', 0, formatValueLabel(todayFat, 0, 'g'))}
+        ${createBatteryHTML('Calories', 0, formatValueLabel(todayCalories, 0, 'kcal'),formatRemainingTarget(todayCalories, 0, 'kcal'))}
+        ${createBatteryHTML('Protein', 0, formatValueLabel(todayProtein, 0, 'g'),formatRemainingTarget(todayProtein, 0, 'g'))}
+        ${createBatteryHTML('Carbs', 0, formatValueLabel(todayCarbs, 0, 'g'),formatRemainingTarget(todayCarbs, 0, 'g'))}
+        ${createBatteryHTML('Fat', 0, formatValueLabel(todayFat, 0, 'g'),formatRemainingTarget(todayFat, 0, 'g'))}
       `;
       return;
     }
@@ -117,10 +125,10 @@
     const pctFat = targetFat ? (todayFat / targetFat) * 100 : 0;
 
     container.innerHTML = `
-      ${createBatteryHTML('Calories', pctCalories, formatValueLabel(todayCalories, targetCalories, 'kcal'))}
-      ${createBatteryHTML('Protein', pctProtein, formatValueLabel(todayProtein, targetProtein, 'g'))}
-      ${createBatteryHTML('Carbs', pctCarbs, formatValueLabel(todayCarbs, targetCarbs, 'g'))}
-      ${createBatteryHTML('Fat', pctFat, formatValueLabel(todayFat, targetFat, 'g'))}
+      ${createBatteryHTML('Calories', pctCalories, formatValueLabel(todayCalories, targetCalories, 'kcal'), formatRemainingTarget(todayCalories, targetCalories, 'kcal'))}
+      ${createBatteryHTML('Protein', pctProtein, formatValueLabel(todayProtein, targetProtein, 'g'), formatRemainingTarget(todayProtein, targetProtein, 'g'))}
+      ${createBatteryHTML('Carbs', pctCarbs, formatValueLabel(todayCarbs, targetCarbs, 'g'), formatRemainingTarget(todayCarbs, targetCarbs, 'g'))}
+      ${createBatteryHTML('Fat', pctFat, formatValueLabel(todayFat, targetFat, 'g'), formatRemainingTarget(todayFat, targetFat, 'g'))}
     `;
   }
 
