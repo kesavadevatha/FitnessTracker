@@ -168,10 +168,10 @@ function renderReportCards(dailyTotals) {
   ]);
 
   bestRecordCard.innerHTML = buildReportBlock('All time best records', [
-    ['Highest calories/day', `${formatNumber(bestCaloriesDay.calories)} kcal on ${bestCaloriesDay.date}`],
-    ['Highest protein/day', `${formatNumber(bestProteinDay.protein)} g on ${bestProteinDay.date}`],
-    ['Highest carbs/day', `${formatNumber(bestCarbsDay.carbs)} g on ${bestCarbsDay.date}`],
-    ['Highest fat/day', `${formatNumber(bestFatDay.fat)} g on ${bestFatDay.date}`],
+    ['Highest calories/day', `${formatNumber(bestCaloriesDay.calories)} kcal`],
+    ['Highest protein/day', `${formatNumber(bestProteinDay.protein)} g`],
+    ['Highest carbs/day', `${formatNumber(bestCarbsDay.carbs)} g`],
+    ['Highest fat/day', `${formatNumber(bestFatDay.fat)} g`],
   ]);
 }
 
