@@ -101,14 +101,18 @@ function buildMetricCardGrid(title, rows) {
     <h3 class="report-card-title">${title}</h3>
     <div class="report-item-grid">
       ${rows
-        .map(
-          ([label, value]) => `
+        .map(([label, value]) => {
+          const [icon, ...labelText] = String(label).split(' ');
+          return `
             <div class="report-item-card">
-              <div class="report-item-label">${label}</div>
+              <div class="report-item-label">
+                <span class="report-item-icon">${icon}</span>
+                <span class="report-item-name">${labelText.join(' ')}</span>
+              </div>
               <div class="report-item-value">${value}</div>
             </div>
-          `
-        )
+          `;
+        })
         .join('')}
     </div>
   `;
@@ -122,11 +126,11 @@ function renderReportCards(dailyTotals) {
       ['Total carbs', '—'],
       ['Total fat', '—'],
     ]);
-    bestRecordCard.innerHTML = buildMetricCardGrid('All time best records', [
-      ['Highest calories/day', '—'],
-      ['Highest protein/day', '—'],
-      ['Highest carbs/day', '—'],
-      ['Highest fat/day', '—'],
+    bestRecordCard.innerHTML = buildMetricCardGrid('🏆 All Time Best Records', [
+      ['⚡ Highest calories', '—'],
+      ['🥩 Highest protein', '—'],
+      ['🍞 Highest carbs', '—'],
+      ['🥑 Highest fat', '—'],
     ]);
     return;
   }
@@ -187,11 +191,11 @@ function renderReportCards(dailyTotals) {
     ['Total fat', `${formatNumber(weekTotals.fat)} g`],
   ]);
 
-  bestRecordCard.innerHTML = buildMetricCardGrid('All time best records', [
-    ['Highest calories/day', `${formatNumber(bestCaloriesDay.calories)} kcal`],
-    ['Highest protein/day', `${formatNumber(bestProteinDay.protein)} g`],
-    ['Highest carbs/day', `${formatNumber(bestCarbsDay.carbs)} g`],
-    ['Highest fat/day', `${formatNumber(bestFatDay.fat)} g`],
+  bestRecordCard.innerHTML = buildMetricCardGrid('🏆 All Time Best Records', [
+    ['⚡ Highest calories', `${formatNumber(bestCaloriesDay.calories)} kcal`],
+    ['🥩 Highest protein', `${formatNumber(bestProteinDay.protein)} g`],
+    ['🍞 Highest carbs', `${formatNumber(bestCarbsDay.carbs)} g`],
+    ['🥑 Highest fat', `${formatNumber(bestFatDay.fat)} g`],
   ]);
 }
 
