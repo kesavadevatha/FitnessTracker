@@ -11,17 +11,45 @@ if (window.auth) {
 }
 
 let userTargetDailyCalorie = 2000; // default fallback
+let userTargetProtein = 100; // default fallback
+let userTargetCarbs = 250; // default fallback
+let userTargetFat = 65; // default fallback
 
-async function fetchUserTargetCalorie() {
+async function fetchUserTargets() {
   try {
-    const response = await auth.authFetch(`${API_BASE_URL}/api/user`);
-    if (!response.ok) {
+    // Fetch user profile
+    const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+    if (!profileResponse.ok) {
+      console.warn('Failed to fetch user profile for nutrition targets');
       return;
     }
-    const userData = await response.json();
-    userTargetDailyCalorie = userData.targetDailyCalorie || userData.target_daily_calorie || 2000;
+    const userData = await profileResponse.json();
+
+    // Calculate targets based on user profile
+    const nutritionResponse = await auth.authFetch(`${API_BASE_URL}/api/nutrition/targets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sex: userData.gender,
+        weightKg: userData.weight,
+        heightCm: userData.height,
+        age: new Date().getFullYear() - new Date(userData.dateOfBirth).getFullYear(),
+        activityLevel: userData.activityLevel,
+        goal: userData.goal
+      })
+    });
+
+    if (nutritionResponse.ok) {
+      const targets = await nutritionResponse.json();
+      userTargetDailyCalorie = targets.targetCalories || 2000;
+      userTargetProtein = targets.protein?.grams || 100;
+      userTargetCarbs = targets.carbs?.grams || 250;
+      userTargetFat = targets.fat?.grams || 65;
+    } else {
+      console.warn('Failed to calculate nutrition targets');
+    }
   } catch (error) {
-    console.error('Failed to fetch user target calorie:', error);
+    console.error('Failed to fetch user targets:', error);
   }
 }
 
@@ -54,6 +82,19 @@ function buildCard(title, value, subtext, icon = '') {
 
 function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
+}
+
+function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
+  // Rate each macro as (average / target) * 5, capped at 5
+  const calorieRating = Math.min((averageCalories / userTargetDailyCalorie) * 5, 5);
+  const proteinRating = Math.min((averageProtein / userTargetProtein) * 5, 5);
+  const carbsRating = Math.min((averageCarbs / userTargetCarbs) * 5, 5);
+  const fatRating = Math.min((averageFat / userTargetFat) * 5, 5);
+  
+  // Average all four ratings
+  const overallRating = (calorieRating + proteinRating + carbsRating + fatRating) / 4;
+  
+  return Math.round(overallRating * 10) / 10; // Round to 1 decimal place
 }
 
 function getRangeFromData(data) {
@@ -250,22 +291,26 @@ function renderProgress(data, startDate, endDate) {
   ).size;
   const dailyTotals = summarizeByDate(data);
 
-  const averageCalories = days > 0 ? formatNumber(totalCalories / days) : '0';
-  const averageProtein = days > 0 ? formatNumber(totalProtein / days) : '0';
-  const averageCarbs = days > 0 ? formatNumber(totalCarbs / days) : '0';
-  const averageFat = days > 0 ? formatNumber(totalFat / days) : '0';
+  const averageCalories = days > 0 ? totalCalories / days : 0;
+  const averageProtein = days > 0 ? totalProtein / days : 0;
+  const averageCarbs = days > 0 ? totalCarbs / days : 0;
+  const averageFat = days > 0 ? totalFat / days : 0;
 
   const totalTargetCalories = days * userTargetDailyCalorie;
   const totalDeficit = totalTargetCalories - totalCalories;
-  const averageDeficit = days > 0 ? formatNumber(totalDeficit / days) : '0';
+  const averageDeficit = days > 0 ? totalDeficit / days : 0;
+
+  // Calculate progress rating
+  const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
 
   progressCards.innerHTML = `
-    ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${averageCalories}`, '⚡')}
-    ${buildCard('Protein | g/day', `${formatNumber(totalProtein)} g`, `${averageProtein}`, '🥩')}
-    ${buildCard('Carbs | g/day', `${formatNumber(totalCarbs)} g`, `${averageCarbs}`, '🍞')}
-    ${buildCard('Fat | g/day', `${formatNumber(totalFat)} g`, `${averageFat}`, '🥑')}
+    ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
+    ${buildCard('Protein | g/day', `${formatNumber(totalProtein)} g`, `${formatNumber(averageProtein)}`, '🥩')}
+    ${buildCard('Carbs | g/day', `${formatNumber(totalCarbs)} g`, `${formatNumber(averageCarbs)}`, '🍞')}
+    ${buildCard('Fat | g/day', `${formatNumber(totalFat)} g`, `${formatNumber(averageFat)}`, '🥑')}
     ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
-    ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${averageDeficit}`, '⬇️')}
+    ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${formatNumber(averageDeficit)}`, '⬇️')}
+    ${buildCard('Progress Rating | 5', `${formatNumber(progressRating)}/5`, `Rating: ${formatNumber(progressRating)}`, '⭐')}
   `;
 
   renderReportCards(dailyTotals);
@@ -331,7 +376,7 @@ async function fetchProgress(startDate, endDate) {
 
 async function loadInitialProgress() {
   progressFeedback.textContent = 'Loading available progress...';
-  await fetchUserTargetCalorie();
+  await fetchUserTargets();
   await fetchProgress();
 }
 
