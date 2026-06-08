@@ -79,7 +79,7 @@ function calculateTargets({ sex, weightKg, heightCm, age, activityLevel, goal })
   const targetCalories = Math.round(tdee * (1 + adj));
 
   const adjPublic = getGoalAdjustmentPublic(goal);
-  const targetCaloriesPublic = tdee + adjPublic;
+  const targetCaloriesPublic = Math.round(tdee + adjPublic);
 
   const proteinGPerKg = getProteinPerKg(goal);
   const proteinGrams = round(proteinGPerKg * weightKg, 1);
