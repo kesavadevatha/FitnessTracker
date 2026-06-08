@@ -540,8 +540,8 @@ function exportToExcel(catalogData) {
   ];
 
   // Create workbook and worksheet
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+  const wb = window.XLSX.utils.book_new();
+  const ws = window.XLSX.utils.aoa_to_sheet(worksheetData);
   
   // Set column widths
   ws['!cols'] = [
@@ -554,11 +554,11 @@ function exportToExcel(catalogData) {
     { wch: 14 }  // Serving Unit
   ];
 
-  XLSX.utils.book_append_sheet(wb, ws, 'Food Catalog');
+  window.XLSX.utils.book_append_sheet(wb, ws, 'Food Catalog');
   
   // Generate filename with current date
   const dateStr = new Date().toISOString().split('T')[0];
-  XLSX.writeFile(wb, `Food_Catalog_${dateStr}.xlsx`);
+  window.XLSX.writeFile(wb, `Food_Catalog_${dateStr}.xlsx`);
   
   showStatus(`Downloaded Excel report with ${catalogData.length} food items.`);
 }
