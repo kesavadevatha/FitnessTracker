@@ -326,7 +326,7 @@ function renderProgress(data, startDate, endDate) {
 
   // Calculate progress rating
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
-  const calorieAsynRating = getRangeFromData(averageCalories, userTargetDailyCaloriePublic);
+  const calorieAsynRating = getRating(averageCalories, userTargetDailyCaloriePublic);
 
   progressCards.innerHTML = `
     ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
