@@ -500,10 +500,186 @@ async function loadCatalog(searchTerm = '') {
   }
 }
 
+/* -------------------- EXPORT/DOWNLOAD -------------------- */
+
+async function fetchAllCatalogItems() {
+  try {
+    const response = await auth.authFetch(`${API_BASE_URL}/api/food-catalog`);
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Unable to fetch catalog');
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch catalog:', error);
+    showStatus('Failed to download catalog: ' + error.message, true);
+    return [];
+  }
+}
+
+function exportToExcel(catalogData) {
+  if (!catalogData || catalogData.length === 0) {
+    showStatus('No catalog items to export', true);
+    return;
+  }
+
+  // Prepare data for Excel
+  const worksheetData = [
+    ['Food Name', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Serving Size', 'Serving Unit'],
+    ...catalogData.map(food => [
+      food.food_name,
+      food.calories_per_serving,
+      food.protein_per_serving,
+      food.carbs_per_serving,
+      food.fat_per_serving,
+      food.serving_size,
+      food.serving_size_unit
+    ])
+  ];
+
+  // Create workbook and worksheet
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+  
+  // Set column widths
+  ws['!cols'] = [
+    { wch: 25 }, // Food Name
+    { wch: 12 }, // Calories
+    { wch: 14 }, // Protein
+    { wch: 12 }, // Carbs
+    { wch: 10 }, // Fat
+    { wch: 14 }, // Serving Size
+    { wch: 14 }  // Serving Unit
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Food Catalog');
+  
+  // Generate filename with current date
+  const dateStr = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `Food_Catalog_${dateStr}.xlsx`);
+  
+  showStatus(`Downloaded Excel report with ${catalogData.length} food items.`);
+}
+
+function exportToPDF(catalogData) {
+  if (!catalogData || catalogData.length === 0) {
+    showStatus('No catalog items to export', true);
+    return;
+  }
+
+  const { jsPDF } = window;
+  const doc = new jsPDF();
+  
+  // Set title
+  doc.setFontSize(16);
+  doc.text('Food Catalog Report', 14, 22);
+  
+  // Add date
+  doc.setFontSize(10);
+  const dateStr = new Date().toLocaleDateString();
+  doc.text(`Generated: ${dateStr}`, 14, 30);
+  
+  // Create table data
+  const tableData = catalogData.map(food => [
+    food.food_name,
+    food.calories_per_serving,
+    food.protein_per_serving,
+    food.carbs_per_serving,
+    food.fat_per_serving,
+    food.serving_size,
+    food.serving_size_unit
+  ]);
+
+  // Add table to PDF
+  doc.autoTable({
+    head: [['Food Name', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Serving Size', 'Serving Unit']],
+    body: tableData,
+    startY: 38,
+    theme: 'grid',
+    styles: {
+      fontSize: 9,
+      halign: 'center',
+      valign: 'middle'
+    },
+    headStyles: {
+      fillColor: [66, 133, 244],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold'
+    },
+    margin: { top: 10, right: 10, bottom: 10, left: 10 }
+  });
+
+  // Save PDF
+  const dateStr2 = new Date().toISOString().split('T')[0];
+  doc.save(`Food_Catalog_${dateStr2}.pdf`);
+  
+  showStatus(`Downloaded PDF report with ${catalogData.length} food items.`);
+}
+
+async function handleDownloadClick() {
+  showStatus('Preparing catalog for download...');
+  
+  const catalogData = await fetchAllCatalogItems();
+  
+  if (!catalogData || catalogData.length === 0) {
+    return;
+  }
+
+  // Create a modal with format options
+  const formatModal = document.createElement('div');
+  formatModal.className = 'catalog-modal-overlay';
+  formatModal.innerHTML = `
+    <div class="catalog-modal">
+      <div class="catalog-modal-header">
+        <div>
+          <p class="eyebrow">Download Options</p>
+          <h2>Select Report Format</h2>
+        </div>
+        <button type="button" class="icon-button" data-close-format-modal aria-label="Close modal">✕</button>
+      </div>
+      <div class="catalog-modal-body" style="padding: 24px;">
+        <p style="margin-bottom: 20px;">Choose the format for your food catalog report:</p>
+        <div style="display: flex; gap: 12px;">
+          <button type="button" id="export-excel-btn" class="primary-btn" style="flex: 1;">📊 Export as Excel</button>
+          <button type="button" id="export-pdf-btn" class="primary-btn" style="flex: 1;">📄 Export as PDF</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const closeModal = () => {
+    formatModal.remove();
+  };
+
+  formatModal.querySelector('[data-close-format-modal]').addEventListener('click', closeModal);
+  
+  formatModal.querySelector('#export-excel-btn').addEventListener('click', () => {
+    exportToExcel(catalogData);
+    closeModal();
+  });
+  
+  formatModal.querySelector('#export-pdf-btn').addEventListener('click', () => {
+    exportToPDF(catalogData);
+    closeModal();
+  });
+
+  document.body.appendChild(formatModal);
+}
+
 /* -------------------- EVENTS -------------------- */
 
 searchInput.addEventListener('input', (e) => {
   loadCatalog(e.target.value.trim());
 });
+
+const downloadButton = document.getElementById('download-catalog');
+if (downloadButton) {
+  downloadButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    handleDownloadClick();
+  });
+}
 
 loadCatalog();

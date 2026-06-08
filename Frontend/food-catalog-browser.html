@@ -20,6 +20,7 @@
             <p class="subcopy">Search your saved foods, inspect their serving values, and quickly find the right entry for the food intake page.</p>
           </div>
           <div class="header-actions">
+            <button id="download-catalog" class="secondary-btn" title="Download food catalog as Excel or PDF">📥 Download Report</button>
             <button id="open-add-item" class="primary-btn">Add Item</button>
           </div>
         </div>
@@ -40,6 +41,9 @@
   <script src="./js/config.js"></script>
   <script src="./js/auth.js"></script>
   <script type="module" src="./components/sidebar/sidebar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.33/jspdf.plugin.autotable.min.js"></script>
   <script src="./js/food-catalog-browser.js"></script>
 </body>
 </html>
