@@ -10,7 +10,8 @@ if (window.auth) {
   auth.requireLogin();
 }
 
-let userGoal = 'maintain weight'; // default fallback
+let userGoal = 'loss fat & Build muscle'; // default fallback
+let calorieAsynRating = 5; // default fallback
 let userTargetDailyCalorie = 2000; // default fallback
 let userTargetProtein = 100; // default fallback
 let userTargetCarbs = 250; // default fallback
@@ -87,26 +88,30 @@ function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
 }
 
-function getRating(averageCalories, userTargetDailyCalorie) {
+async function getRating(averageCalories, userTargetDailyCalorie) {
+  try {
+    // Fetch user profile
+    const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+    if (!profileResponse.ok) {
+      console.warn('Failed to fetch user profile for nutrition targets');
+      return;
+    }
+    const userData = await profileResponse.json();
+    console.log('User data for rating:', userData);
 
-  console.log('Calculating rating with averageCalories:', averageCalories, 'userTargetDailyCalorie:', userTargetDailyCalorie, 'userGoal:', userGoal);
-  if (userGoal !== 'lose fat & Build muscle') return 5;
+    if (userData.goal !== 'lose fat & Build muscle') return 5;
 
-  const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
+    const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
 
-  if (diff >= 0) {
-    return Math.max(0, 5 - Math.floor(diff / 10));
+    if (diff >= 0) {
+      return Math.max(0, 5 - Math.floor(diff / 10));
+    }
+
+    return Math.max(0, 4 - Math.floor(Math.abs(diff) / 5));
+
+  } catch (error) {
+    console.error('Failed to fetch user targets:', error);
   }
-
-  return Math.max(0, 4 - Math.floor(Math.abs(diff) / 5));
-}
-
-function calculateCalorieAsynRating(averageCalories,userTargetDailyCaloriePublic) {
-
-  if (Number.isNaN(date.getTime())) {
-    return '';
-  }
-  return Math.min((averageCalories / userTargetDailyCaloriePublic) * 5, 5);
 }
 
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
@@ -327,7 +332,7 @@ function renderProgress(data, startDate, endDate) {
 
   // Calculate progress rating
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
-  const calorieAsynRating = getRating(averageCalories, userTargetDailyCaloriePublic);
+  calorieAsynRating = getRating(averageCalories, userTargetDailyCaloriePublic);
 
   progressCards.innerHTML = `
     ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
