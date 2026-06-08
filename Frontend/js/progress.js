@@ -26,7 +26,7 @@ async function fetchUserTargets() {
     const userData = await profileResponse.json();
 
     // Calculate targets based on user profile
-    const nutritionResponse = await auth.authFetch(`${API_BASE_URL}/api/nutrition/targets`, {
+    const nutritionResponse = await auth.authFetch(`${API_BASE_URL}/api/targets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -377,7 +377,14 @@ async function fetchProgress(startDate, endDate) {
 async function loadInitialProgress() {
   progressFeedback.textContent = 'Loading available progress...';
   await fetchUserTargets();
-  await fetchProgress();
+  
+  // Set endDate to yesterday (t-1) to exclude today's incomplete data
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  await fetchProgress(null, yesterdayStr);
 }
 
 progressForm.addEventListener('submit', async (event) => {
