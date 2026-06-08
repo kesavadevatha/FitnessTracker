@@ -208,4 +208,11 @@ if (backButton) {
   });
 }
 
+const viewTargetsButton = document.getElementById('view-targets-button');
+if (viewTargetsButton) {
+  viewTargetsButton.addEventListener('click', () => {
+    window.location.href = '/user-targets.html';
+  });
+}
+
 initProfilePage();
