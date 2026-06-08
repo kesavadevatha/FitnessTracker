@@ -16,6 +16,16 @@ const GOAL_CALORIE_ADJUST = {
   'healthy lifestyle': 0.0
 };
 
+const GOAL_CALORIE_ADJUST_PUBLIC = {
+  'lose fat': -500,
+  'build muscle': 250,
+  'maintain weight': 0,
+  'gain weight': 500,
+  'body recomposition': -200,
+  'lose fat & build muscle': -300,
+  'healthy lifestyle': 0
+};
+
 const PROTEIN_G_PER_KG = {
   'lose fat': 1.6,
   'build muscle': 1.4,
@@ -43,6 +53,10 @@ function getGoalAdjustment(goal) {
   return GOAL_CALORIE_ADJUST[String(goal || '').toLowerCase()] ?? 0;
 }
 
+function getGoalAdjustmentPublic(goal) {
+  return GOAL_CALORIE_ADJUST_PUBLIC[String(goal || '').toLowerCase()] ?? 0;
+}
+
 function getProteinPerKg(goal) {
   return PROTEIN_G_PER_KG[String(goal || '').toLowerCase()] || 1.8;
 }
@@ -64,6 +78,9 @@ function calculateTargets({ sex, weightKg, heightCm, age, activityLevel, goal })
   const adj = getGoalAdjustment(goal);
   const targetCalories = Math.round(tdee * (1 + adj));
 
+  const adjPublic = getGoalAdjustmentPublic(goal);
+  const targetCaloriesPublic = tdee + adjPublic;
+
   const proteinGPerKg = getProteinPerKg(goal);
   const proteinGrams = round(proteinGPerKg * weightKg, 1);
   const fatGrams = round(FAT_G_PER_KG * weightKg, 1);
@@ -78,6 +95,7 @@ function calculateTargets({ sex, weightKg, heightCm, age, activityLevel, goal })
     bmr: Math.round(bmr),
     tdee: Math.round(tdee),
     targetCalories,
+    targetCaloriesPublic,
     protein: {
       grams: proteinGrams,
       calories: Math.round(proteinCalories)
