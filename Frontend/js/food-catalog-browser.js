@@ -593,6 +593,10 @@ function exportToPDF(catalogData) {
   ]);
 
   console.log(typeof doc.autoTable);
+  if (typeof doc.autoTable !== 'function') {
+    alert('AutoTable plugin not loaded');
+    return;
+  }
   // Add table to PDF
   doc.autoTable({
     head: [['Food Name', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Serving Size', 'Serving Unit']],
