@@ -89,6 +89,7 @@ function formatNumber(value) {
 
 function getRating(averageCalories, userTargetDailyCalorie) {
 
+  console.log('Calculating rating with averageCalories:', averageCalories, 'userTargetDailyCalorie:', userTargetDailyCalorie, 'userGoal:', userGoal);
   if (userGoal !== 'lose fat & Build muscle') return 5;
 
   const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
