@@ -127,24 +127,37 @@ async function fetchUserProgress(userEmail) {
     showStatus('Fetching progress data...', 'loading');
 
     // Get user profile for macro targets
+    console.log('Fetching profile for:', userEmail);
     const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(userEmail)}`);
+    
     if (!profileResponse.ok) {
-      throw new Error('Could not fetch user profile');
+      const errorData = await profileResponse.json().catch(() => ({}));
+      console.error('Profile fetch failed:', profileResponse.status, errorData);
+      throw new Error(`Could not fetch user profile (${profileResponse.status}): ${errorData.error || 'Unknown error'}`);
     }
     const userData = await profileResponse.json();
+    console.log('User data:', userData);
+
+    // Validate user has required profile data
+    if (!userData.gender || !userData.weight || !userData.height || !userData.dateOfBirth || !userData.goal) {
+      throw new Error('User profile is incomplete. Please ensure user has filled in gender, weight, height, date of birth, and fitness goal.');
+    }
 
     // Calculate user's nutrition targets
+    const nutritionPayload = {
+      sex: userData.gender,
+      weightKg: Number(userData.weight),
+      heightCm: Number(userData.height),
+      age: Math.max(1, new Date().getFullYear() - new Date(userData.dateOfBirth).getFullYear()),
+      activityLevel: userData.activityLevel || 'sedentary',
+      goal: userData.goal
+    };
+
+    console.log('Sending nutrition targets request:', nutritionPayload);
     const nutritionResponse = await auth.authFetch(`${API_BASE_URL}/api/targets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sex: userData.gender,
-        weightKg: userData.weight,
-        heightCm: userData.height,
-        age: new Date().getFullYear() - new Date(userData.dateOfBirth).getFullYear(),
-        activityLevel: userData.activityLevel,
-        goal: userData.goal
-      })
+      body: JSON.stringify(nutritionPayload)
     });
 
     let targets = {
@@ -156,18 +169,27 @@ async function fetchUserProgress(userEmail) {
 
     if (nutritionResponse.ok) {
       targets = await nutritionResponse.json();
+      console.log('Nutrition targets:', targets);
+    } else {
+      const errorData = await nutritionResponse.json().catch(() => ({}));
+      console.warn('Nutrition targets calculation failed, using defaults:', errorData);
     }
 
     // Fetch user's tracker data
+    console.log('Fetching tracker data for:', userEmail);
     const trackerResponse = await auth.authFetch(`${API_BASE_URL}/api/tracker?email=${encodeURIComponent(userEmail)}`);
+    
     if (!trackerResponse.ok) {
-      throw new Error('Could not fetch tracker data');
+      const errorData = await trackerResponse.json().catch(() => ({}));
+      console.error('Tracker fetch failed:', trackerResponse.status, errorData);
+      throw new Error(`Could not fetch tracker data (${trackerResponse.status}): ${errorData.error || 'Unknown error'}`);
     }
     const trackerData = await trackerResponse.json();
+    console.log('Tracker data count:', trackerData.length);
 
     if (!Array.isArray(trackerData) || trackerData.length === 0) {
       showStatus(`No tracking data found for ${userEmail}`, 'error');
-      progressResults.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
+      progressResults.innerHTML = '<div class="empty-state"><p>No data available for this user</p></div>';
       return;
     }
 
