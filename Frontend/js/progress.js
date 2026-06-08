@@ -260,12 +260,12 @@ function renderProgress(data, startDate, endDate) {
   const averageDeficit = days > 0 ? formatNumber(totalDeficit / days) : '0';
 
   progressCards.innerHTML = `
-    ${buildCard('Calories', `${formatNumber(totalCalories)} kcal`, `${averageCalories} kcal/day`, '⚡')}
-    ${buildCard('Protein', `${formatNumber(totalProtein)} g`, `${averageProtein} g/day`, '🥩')}
-    ${buildCard('Carbs', `${formatNumber(totalCarbs)} g`, `${averageCarbs} g/day`, '🍞')}
-    ${buildCard('Fat', `${formatNumber(totalFat)} g`, `${averageFat} g/day`, '🥑')}
-    ${buildCard('Streak','Active tracking streak', `${days} days`,  '🔥')}
-    ${buildCard('Maintained Calorie Deficit', `${formatNumber(totalDeficit)} kcal`, `${averageDeficit} kcal/day`, '⬇️')}
+    ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${averageCalories}`, '⚡')}
+    ${buildCard('Protein | g/day', `${formatNumber(totalProtein)} g`, `${averageProtein}`, '🥩')}
+    ${buildCard('Carbs | g/day', `${formatNumber(totalCarbs)} g`, `${averageCarbs}`, '🍞')}
+    ${buildCard('Fat | g/day', `${formatNumber(totalFat)} g`, `${averageFat}`, '🥑')}
+    ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
+    ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${averageDeficit}`, '⬇️')}
   `;
 
   renderReportCards(dailyTotals);
