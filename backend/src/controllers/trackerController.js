@@ -4,8 +4,17 @@ const { MEAL_ORDER } = require('../config');
 async function getTracker(req, res) {
   const conn = await getConnection();
   // Allow admins to fetch data for other users
-  const isAdmin = req.user?.isAdmin === 'Y';
-  const userEmail = isAdmin && req.query.email ? req.query.email : req.user.email;
+  const isAdmin = req.user?.isAdmin === true;
+  const requestedEmail = req.query.email ? String(req.query.email).toLowerCase() : null;
+  const currentUserEmail = req.user?.email?.toLowerCase();
+
+  // Check authorization: only admins can fetch other users' data
+  if (requestedEmail && requestedEmail !== currentUserEmail && !isAdmin) {
+    conn.release();
+    return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+  }
+
+  const userEmail = requestedEmail || currentUserEmail;
   const startDate = req.query.startDate || null;
   const endDate = req.query.endDate || null;
 

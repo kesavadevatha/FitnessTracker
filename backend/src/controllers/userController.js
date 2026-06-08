@@ -3,8 +3,16 @@ const { findUserByEmail, createUser, updateUserPassword, saveUserProfile, getAll
 async function getProfile(req, res) {
   try {
     // Allow admins to fetch other users' profiles
-    const isAdmin = req.user?.isAdmin === 'Y';
-    const userEmail = isAdmin && req.query.email ? req.query.email : req.user.email;
+    const isAdmin = req.user?.isAdmin === true;
+    const requestedEmail = req.query.email ? String(req.query.email).toLowerCase() : null;
+    const currentUserEmail = req.user?.email?.toLowerCase();
+
+    // Check authorization: only admins can fetch other users' profiles
+    if (requestedEmail && requestedEmail !== currentUserEmail && !isAdmin) {
+      return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+    }
+
+    const userEmail = requestedEmail || currentUserEmail;
     
     const user = await findUserByEmail(userEmail);
     if (!user) {
