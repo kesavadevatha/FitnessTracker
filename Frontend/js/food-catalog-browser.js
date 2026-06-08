@@ -525,6 +525,13 @@ function exportToExcel(catalogData) {
     return;
   }
 
+  // Check if XLSX library is loaded
+  if (typeof XLSX === 'undefined') {
+    showStatus('Excel export library is not loaded. Please refresh the page and try again.', true);
+    console.error('XLSX library not found. Check that the CDN script is loaded.');
+    return;
+  }
+
   // Prepare data for Excel
   const worksheetData = [
     ['Food Name', 'Calories', 'Protein (g)', 'Carbs (g)', 'Fat (g)', 'Serving Size', 'Serving Unit'],
@@ -539,28 +546,33 @@ function exportToExcel(catalogData) {
     ])
   ];
 
-  // Create workbook and worksheet
-  const wb = window.XLSX.utils.book_new();
-  const ws = window.XLSX.utils.aoa_to_sheet(worksheetData);
-  
-  // Set column widths
-  ws['!cols'] = [
-    { wch: 25 }, // Food Name
-    { wch: 12 }, // Calories
-    { wch: 14 }, // Protein
-    { wch: 12 }, // Carbs
-    { wch: 10 }, // Fat
-    { wch: 14 }, // Serving Size
-    { wch: 14 }  // Serving Unit
-  ];
+  try {
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+    
+    // Set column widths
+    ws['!cols'] = [
+      { wch: 25 }, // Food Name
+      { wch: 12 }, // Calories
+      { wch: 14 }, // Protein
+      { wch: 12 }, // Carbs
+      { wch: 10 }, // Fat
+      { wch: 14 }, // Serving Size
+      { wch: 14 }  // Serving Unit
+    ];
 
-  window.XLSX.utils.book_append_sheet(wb, ws, 'Food Catalog');
-  
-  // Generate filename with current date
-  const dateStr = new Date().toISOString().split('T')[0];
-  window.XLSX.writeFile(wb, `Food_Catalog_${dateStr}.xlsx`);
-  
-  showStatus(`Downloaded Excel report with ${catalogData.length} food items.`);
+    XLSX.utils.book_append_sheet(wb, ws, 'Food Catalog');
+    
+    // Generate filename with current date
+    const dateStr = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, `Food_Catalog_${dateStr}.xlsx`);
+    
+    showStatus(`Downloaded Excel report with ${catalogData.length} food items.`);
+  } catch (error) {
+    console.error('Excel export error:', error);
+    showStatus('Failed to export Excel file: ' + error.message, true);
+  }
 }
 
 function exportToPDF(catalogData) {
