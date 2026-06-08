@@ -10,6 +10,7 @@ if (window.auth) {
   auth.requireLogin();
 }
 
+let userGoal = 'maintain weight'; // default fallback
 let userTargetDailyCalorie = 2000; // default fallback
 let userTargetProtein = 100; // default fallback
 let userTargetCarbs = 250; // default fallback
@@ -41,7 +42,9 @@ async function fetchUserTargets() {
 
     if (nutritionResponse.ok) {
       const targets = await nutritionResponse.json();
+      userGoal = userData.goal;
       userTargetDailyCalorie = targets.targetCalories || 2000;
+      userTargetDailyCaloriePublic = targets.targetCaloriesPublic || 2000;
       userTargetProtein = targets.protein?.grams || 100;
       userTargetCarbs = targets.carbs?.grams || 250;
       userTargetFat = targets.fat?.grams || 65;
@@ -82,6 +85,27 @@ function buildCard(title, value, subtext, icon = '') {
 
 function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
+}
+
+function getRating(averageCalories, userTargetDailyCalorie) {
+
+  if (userGoal !== 'lose fat') return 5;
+
+  const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
+
+  if (diff >= 0) {
+    return Math.max(0, 5 - Math.floor(diff / 10));
+  }
+
+  return Math.max(0, 4 - Math.floor(Math.abs(diff) / 5));
+}
+
+function calculateCalorieAsynRating(averageCalories,userTargetDailyCaloriePublic) {
+
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+  return Math.min((averageCalories / userTargetDailyCaloriePublic) * 5, 5);
 }
 
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
@@ -302,6 +326,7 @@ function renderProgress(data, startDate, endDate) {
 
   // Calculate progress rating
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
+  const calorieAsynRating = getRangeFromData(averageCalories, userTargetDailyCaloriePublic);
 
   progressCards.innerHTML = `
     ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
@@ -311,6 +336,7 @@ function renderProgress(data, startDate, endDate) {
     ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
     ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${formatNumber(averageDeficit)}`, '⬇️')}
     ${buildCard('Rating', `${formatNumber(progressRating)}/5`, `${formatNumber(progressRating)}`, '⭐')}
+    ${buildCard('Rating', `${formatNumber(calorieAsynRating)}/5`, `${formatNumber(calorieAsynRating)}`, '⚡⭐')}
   `;
 
   renderReportCards(dailyTotals);
