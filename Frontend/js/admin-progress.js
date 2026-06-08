@@ -175,9 +175,14 @@ async function fetchUserProgress(userEmail) {
       console.warn('Nutrition targets calculation failed, using defaults:', errorData);
     }
 
-    // Fetch user's tracker data
-    console.log('Fetching tracker data for:', userEmail);
-    const trackerResponse = await auth.authFetch(`${API_BASE_URL}/api/tracker?email=${encodeURIComponent(userEmail)}`);
+    // Fetch user's tracker data (excluding today, up to t-1)
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    
+    console.log('Fetching tracker data for:', userEmail, 'up to:', yesterdayStr);
+    const trackerResponse = await auth.authFetch(`${API_BASE_URL}/api/tracker?email=${encodeURIComponent(userEmail)}&endDate=${yesterdayStr}`);
     
     if (!trackerResponse.ok) {
       const errorData = await trackerResponse.json().catch(() => ({}));
