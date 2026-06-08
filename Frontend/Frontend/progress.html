@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress | Fitness Tracker</title>
+  <link rel="stylesheet" href="./css/auth.css" />
+  <link rel="stylesheet" href="./css/fitness-dashboard.css" />
+  <link rel="stylesheet" href="./components/sidebar/sidebar.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside id="sidebar-root" class="sidebar-shell" aria-label="Sidebar navigation"></aside>
+
+    <main class="content-shell">
+      <section class="dashboard-view">
+        <div class="progress-page-main">
+          <section class="dashboard-header">
+            <div>
+              <p class="eyebrow">Progress report</p>
+              <h1>Overall progress</h1>
+              <p class="subcopy">Review your daily macros and calories, then compare them with weekly and best-record summaries.</p>
+            </div>
+          </section>
+
+          <section class="progress-hero">
+            <div class="progress-summary-panel">
+              <div class="progress-dashboard-cards" id="progress-cards">
+                <article class="metric-card">
+                  <p class="metric-name">Total calories</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Average per day: —</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">Protein</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Average per day: —</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">Carbs</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Average per day: —</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">Fat</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Average per day: —</p>
+                </article>
+                <article class="metric-card">
+                  <p class="metric-name">🔥 Streak</p>
+                  <p class="metric-total">—</p>
+                  <p class="metric-meta">Active tracking days</p>
+                </article>
+              </div>
+            </div>
+
+            <div class="report-filter-card">
+              <form id="progress-form" class="report-form progress-toolbar">
+                <div class="form-grid-row">
+                  <label>
+                    <span>From date</span>
+                    <input type="date" name="startDate" required />
+                  </label>
+                  <label>
+                    <span>To date</span>
+                    <input type="date" name="endDate" required />
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="primary-btn">Fetch progress</button>
+                </div>
+              </form>
+              <p id="progress-feedback" class="progress-feedback">Enter a date range and click fetch to review overall progress.</p>
+            </div>
+          </section>
+
+          <section class="reports-section">
+            <div class="progress-reports-header">
+              <div>
+                <p class="eyebrow">Reports</p>
+                <h2>Latest insights</h2>
+              </div>
+            </div>
+            <div class="reports-grid">
+              <article class="report-card" id="week-report-card">
+                <div class="best-records-panel week-panel">
+                  <h3 class="report-card-title">Past Week Progress</h3>
+                  <div class="report-item-grid">
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">⚡</span>
+                        <span class="report-item-name">Total calories</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">🥩</span>
+                        <span class="report-item-name">Total protein</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">🍞</span>
+                        <span class="report-item-name">Total carbs</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">🥑</span>
+                        <span class="report-item-name">Total fat</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+              <article class="report-card" id="best-report-card">
+                <div class="best-records-panel">
+                  <h3 class="report-card-title">🏆 All Time Best Records</h3>
+                  <div class="report-item-grid">
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">⚡</span>
+                        <span class="report-item-name">Highest calories</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">🥩</span>
+                        <span class="report-item-name">Highest protein</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">🍞</span>
+                        <span class="report-item-name">Highest carbs</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                    <div class="report-item-card">
+                      <div class="report-item-label">
+                        <span class="report-item-icon">🥑</span>
+                        <span class="report-item-name">Highest fat</span>
+                      </div>
+                      <div class="report-item-value">—</div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/auth.js"></script>
+  <script type="module" src="./components/sidebar/sidebar.js"></script>
+  <script src="./js/progress.js"></script>
+</body>
+</html>
