@@ -310,7 +310,7 @@ function renderProgress(data, startDate, endDate) {
     ${buildCard('Fat | g/day', `${formatNumber(totalFat)} g`, `${formatNumber(averageFat)}`, '🥑')}
     ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
     ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${formatNumber(averageDeficit)}`, '⬇️')}
-    ${buildCard('Progress Rating | 5', `${formatNumber(progressRating)}/5`, `Rating: ${formatNumber(progressRating)}`, '⭐')}
+    ${buildCard('Rating', `${formatNumber(progressRating)}/5`, `${formatNumber(progressRating)}`, '⭐')}
   `;
 
   renderReportCards(dailyTotals);
