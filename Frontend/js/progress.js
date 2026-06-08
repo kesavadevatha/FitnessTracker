@@ -46,8 +46,8 @@ function buildCard(title, value, subtext, icon = '') {
   return `
     <article class="metric-card">
       <p class="metric-name">${icon ? `<span class="metric-icon">${icon}</span> ` : ''}${title}</p>
-      <p class="metric-total">${value}</p>
-      <p class="metric-meta">${subtext}</p>
+      <p class="metric-total">${subtext}</p>
+      <p class="metric-meta">${value}</p>
     </article>
   `;
 }
