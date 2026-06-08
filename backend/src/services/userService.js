@@ -112,9 +112,28 @@ async function saveUserProfile(email, profile) {
   }
 }
 
+async function getAllUsers() {
+  const conn = await getConnection();
+
+  try {
+    const result = await conn.query(
+      `
+        SELECT user_id, email, is_admin, created_date
+        FROM custom.app_user
+        ORDER BY email ASC
+      `
+    );
+
+    return result.rows || [];
+  } finally {
+    conn.release();
+  }
+}
+
 module.exports = {
   findUserByEmail,
   createUser,
   updateUserPassword,
-  saveUserProfile
+  saveUserProfile,
+  getAllUsers
 };

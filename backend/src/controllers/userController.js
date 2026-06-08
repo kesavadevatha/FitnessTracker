@@ -1,8 +1,12 @@
-const { findUserByEmail, createUser, updateUserPassword, saveUserProfile } = require('../services/userService');
+const { findUserByEmail, createUser, updateUserPassword, saveUserProfile, getAllUsers } = require('../services/userService');
 
 async function getProfile(req, res) {
   try {
-    const user = await findUserByEmail(req.user.email);
+    // Allow admins to fetch other users' profiles
+    const isAdmin = req.user?.isAdmin === 'Y';
+    const userEmail = isAdmin && req.query.email ? req.query.email : req.user.email;
+    
+    const user = await findUserByEmail(userEmail);
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
@@ -203,10 +207,21 @@ async function changePassword(req, res) {
   }
 }
 
+async function getAllUsersHandler(req, res) {
+  try {
+    const users = await getAllUsers();
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Unable to fetch users.' });
+  }
+}
+
 module.exports = {
   getProfile,
   updateProfile,
   getCurrentUser,
   createUser: createUserHandler,
-  changePassword
+  changePassword,
+  getAllUsers: getAllUsersHandler
 };

@@ -29,6 +29,13 @@ export const sidebarItems = [
     href: '/admin.html'
   },
   {
+    id: 'admin-progress',
+    label: 'User Progress',
+    icon: '📊',
+    action: 'route',
+    href: '/admin-progress.html'
+  },
+  {
     id: 'food-catalog',
     label: 'Food Catalog',
     icon: '🗂',

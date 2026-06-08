@@ -81,7 +81,7 @@ function renderSidebar() {
             const isAdmin = authUser?.isAdmin;
             const isLoggedIn = Boolean(authUser?.email);
 
-            if (item.id === 'admin' || item.id === 'food-catalog') {
+            if (item.id === 'admin' || item.id === 'admin-progress' || item.id === 'food-catalog') {
               return isAdmin;
             }
             if (item.id === 'profile') {

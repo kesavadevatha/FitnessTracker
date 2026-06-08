@@ -3,7 +3,9 @@ const { MEAL_ORDER } = require('../config');
 
 async function getTracker(req, res) {
   const conn = await getConnection();
-  const userId = req.user.email;
+  // Allow admins to fetch data for other users
+  const isAdmin = req.user?.isAdmin === 'Y';
+  const userEmail = isAdmin && req.query.email ? req.query.email : req.user.email;
   const startDate = req.query.startDate || null;
   const endDate = req.query.endDate || null;
 
@@ -13,7 +15,7 @@ async function getTracker(req, res) {
       FROM custom.meal_log
       WHERE LOWER(user_id) = LOWER($1)
     `;
-    const params = [userId];
+    const params = [userEmail];
 
     if (startDate) {
       query += ` AND track_date::date >= $${params.length + 1}`;

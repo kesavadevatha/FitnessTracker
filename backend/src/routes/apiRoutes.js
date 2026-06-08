@@ -14,6 +14,7 @@ router.post('/api/register', authController.register);
 router.get('/api/user/profile', authenticateRequest, userController.getProfile);
 router.put('/api/user/profile', authenticateRequest, userController.updateProfile);
 router.get('/api/me', userController.getCurrentUser);
+router.get('/api/users', authenticateRequest, userController.getAllUsers);
 router.post('/api/users', userController.createUser);
 router.put('/api/user/password', authenticateRequest, userController.changePassword);
 
