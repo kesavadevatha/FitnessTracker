@@ -569,8 +569,10 @@ function exportToPDF(catalogData) {
     return;
   }
 
-  const { jsPDF } = window;
-  const doc = new jsPDF();
+  const { jsPDF } = window.jsPDF;
+  //const doc = new jsPDF();
+  const doc = new window.jspdf.jsPDF();
+  console.log(window.jspdf);
   
   // Set title
   doc.setFontSize(16);
