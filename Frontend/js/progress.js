@@ -284,7 +284,13 @@ function renderReportCards(dailyTotals) {
     if (!best) {
       return day;
     }
-    return day.calories > best.calories ? day : best;
+
+    bestCaloriesPct = userTargetDailyCalorie - best.calories / userTargetDailyCalorie * 100;
+    dayCaloriesPct = userTargetDailyCalorie - day.calories / userTargetDailyCalorie * 100;
+
+    if (dayCaloriesPct < 0) return best; // ignore days that exceed the target
+
+    return dayCaloriesPct < bestCaloriesPct ? day : best;
   }, null);
   
   const bestProteinDay = dailyTotals.reduce((best, day) => {
@@ -298,14 +304,24 @@ function renderReportCards(dailyTotals) {
     if (!best) {
       return day;
     }
-    return day.carbs > best.carbs ? day : best;
+    bestCarbsPct = userTargetCarbs - best.carbs / userTargetCarbs * 100;
+    dayCarbsPct = userTargetCarbs - day.carbs / userTargetCarbs * 100;
+
+    if (dayCarbsPct < 0) return best; // ignore days that exceed the target
+
+    return dayCarbsPct < bestCarbsPct ? day : best;
   }, null);
 
   const bestFatDay = dailyTotals.reduce((best, day) => {
     if (!best) {
       return day;
     }
-    return day.fat > best.fat ? day : best;
+    bestFatPct = userTargetFat - best.fat / userTargetFat * 100;
+    dayFatPct = userTargetFat - day.fat / userTargetFat * 100;
+
+    if (dayFatPct < 0) return best; // ignore days that exceed the target
+
+    return dayFatPct < bestFatPct ? day : best;
   }, null);
 
   weekReportCard.innerHTML = buildWeekMetricGrid('📈 Past Week Progress', [
