@@ -8,37 +8,44 @@ async function getTracker(req, res) {
   const requestedEmail = req.query.email ? String(req.query.email).toLowerCase() : null;
   const currentUserEmail = req.user?.email?.toLowerCase();
 
+  console.time('getTracker - 1');
   // Check authorization: only admins can fetch other users' data
   if (requestedEmail && requestedEmail !== currentUserEmail && !isAdmin) {
     conn.release();
     return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
   }
+  console.time('getTracker - 2');
 
   const userEmail = requestedEmail || currentUserEmail;
   const startDate = req.query.startDate || null;
   const endDate = req.query.endDate || null;
 
   try {
+    console.time('getTracker - 3');
     let query = `
       SELECT *
       FROM custom.meal_log
       WHERE LOWER(user_id) = LOWER($1)
     `;
     const params = [userEmail];
+    console.time('getTracker - 4');
 
     if (startDate) {
       query += ` AND track_date::date >= $${params.length + 1}`;
       params.push(startDate);
     }
+    console.time('getTracker - 5');
 
     if (endDate) {
       query += ` AND track_date::date <= $${params.length + 1}`;
       params.push(endDate);
     }
+    console.time('getTracker - 6');
 
     query += ` ORDER BY track_date DESC`;
 
     const result = await conn.query(query, params);
+    console.time('getTracker - 7');
 
     res.json(result.rows);
   } catch (err) {
