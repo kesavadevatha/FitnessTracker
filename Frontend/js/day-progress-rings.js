@@ -134,6 +134,31 @@
 
   global.renderProgressRings = renderProgressRings;
 
+  function getRating(averageCalories, targetCalories) {
+
+    const diff =
+      ((targetCalories - averageCalories) / targetCalories) * 100;
+
+    // UNDER target (deficit)
+    if (diff >= 0) {
+      if (diff <= 10) return 5;      // Ideal deficit
+      if (diff <= 20) return 4;      // Good deficit
+      if (diff <= 30) return 3;      // Aggressive deficit
+      if (diff <= 40) return 2;      // Too aggressive
+      return 1;                      // Extreme deficit
+    }
+
+    // OVER target (surplus)
+    const surplus = Math.abs(diff);
+
+    if (surplus <= 5) return 4;      // Small miss
+    if (surplus <= 10) return 3;     // Moderate miss
+    if (surplus <= 20) return 2;     // Significant miss
+    if (surplus <= 30) return 1;     // Large miss
+
+    return 0;                        // Very large surplus
+  }
+
   function renderRatingStrip(container, totals = {}, targets = {}) {
     if (!container) return;
 
@@ -163,10 +188,10 @@
     const targetFat = safeNumber(targets.fat?.grams);
 
     // Calculate ratings (0-5 scale)
-    const calorieRating = targetCalories > 0 ? Math.min((todayCalories / targetCalories) * 5, 5) : 0;
-    const proteinRating = targetProtein > 0 ? Math.min((todayProtein / targetProtein) * 5, 5) : 0;
-    const carbsRating = targetCarbs > 0 ? Math.min((todayCarbs / targetCarbs) * 5, 5) : 0;
-    const fatRating = targetFat > 0 ? Math.min((todayFat / targetFat) * 5, 5) : 0;
+    const calorieRating = getRating(todayCalories, targetCalories);
+    const proteinRating = getRating(todayProtein, targetProtein);
+    const carbsRating = getRating(todayCarbs, targetCarbs);
+    const fatRating = getRating(todayFat, targetFat);
 
     // Overall rating is average of all macro ratings
     const overallRating = (calorieRating + proteinRating + carbsRating + fatRating) / 4;
