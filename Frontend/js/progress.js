@@ -151,10 +151,10 @@ async function calculateOverallRatingWithFetch(calorieRating, proteinRating, car
 
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
   // Rate each macro as (average / target) * 5, capped at 5
-  const calorieRating = getRating(averageCalories, userTargetDailyCaloriePublic);
-  const proteinRating = userTargetDailyProteinPublic > 0 ? Math.min((averageProtein / userTargetDailyProteinPublic) * 5, 5) : 0;
-  const carbsRating = getRating(averageCarbs, userTargetCarbsPublic);
-  const fatRating = getRating(averageFat, userTargetFatPublic);
+  const calorieRating = getRating(averageCalories, userTargetDailyCalorie);
+  const proteinRating = userTargetDailyProtein > 0 ? Math.min((averageProtein / userTargetDailyProtein) * 5, 5) : 0;
+  const carbsRating = getRating(averageCarbs, userTargetCarbs);
+  const fatRating = getRating(averageFat, userTargetFat);
 
   // Average all four ratings
   const overallRating = calculateOverallRatingWithFetch(calorieRating, proteinRating, carbsRating, fatRating);
