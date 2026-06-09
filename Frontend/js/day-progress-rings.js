@@ -181,27 +181,23 @@
           <div class="rating-box-content">Rating</div>
         </div>
         <div class="rating-box rating-overall">
-          <div class="rating-box-top">${formatRating(overallRating)}</div>
-          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-top">${formatRating(overallRating)}⭐</div>
         </div>
         <div class="rating-box rating-macro">
-          <div class="rating-box-top">${formatRating(calorieRating)}</div>
-          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-top">${formatRating(calorieRating)}⭐</div>
           <div class="rating-box-bottom">Calorie</div>
         </div>
         <div class="rating-box rating-macro">
-          <div class="rating-box-top">${formatRating(proteinRating)}</div>
-          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-top">${formatRating(proteinRating)}⭐</div>
+          
           <div class="rating-box-bottom">Protein</div>
         </div>
         <div class="rating-box rating-macro">
-          <div class="rating-box-top">${formatRating(carbsRating)}</div>
-          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-top">${formatRating(carbsRating)}⭐</div>
           <div class="rating-box-bottom">Carbs</div>
         </div>
         <div class="rating-box rating-macro">
-          <div class="rating-box-top">${formatRating(fatRating)}</div>
-          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-top">${formatRating(fatRating)}⭐</div>
           <div class="rating-box-bottom">Fat</div>
         </div>
       </div>
