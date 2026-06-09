@@ -89,24 +89,14 @@
   function createStripItem(icon, label, current, target, unit) {
 
     const remaining = Math.round(target - current);
+    const percent = target > 0 ? Math.round((current / target) * 100) : 0;
 
     return `
-      <div class="metric-strip-item">
-        <div class="metric-strip-icon">${icon}</div>
-
-        <div class="metric-strip-content">
-          <div class="metric-strip-label">
-            ${label}
-          </div>
-
-          <div class="metric-strip-value">
-            ${Math.round(current)}
-          </div>
-
-          <div class="metric-strip-meta">
-            ${Math.round(target)} ${unit}
-          </div>
-        </div>
+      <div class="fitness-stat">
+        <span>${icon}</span>
+        <strong>${Math.round(current)}</strong>
+        <small>/${Math.round(target)}${unit}</small>
+        <em>${percent}%</em>
       </div>
     `;
   }
