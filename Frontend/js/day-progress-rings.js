@@ -137,20 +137,20 @@
   // Rating calculation based on how close the intake is to the target, with a buffer for slight overages/underages 
   function getRating(intake, target) {
 
-    const diff =
-      ((intake - target) / target) * 100;
+    const deficit =
+      ((target - intake) / target) * 100;
 
     // UNDER target (deficit)
-    if (diff >= 0) {
-      if (diff <= 10) return 5;      // Ideal deficit
-      if (diff <= 20) return 4;      // Good deficit
-      if (diff <= 30) return 3;      // Aggressive deficit
-      if (diff <= 40) return 2;      // Too aggressive
+    if (deficit >= 0) {
+      if (deficit <= 10) return 5;      // Ideal deficit
+      if (deficit <= 20) return 4;      // Good deficit
+      if (deficit <= 30) return 3;      // Aggressive deficit
+      if (deficit <= 40) return 2;      // Too aggressive
       return 1;                      // Extreme deficit
     }
 
     // OVER target (surplus)
-    const surplus = Math.abs(diff);
+    const surplus = Math.abs(deficit);
 
     if (surplus <= 5) return 4;      // Small miss
     if (surplus <= 10) return 3;     // Moderate miss
