@@ -686,7 +686,7 @@ async function loadDayDetails() {
     }
 
     renderProgressRings(dayRingsContainer, data.totals, targets);
-    renderRatingStrip(dayRatingStrip, data.totals, targets);
+    await renderRatingStrip(dayRatingStrip, data.totals, targets);
     renderMealPanels(data);
 
   } catch (error) {

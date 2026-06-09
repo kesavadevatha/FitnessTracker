@@ -134,10 +134,11 @@
 
   global.renderProgressRings = renderProgressRings;
 
-  function getRating(averageCalories, targetCalories) {
+  // Rating calculation based on how close the intake is to the target, with a buffer for slight overages/underages 
+  function getRating(intake, target) {
 
     const diff =
-      ((targetCalories - averageCalories) / targetCalories) * 100;
+      ((intake - target) / target) * 100;
 
     // UNDER target (deficit)
     if (diff >= 0) {
@@ -159,7 +160,43 @@
     return 0;                        // Very large surplus
   }
 
-  function renderRatingStrip(container, totals = {}, targets = {}) {
+  const GOAL_WEIGHTS = {
+    'lose fat':                { cal: 0.50, pro: 0.30, carb: 0.10, fat: 0.10 },
+    'body recomposition':      { cal: 0.40, pro: 0.40, carb: 0.10, fat: 0.10 },
+    'lose fat & build muscle': { cal: 0.35, pro: 0.45, carb: 0.10, fat: 0.10 },
+    'build muscle':            { cal: 0.35, pro: 0.35, carb: 0.20, fat: 0.10 },
+    'gain weight':             { cal: 0.45, pro: 0.25, carb: 0.20, fat: 0.10 },
+    'maintain weight':         { cal: 0.30, pro: 0.30, carb: 0.20, fat: 0.20 },
+    'healthy lifestyle':       { cal: 0.25, pro: 0.25, carb: 0.25, fat: 0.25 }
+  };
+
+  async function calculateOverallRatingWithFetch(calorieRating, proteinRating, carbRating, fatRating) {
+    try {
+      // Fetch user profile to get their goal
+      const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+      let goal = 'maintain weight'; // default fallback
+
+      if (profileResponse.ok) {
+        const profile = await profileResponse.json();
+        goal = profile.goal || 'maintain weight';
+      }
+
+      const w = GOAL_WEIGHTS[goal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
+
+      let rating = calorieRating * w.cal;
+      rating = rating + proteinRating * w.pro;
+      rating = rating + carbRating * w.carb;
+      rating = rating + fatRating * w.fat;
+
+      return Number.isFinite(rating) ? Number(rating.toFixed(1)) : 0;
+    } catch (error) {
+      console.error('Error calculating overall rating:', error);
+      // Fallback to average if fetch fails
+      return (calorieRating + proteinRating + carbRating + fatRating) / 4;
+    }
+  }
+
+  async function renderRatingStrip(container, totals = {}, targets = {}) {
     if (!container) return;
 
     const todayCalories = safeNumber(totals.calories);
@@ -193,8 +230,8 @@
     const carbsRating = getRating(todayCarbs, targetCarbs);
     const fatRating = getRating(todayFat, targetFat);
 
-    // Overall rating is average of all macro ratings
-    const overallRating = (calorieRating + proteinRating + carbsRating + fatRating) / 4;
+    // Overall rating is calculated based on user's goal fetched from database
+    const overallRating = await calculateOverallRatingWithFetch(calorieRating, proteinRating, carbsRating, fatRating);
 
     function formatRating(rating) {
       return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
