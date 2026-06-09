@@ -134,7 +134,7 @@ function calculateProgressRating(averageCalories, averageProtein, averageCarbs, 
 
   let rating = calorieRating * w.cal +
   proteinRating * w.pro +
-  carbRating * w.carb +
+  carbsRating * w.carb +
   fatRating * w.fat;
 
   // Average all four ratings and round to 1 decimal place
