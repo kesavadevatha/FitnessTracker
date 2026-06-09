@@ -132,8 +132,11 @@ function calculateProgressRating(averageCalories, averageProtein, averageCarbs, 
 
   const w = GOAL_WEIGHTS[userGoal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
 
-  let rating = (calorieRating * w.cal) + (proteinRating * w.pro) + (carbRating * w.carb) + (fatRating * w.fat);
-  
+  let rating = calorieRating * w.cal +
+  proteinRating * w.pro +
+  carbRating * w.carb +
+  fatRating * w.fat;
+
   // Average all four ratings and round to 1 decimal place
   return Number.isFinite(rating) ? Number(rating.toFixed(1)) : 0;
 }
