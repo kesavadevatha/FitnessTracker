@@ -328,6 +328,12 @@ function renderCards(entries) {
       carbs: todayCarbs,
       fat: todayFat
     }, targets);
+    renderProgressStrip(metricsGrid, {
+      calories: todayCalories,
+      protein: todayProtein,
+      carbs: todayCarbs,
+      fat: todayFat
+    }, targets);
   } else {
     // fallback to legacy metric cards when targets not available
     metricsGrid.innerHTML = `

@@ -86,6 +86,55 @@
     return `${Math.round(target) - Math.round(consumed)} ${unit}`;
   }
 
+  function createStripItem(icon, label, current, target, unit) {
+
+    const remaining = Math.round(target - current);
+
+    return `
+      <div class="metric-strip-item">
+        <div class="metric-strip-icon">${icon}</div>
+
+        <div class="metric-strip-content">
+          <div class="metric-strip-label">
+            ${label}
+          </div>
+
+          <div class="metric-strip-value">
+            ${Math.round(current)}
+          </div>
+
+          <div class="metric-strip-meta">
+            ${Math.round(target)} ${unit}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderProgressStrip(container, totals = {}, targets = {}) {
+
+    if (!container) return;
+
+    const calories = safeNumber(totals.calories);
+    const protein = safeNumber(totals.protein);
+    const carbs = safeNumber(totals.carbs);
+    const fat = safeNumber(totals.fat);
+
+    const calorieTarget = safeNumber(targets.targetCalories);
+    const proteinTarget = safeNumber(targets.protein?.grams);
+    const carbsTarget = safeNumber(targets.carbs?.grams);
+    const fatTarget = safeNumber(targets.fat?.grams);
+
+    container.innerHTML = `    
+      <div class="dashboard-summary-strip">
+        ${createStripItem('⚡','Calories',calories,calorieTarget,'kcal')}
+        ${createStripItem('🥩','Protein',protein,proteinTarget,'g')}
+        ${createStripItem('🍞','Carbs',carbs,carbsTarget,'g')}
+        ${createStripItem('🥑','Fat',fat,fatTarget,'g')}
+      </div>
+    `;
+  }
+
   function renderProgressRings(container, totals = {}, targets = {}) {
     if (!container) return;
 
