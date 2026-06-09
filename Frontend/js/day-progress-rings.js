@@ -86,45 +86,6 @@
     return `${Math.round(target) - Math.round(consumed)} ${unit}`;
   }
 
-  function createStripItem(icon, label, current, target, unit) {
-
-    const remaining = Math.round(target - current);
-    const percent = target > 0 ? Math.round((current / target) * 100) : 0;
-
-    return `
-      <div class="fitness-stat">
-        <span>${icon}</span>
-        <strong>${Math.round(current)}</strong>
-        <small>/${Math.round(target)}${unit}</small>
-        <em>${percent}%</em>
-      </div>
-    `;
-  }
-
-  function renderProgressStrip(container, totals = {}, targets = {}) {
-
-    if (!container) return;
-
-    const calories = safeNumber(totals.calories);
-    const protein = safeNumber(totals.protein);
-    const carbs = safeNumber(totals.carbs);
-    const fat = safeNumber(totals.fat);
-
-    const calorieTarget = safeNumber(targets.targetCalories);
-    const proteinTarget = safeNumber(targets.protein?.grams);
-    const carbsTarget = safeNumber(targets.carbs?.grams);
-    const fatTarget = safeNumber(targets.fat?.grams);
-
-    container.innerHTML = `    
-      <div class="dashboard-summary-strip">
-        ${createStripItem('⚡','Calories',calories,calorieTarget,'kcal')}
-        ${createStripItem('🥩','Protein',protein,proteinTarget,'g')}
-        ${createStripItem('🍞','Carbs',carbs,carbsTarget,'g')}
-        ${createStripItem('🥑','Fat',fat,fatTarget,'g')}
-      </div>
-    `;
-  }
-
   function renderProgressRings(container, totals = {}, targets = {}) {
     if (!container) return;
 
@@ -172,7 +133,6 @@
   }
 
   global.renderProgressRings = renderProgressRings;
-  global.renderProgressStrip = renderProgressStrip;
 
   // Rating calculation based on how close the intake is to the target, with a buffer for slight overages/underages 
   function getRating(intake, target) {
