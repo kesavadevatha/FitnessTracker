@@ -289,50 +289,23 @@ function renderReportCards(dailyTotals) {
   }, null);
 
   const bestCaloriesDay = dailyTotals.reduce((best, day) => {
-    if (!best) {
-      return day;
-    }
-
-    bestCaloriesPct = ((userTargetDailyCalorie - best.calories) / userTargetDailyCalorie) * 100;
-    dayCaloriesPct = ((userTargetDailyCalorie - day.calories) / userTargetDailyCalorie) * 100;
-    
-    console.log('Comparing days for calories:', {
-      bestCaloriesPct, dayCaloriesPct
-    });
-    if (dayCaloriesPct < 0) return best; // ignore days that exceed the target
-
-    return dayCaloriesPct < bestCaloriesPct ? day : best;
+    if (!best) return day;
+    return (userTargetDailyCalorie - day.calories) >= 0 && (userTargetDailyCalorie - day.calories) < (userTargetDailyCalorie - best.calories) ? day : best;
   }, null);
   
   const bestProteinDay = dailyTotals.reduce((best, day) => {
-    if (!best) {
-      return day;
-    }
+    if (!best) return day;
     return day.protein > best.protein ? day : best;
   }, null);
 
   const bestCarbsDay = dailyTotals.reduce((best, day) => {
-    if (!best) {
-      return day;
-    }
-    bestCarbsPct = userTargetCarbs - best.carbs / userTargetCarbs * 100;
-    dayCarbsPct = userTargetCarbs - day.carbs / userTargetCarbs * 100;
-
-    if (dayCarbsPct < 0) return best; // ignore days that exceed the target
-
-    return dayCarbsPct < bestCarbsPct ? day : best;
+    if (!best) return day;    
+    return (userTargetCarbs - day.carbs) >= 0 && (userTargetCarbs - day.carbs) < (userTargetCarbs - best.carbs) ? day : best;
   }, null);
 
   const bestFatDay = dailyTotals.reduce((best, day) => {
-    if (!best) {
-      return day;
-    }
-    bestFatPct = userTargetFat - best.fat / userTargetFat * 100;
-    dayFatPct = userTargetFat - day.fat / userTargetFat * 100;
-
-    if (dayFatPct < 0) return best; // ignore days that exceed the target
-
-    return dayFatPct < bestFatPct ? day : best;
+    if (!best) return day;
+    return (userTargetFat - day.fat) >= 0 && (userTargetFat - day.fat) < (userTargetFat - best.fat) ? day : best;
   }, null);
 
   weekReportCard.innerHTML = buildWeekMetricGrid('📈 Past Week Progress', [
