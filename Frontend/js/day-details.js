@@ -1,6 +1,7 @@
 const dayTitle = document.getElementById('day-title');
 const dayCopy = document.getElementById('day-copy');
 const dayRingsContainer = document.getElementById('day-rings-container');
+const dayRatingStrip = document.getElementById('day-rating-strip');
 const mealTabs = document.getElementById('meal-tabs');
 const mealPanel = document.getElementById('meal-panel');
 const addItemModal = document.getElementById('add-item-modal');
@@ -685,6 +686,7 @@ async function loadDayDetails() {
     }
 
     renderProgressRings(dayRingsContainer, data.totals, targets);
+    renderRatingStrip(dayRatingStrip, data.totals, targets);
     renderMealPanels(data);
 
   } catch (error) {

@@ -492,6 +492,87 @@ body {
   margin-bottom: 32px;
 }
 
+/* Rating Strip Styles */
+.rating-strip-container {
+  margin-bottom: 32px;
+}
+
+.rating-strip {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.6));
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.rating-box {
+  flex: 1;
+  min-width: 120px;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 8px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.rating-box:hover {
+  border-color: rgba(148, 163, 184, 0.25);
+  background: linear-gradient(180deg, rgba(30, 41, 59, 1), rgba(15, 23, 42, 1));
+}
+
+.rating-box.rating-label {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-height: 90px;
+  justify-content: center;
+}
+
+.rating-box.rating-overall {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.15));
+  border-color: rgba(79, 70, 229, 0.3);
+  min-height: 90px;
+}
+
+.rating-box.rating-macro {
+  min-height: 90px;
+}
+
+.rating-box-content {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.rating-box-top {
+  font-weight: 700;
+  font-size: 24px;
+  color: #f1f5f9;
+  line-height: 1;
+}
+
+.rating-box-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.rating-box-bottom {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
 .progress-ring-card {
   background: linear-gradient(180deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
   border: 1px solid rgba(148,163,184,0.08);

@@ -133,4 +133,80 @@
   }
 
   global.renderProgressRings = renderProgressRings;
+
+  function renderRatingStrip(container, totals = {}, targets = {}) {
+    if (!container) return;
+
+    const todayCalories = safeNumber(totals.calories);
+    const todayProtein = safeNumber(totals.protein);
+    const todayCarbs = safeNumber(totals.carbs);
+    const todayFat = safeNumber(totals.fat);
+
+    const hasTargets = Boolean(
+      targets &&
+      (
+        Number.isFinite(targets.targetCalories) ||
+        Number.isFinite(targets.protein?.grams) ||
+        Number.isFinite(targets.carbs?.grams) ||
+        Number.isFinite(targets.fat?.grams)
+      )
+    );
+
+    if (!hasTargets) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const targetCalories = safeNumber(targets.targetCalories);
+    const targetProtein = safeNumber(targets.protein?.grams);
+    const targetCarbs = safeNumber(targets.carbs?.grams);
+    const targetFat = safeNumber(targets.fat?.grams);
+
+    // Calculate ratings (0-5 scale)
+    const calorieRating = targetCalories > 0 ? Math.min((todayCalories / targetCalories) * 5, 5) : 0;
+    const proteinRating = targetProtein > 0 ? Math.min((todayProtein / targetProtein) * 5, 5) : 0;
+    const carbsRating = targetCarbs > 0 ? Math.min((todayCarbs / targetCarbs) * 5, 5) : 0;
+    const fatRating = targetFat > 0 ? Math.min((todayFat / targetFat) * 5, 5) : 0;
+
+    // Overall rating is average of all macro ratings
+    const overallRating = (calorieRating + proteinRating + carbsRating + fatRating) / 4;
+
+    function formatRating(rating) {
+      return Number.isFinite(rating) ? rating.toFixed(1) : '0.0';
+    }
+
+    container.innerHTML = `
+      <div class="rating-strip">
+        <div class="rating-box rating-label">
+          <div class="rating-box-content">Rating</div>
+        </div>
+        <div class="rating-box rating-overall">
+          <div class="rating-box-top">${formatRating(overallRating)}</div>
+          <div class="rating-box-icon">⭐</div>
+        </div>
+        <div class="rating-box rating-macro">
+          <div class="rating-box-top">${formatRating(calorieRating)}</div>
+          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-bottom">Calorie</div>
+        </div>
+        <div class="rating-box rating-macro">
+          <div class="rating-box-top">${formatRating(proteinRating)}</div>
+          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-bottom">Protein</div>
+        </div>
+        <div class="rating-box rating-macro">
+          <div class="rating-box-top">${formatRating(carbsRating)}</div>
+          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-bottom">Carbs</div>
+        </div>
+        <div class="rating-box rating-macro">
+          <div class="rating-box-top">${formatRating(fatRating)}</div>
+          <div class="rating-box-icon">⭐</div>
+          <div class="rating-box-bottom">Fat</div>
+        </div>
+      </div>
+    `;
+  }
+
+  global.renderRatingStrip = renderRatingStrip;
 })(window);
