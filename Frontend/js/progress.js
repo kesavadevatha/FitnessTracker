@@ -162,8 +162,16 @@ function calculateProgressRating(averageCalories, averageProtein, averageCarbs, 
   const carbsRating = getRating(averageCarbs, userTargetCarbs);
   const fatRating = getRating(averageFat, userTargetFat);
 
+  console.log('Individual ratings:', {
+    calorieRating,
+    proteinRating,
+    carbsRating,
+    fatRating
+  });
+
   // Average all four ratings
   const overallRating = calculateOverallRatingWithFetch(calorieRating, proteinRating, carbsRating, fatRating);
+  console.log('Overall progress rating:', overallRating);
   
   return Math.round(overallRating * 10) / 10; // Round to 1 decimal place
 }
