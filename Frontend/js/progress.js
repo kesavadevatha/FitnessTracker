@@ -88,22 +88,22 @@ function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
 }
 
-function getRating(averageCalories, targetCalories) {
+function getRating(intake, target) {
 
-  const diff =
-    ((targetCalories - averageCalories) / targetCalories) * 100;
+  const deficit =
+    ((target - intake) / target) * 100;
 
   // UNDER target (deficit)
-  if (diff >= 0) {
-    if (diff <= 10) return 5;      // Ideal deficit
-    if (diff <= 20) return 4;      // Good deficit
-    if (diff <= 30) return 3;      // Aggressive deficit
-    if (diff <= 40) return 2;      // Too aggressive
+  if (deficit >= 0) {
+    if (deficit <= 10) return 5;      // Ideal deficit
+    if (deficit <= 20) return 4;      // Good deficit
+    if (deficit <= 30) return 3;      // Aggressive deficit
+    if (deficit <= 40) return 2;      // Too aggressive
     return 1;                      // Extreme deficit
   }
 
   // OVER target (surplus)
-  const surplus = Math.abs(diff);
+  const surplus = Math.abs(deficit);
 
   if (surplus <= 5) return 4;      // Small miss
   if (surplus <= 10) return 3;     // Moderate miss
@@ -113,15 +113,51 @@ function getRating(averageCalories, targetCalories) {
   return 0;                        // Very large surplus
 }
 
+const GOAL_WEIGHTS = {
+  'lose fat':                { cal: 0.50, pro: 0.30, carb: 0.10, fat: 0.10 },
+  'body recomposition':      { cal: 0.40, pro: 0.40, carb: 0.10, fat: 0.10 },
+  'lose fat & build muscle': { cal: 0.35, pro: 0.45, carb: 0.10, fat: 0.10 },
+  'build muscle':            { cal: 0.35, pro: 0.35, carb: 0.20, fat: 0.10 },
+  'gain weight':             { cal: 0.45, pro: 0.25, carb: 0.20, fat: 0.10 },
+  'maintain weight':         { cal: 0.30, pro: 0.30, carb: 0.20, fat: 0.20 },
+  'healthy lifestyle':       { cal: 0.25, pro: 0.25, carb: 0.25, fat: 0.25 }
+};
+
+async function calculateOverallRatingWithFetch(calorieRating, proteinRating, carbRating, fatRating) {
+  try {
+    // Fetch user profile to get their goal
+    const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
+    let goal = 'maintain weight'; // default fallback
+
+    if (profileResponse.ok) {
+      const profile = await profileResponse.json();
+      goal = profile.goal || 'maintain weight';
+    }
+
+    const w = GOAL_WEIGHTS[goal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
+
+    let rating = calorieRating * w.cal;
+    rating = rating + proteinRating * w.pro;
+    rating = rating + carbRating * w.carb;
+    rating = rating + fatRating * w.fat;
+
+    return Number.isFinite(rating) ? Number(rating.toFixed(1)) : 0;
+  } catch (error) {
+    console.error('Error calculating overall rating:', error);
+    // Fallback to average if fetch fails
+    return (calorieRating + proteinRating + carbRating + fatRating) / 4;
+  }
+}
+
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
   // Rate each macro as (average / target) * 5, capped at 5
-  const calorieRating = Math.min((averageCalories / userTargetDailyCalorie) * 5, 5);
-  const proteinRating = Math.min((averageProtein / userTargetProtein) * 5, 5);
-  const carbsRating = Math.min((averageCarbs / userTargetCarbs) * 5, 5);
-  const fatRating = Math.min((averageFat / userTargetFat) * 5, 5);
-  
+  const calorieRating = getRating(averageCalories, userTargetDailyCaloriePublic);
+  const proteinRating = userTargetDailyProteinPublic > 0 ? Math.min((averageProtein / userTargetDailyProteinPublic) * 5, 5) : 0;
+  const carbsRating = getRating(averageCarbs, userTargetCarbsPublic);
+  const fatRating = getRating(averageFat, userTargetFatPublic);
+
   // Average all four ratings
-  const overallRating = (calorieRating + proteinRating + carbsRating + fatRating) / 4;
+  const overallRating = calculateOverallRatingWithFetch(calorieRating, proteinRating, carbsRating, fatRating);
   
   return Math.round(overallRating * 10) / 10; // Round to 1 decimal place
 }
