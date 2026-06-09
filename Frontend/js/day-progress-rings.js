@@ -182,6 +182,7 @@
   }
 
   global.renderProgressRings = renderProgressRings;
+  global.renderProgressStrip = renderProgressStrip;
 
   // Rating calculation based on how close the intake is to the target, with a buffer for slight overages/underages 
   function getRating(intake, target) {
