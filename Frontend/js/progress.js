@@ -123,18 +123,8 @@ const GOAL_WEIGHTS = {
   'healthy lifestyle':       { cal: 0.25, pro: 0.25, carb: 0.25, fat: 0.25 }
 };
 
-async function calculateOverallRatingWithFetch(calorieRating, proteinRating, carbRating, fatRating) {
-  try {
-    // Fetch user profile to get their goal
-    const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
-    let goal = 'maintain weight'; // default fallback
-
-    if (profileResponse.ok) {
-      const profile = await profileResponse.json();
-      goal = profile.goal || 'maintain weight';
-    }
-
-    const w = GOAL_WEIGHTS[goal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
+function calculateOverallRating(calorieRating, proteinRating, carbRating, fatRating) {
+  const w = GOAL_WEIGHTS[userGoal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
 
     let rating = calorieRating * w.cal;
     rating = rating + proteinRating * w.pro;
@@ -142,11 +132,6 @@ async function calculateOverallRatingWithFetch(calorieRating, proteinRating, car
     rating = rating + fatRating * w.fat;
 
     return Number.isFinite(rating) ? Number(rating.toFixed(1)) : 0;
-  } catch (error) {
-    console.error('Error calculating overall rating:', error);
-    // Fallback to average if fetch fails
-    return (calorieRating + proteinRating + carbRating + fatRating) / 4;
-  }
 }
 
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
@@ -170,7 +155,7 @@ function calculateProgressRating(averageCalories, averageProtein, averageCarbs, 
   });
 
   // Average all four ratings
-  const overallRating = calculateOverallRatingWithFetch(calorieRating, proteinRating, carbsRating, fatRating);
+  const overallRating = calculateOverallRating(calorieRating, proteinRating, carbsRating, fatRating);
   console.log('Overall progress rating:', overallRating);
   
   return overallRating; // Round to 1 decimal place
