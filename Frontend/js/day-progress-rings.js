@@ -189,7 +189,7 @@
 
     // Calculate ratings (0-5 scale)
     const calorieRating = getRating(todayCalories, targetCalories);
-    const proteinRating = getRating(todayProtein, targetProtein);
+    const proteinRating = targetProtein > 0 ? Math.min((todayProtein / targetProtein) * 5, 5) : 0;
     const carbsRating = getRating(todayCarbs, targetCarbs);
     const fatRating = getRating(todayFat, targetFat);
 
