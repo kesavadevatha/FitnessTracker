@@ -88,31 +88,15 @@ function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
 }
 
-async function getRating(averageCalories, userTargetDailyCalorie) {
-  try {
-    // Fetch user profile
-    const profileResponse = await auth.authFetch(`${API_BASE_URL}/api/user/profile`);
-    if (!profileResponse.ok) {
-      console.warn('Failed to fetch user profile for nutrition targets');
-      return;
-    }
-    const userData = await profileResponse.json();
-    console.log('User data for rating:', userData);
-
-    if (userData.goal !== 'Lose Fat & Build Muscle') return 5;
-
-    const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
-    console.log('Calorie difference percentage:', diff);
-    
-    if (diff >= 0) {
-      return Math.max(0, 5 - Math.floor(diff / 10));
-    }
-
-    return Math.max(0, 4 - Math.floor(Math.abs(diff) / 5));
-
-  } catch (error) {
-    console.error('Failed to fetch user targets:', error);
+function getRating(averageCalories, userTargetDailyCalorie) {
+  const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
+  console.log('Calorie difference percentage:', diff);
+  
+  if (diff >= 0) {
+    return Math.max(0, 5 - Math.floor(diff / 10));
   }
+
+  return Math.max(0, 4 - Math.floor(Math.abs(diff) / 5));
 }
 
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
