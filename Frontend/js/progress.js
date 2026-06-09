@@ -88,15 +88,29 @@ function formatNumber(value) {
   return Number.isFinite(value) ? value.toLocaleString('en-US', { maximumFractionDigits: 1 }) : '0';
 }
 
-function getRating(averageCalories, userTargetDailyCalorie) {
-  const diff = (averageCalories - userTargetDailyCalorie)/userTargetDailyCalorie * 100;
-  console.log('Calorie difference percentage:', diff);
-  
+function getRating(averageCalories, targetCalories) {
+
+  const diff =
+    ((targetCalories - averageCalories) / targetCalories) * 100;
+
+  // UNDER target (deficit)
   if (diff >= 0) {
-    return Math.max(0, 5 - Math.floor(diff / 10));
+    if (diff <= 10) return 5;      // Ideal deficit
+    if (diff <= 20) return 4;      // Good deficit
+    if (diff <= 30) return 3;      // Aggressive deficit
+    if (diff <= 40) return 2;      // Too aggressive
+    return 1;                      // Extreme deficit
   }
 
-  return Math.max(0, 4 - Math.floor(Math.abs(diff) / 5));
+  // OVER target (surplus)
+  const surplus = Math.abs(diff);
+
+  if (surplus <= 5) return 4;      // Small miss
+  if (surplus <= 10) return 3;     // Moderate miss
+  if (surplus <= 20) return 2;     // Significant miss
+  if (surplus <= 30) return 1;     // Large miss
+
+  return 0;                        // Very large surplus
 }
 
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
