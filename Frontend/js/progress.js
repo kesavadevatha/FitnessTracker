@@ -293,10 +293,12 @@ function renderReportCards(dailyTotals) {
       return day;
     }
 
-    bestCaloriesPct = userTargetDailyCalorie - best.calories / userTargetDailyCalorie * 100;
-    dayCaloriesPct = userTargetDailyCalorie - day.calories / userTargetDailyCalorie * 100;
-
-    console.log(`Comparing days for calories: ${day.date} (${day.calories} kcal, ${dayCaloriesPct.toFixed(1)}% from target) vs ${best.date} (${best.calories} kcal, ${bestCaloriesPct.toFixed(1)}% from target)`);
+    bestCaloriesPct = ((userTargetDailyCalorie - best.calories) / userTargetDailyCalorie) * 100;
+    dayCaloriesPct = ((userTargetDailyCalorie - day.calories) / userTargetDailyCalorie) * 100;
+    
+    console.log('Comparing days for calories:', {
+      bestCaloriesPct, dayCaloriesPct
+    });
     if (dayCaloriesPct < 0) return best; // ignore days that exceed the target
 
     return dayCaloriesPct < bestCaloriesPct ? day : best;
