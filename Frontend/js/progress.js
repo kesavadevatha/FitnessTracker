@@ -173,7 +173,7 @@ function calculateProgressRating(averageCalories, averageProtein, averageCarbs, 
   const overallRating = calculateOverallRatingWithFetch(calorieRating, proteinRating, carbsRating, fatRating);
   console.log('Overall progress rating:', overallRating);
   
-  return Math.round(overallRating * 10) / 10; // Round to 1 decimal place
+  return overallRating; // Round to 1 decimal place
 }
 
 function getRangeFromData(data) {
@@ -381,6 +381,7 @@ function renderProgress(data, startDate, endDate) {
 
   // Calculate progress rating
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
+  console.log('Calculated progress rating:', progressRating);
   calorieAsynRating = getRating(averageCalories, userTargetDailyCaloriePublic);
 
   progressCards.innerHTML = `
