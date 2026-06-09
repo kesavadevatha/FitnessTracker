@@ -49,6 +49,14 @@ async function fetchUserTargets() {
       userTargetProtein = targets.protein?.grams || 100;
       userTargetCarbs = targets.carbs?.grams || 250;
       userTargetFat = targets.fat?.grams || 65;
+
+      console.log('Fetched user targets:', {
+        userGoal,
+        userTargetDailyCalorie,
+        userTargetProtein,
+        userTargetCarbs,
+        userTargetFat
+      });
     } else {
       console.warn('Failed to calculate nutrition targets');
     }
@@ -288,6 +296,7 @@ function renderReportCards(dailyTotals) {
     bestCaloriesPct = userTargetDailyCalorie - best.calories / userTargetDailyCalorie * 100;
     dayCaloriesPct = userTargetDailyCalorie - day.calories / userTargetDailyCalorie * 100;
 
+    console.log(`Comparing days for calories: ${day.date} (${day.calories} kcal, ${dayCaloriesPct.toFixed(1)}% from target) vs ${best.date} (${best.calories} kcal, ${bestCaloriesPct.toFixed(1)}% from target)`);
     if (dayCaloriesPct < 0) return best; // ignore days that exceed the target
 
     return dayCaloriesPct < bestCaloriesPct ? day : best;
