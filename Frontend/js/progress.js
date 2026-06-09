@@ -123,42 +123,19 @@ const GOAL_WEIGHTS = {
   'healthy lifestyle':       { cal: 0.25, pro: 0.25, carb: 0.25, fat: 0.25 }
 };
 
-function calculateOverallRating(calorieRating, proteinRating, carbRating, fatRating) {
-  const w = GOAL_WEIGHTS[userGoal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
-
-    let rating = calorieRating * w.cal;
-    rating = rating + proteinRating * w.pro;
-    rating = rating + carbRating * w.carb;
-    rating = rating + fatRating * w.fat;
-
-    return Number.isFinite(rating) ? Number(rating.toFixed(1)) : 0;
-}
-
 function calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat) {
   // Rate each macro as (average / target) * 5, capped at 5
-  console.log('Calculating ratings with:', {
-    averageCalories,userTargetDailyCalorie,
-    averageProtein, userTargetProtein,
-    averageCarbs,userTargetCarbs,
-    averageFat, userTargetFat
-  });
   const calorieRating = getRating(averageCalories, userTargetDailyCalorie);
   const proteinRating = userTargetProtein > 0 ? Math.min((averageProtein / userTargetProtein) * 5, 5) : 0;
   const carbsRating = getRating(averageCarbs, userTargetCarbs);
   const fatRating = getRating(averageFat, userTargetFat);
 
-  console.log('Individual ratings:', {
-    calorieRating,
-    proteinRating,
-    carbsRating,
-    fatRating
-  });
+  const w = GOAL_WEIGHTS[userGoal.toLowerCase()] || GOAL_WEIGHTS['maintain weight'];
 
-  // Average all four ratings
-  const overallRating = calculateOverallRating(calorieRating, proteinRating, carbsRating, fatRating);
-  console.log('Overall progress rating:', overallRating);
+  let rating = (calorieRating * w.cal) + (proteinRating * w.pro) + (carbRating * w.carb) + (fatRating * w.fat);
   
-  return overallRating; // Round to 1 decimal place
+  // Average all four ratings and round to 1 decimal place
+  return Number.isFinite(rating) ? Number(rating.toFixed(1)) : 0;
 }
 
 function getRangeFromData(data) {
@@ -367,7 +344,6 @@ function renderProgress(data, startDate, endDate) {
   // Calculate progress rating
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
   console.log('Calculated progress rating:', progressRating);
-  calorieAsynRating = getRating(averageCalories, userTargetDailyCaloriePublic);
 
   progressCards.innerHTML = `
     ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
@@ -377,7 +353,6 @@ function renderProgress(data, startDate, endDate) {
     ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
     ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${formatNumber(averageDeficit)}`, '⬇️')}
     ${buildCard('Rating', `${formatNumber(progressRating)}/5`, `${formatNumber(progressRating)}`, '⭐')}
-    ${buildCard('Rating', `${formatNumber(calorieAsynRating)}/5`, `${formatNumber(calorieAsynRating)}`, '⚡⭐')}
   `;
 
   renderReportCards(dailyTotals);
