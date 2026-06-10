@@ -75,7 +75,11 @@ function formatInputDate(value) {
     return '';
   }
 
-  return date.toISOString().slice(0, 10);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
 }
 
 function formatValue(label, value, unit = '') {
@@ -217,10 +221,9 @@ function buildMetricCardGrid(title, rows) {
             <div class="report-item-card">
               <div class="report-item-label">
                 <span class="report-item-icon">${icon}</span>
-                <span class="report-item-name">${labelText.join(' ')}</span>
+                <span class="report-item-name">${date}</span>
               </div>
               <div class="report-item-value" aria-hidden="false">   ${value}</div>
-              <div class="report-item-date" aria-hidden="false">   ${date}</div>
             </div>
           `;
         })
