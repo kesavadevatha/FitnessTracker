@@ -385,7 +385,7 @@ function renderProgress(data, startDate, endDate) {
   
   progressCards.innerHTML = `
     ${buildCard('Calories | kcal/day', 
-      `Target ${formatNumber(userTargetDailyCalorie)} kcal | ${formatNumber(NavigationPrecommitController(averageCalories,userTargetDailyCalorie))}☆`, 
+      `Target ${formatNumber(userTargetDailyCalorie)} kcal | ${formatNumber(nonProtienMacroProgressRating(averageCalories,userTargetDailyCalorie))}☆`, 
       `${formatNumber(averageCalories)}`,'⚡')}
     ${buildCard('Protein | g/day', 
       `Target ${formatNumber(userTargetProtein)} g | ${formatNumber(protienProgressRating(averageProtein, userTargetProtein))}☆`, 
