@@ -212,13 +212,12 @@ function buildMetricCardGrid(title, rows) {
     <div class="report-item-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;grid-auto-rows:1fr;">
       ${rows
         .map(([label, value, date]) => {
-          const icon = label.charAt(0);
-          const labelText = label.slice(2);
+          const [icon, ...labelText] = String(label).split(' ');
           return `
             <div class="report-item-card">
               <div class="report-item-label">
                 <span class="report-item-icon">${icon}</span>
-                <span class="report-item-name">${labelText}</span>
+                <span class="report-item-name">${labelText.join(' ')}</span>
               </div>
               <div class="report-item-value" aria-hidden="false">   ${value}</div>
               <div class="report-item-date" aria-hidden="false">   ${date}</div>
