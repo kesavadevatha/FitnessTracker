@@ -218,7 +218,7 @@ function buildMetricCardGrid(title, rows) {
             <div class="report-item-card">
               <div class="report-item-label">
                 <span class="report-item-icon">${icon}</span>
-                <span class="report-item-name">${labelText.join(' ')}</span>
+                <span class="report-item-name">${labelText}</span>
               </div>
               <div class="report-item-value" aria-hidden="false">   ${value}</div>
               <div class="report-item-date" aria-hidden="false">   ${date}</div>
