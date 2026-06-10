@@ -211,7 +211,7 @@ function buildMetricCardGrid(title, rows) {
     <h3 class="report-card-title">${title}</h3>
     <div class="report-item-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;grid-auto-rows:1fr;">
       ${rows
-        .map(([label, value]) => {
+        .map(([label, value, date]) => {
           const [icon, ...labelText] = String(label).split(' ');
           return `
             <div class="report-item-card">
@@ -220,6 +220,7 @@ function buildMetricCardGrid(title, rows) {
                 <span class="report-item-name">${labelText.join(' ')}</span>
               </div>
               <div class="report-item-value" aria-hidden="false">   ${value}</div>
+              <div class="report-item-date" aria-hidden="false">   ${date}</div>
             </div>
           `;
         })
@@ -290,6 +291,12 @@ function renderReportCards(dailyTotals) {
 
   const bestCaloriesDay = dailyTotals.reduce((best, day) => {
     if (!best) return day;
+
+    if(userTargetDailyCalorie - day.calories < 0 && userTargetDailyCalorie - best.calories < 0) {
+      // both over target, pick the one closer to target
+      return (userTargetDailyCalorie - day.calories) > (userTargetDailyCalorie - best.calories) ? day : best;
+    }
+
     return (userTargetDailyCalorie - day.calories) >= 0 && (userTargetDailyCalorie - day.calories) < (userTargetDailyCalorie - best.calories) ? day : best;
   }, null);
   
@@ -301,8 +308,6 @@ function renderReportCards(dailyTotals) {
   const bestCarbsDay = dailyTotals.reduce((best, day) => {
     if (!best) return day;
 
-    console.log(day.carbs, best.carbs, userTargetCarbs);
-
     if(userTargetCarbs - day.carbs < 0 && userTargetCarbs - best.carbs < 0) {
       // both over target, pick the one closer to target
       return (userTargetCarbs - day.carbs) > (userTargetCarbs - best.carbs) ? day : best;
@@ -313,6 +318,12 @@ function renderReportCards(dailyTotals) {
 
   const bestFatDay = dailyTotals.reduce((best, day) => {
     if (!best) return day;
+
+    if(userTargetFat - day.fat < 0 && userTargetFat - best.fat < 0) {
+      // both over target, pick the one closer to target
+      return (userTargetFat - day.fat) > (userTargetFat - best.fat) ? day : best;
+    }
+
     return (userTargetFat - day.fat) >= 0 && (userTargetFat - day.fat) < (userTargetFat - best.fat) ? day : best;
   }, null);
 
@@ -324,10 +335,10 @@ function renderReportCards(dailyTotals) {
   ]);
 
   bestRecordCard.innerHTML = buildMetricCardGrid('🏆 All Time Best Records', [
-    ['⚡ Highest calories', `${formatNumber(bestCaloriesDay.calories)} kcal`],
-    ['🥩 Highest protein', `${formatNumber(bestProteinDay.protein)} g`],
-    ['🍞 Highest carbs', `${formatNumber(bestCarbsDay.carbs)} g`],
-    ['🥑 Highest fat', `${formatNumber(bestFatDay.fat)} g`],
+    ['⚡ Best calories', `${formatNumber(bestCaloriesDay.calories)} kcal`, `${formatInputDate(bestCaloriesDay.date)}`],
+    ['🥩 Highest protein', `${formatNumber(bestProteinDay.protein)} g`, `${formatInputDate(bestProteinDay.date)}`],
+    ['🍞 Best carbs', `${formatNumber(bestCarbsDay.carbs)} g`, `${formatInputDate(bestCarbsDay.date)}`],
+    ['🥑 Best fat', `${formatNumber(bestFatDay.fat)} g`, `${formatInputDate(bestFatDay.date)}`],
   ]);
 }
 
