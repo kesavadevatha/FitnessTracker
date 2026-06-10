@@ -11,6 +11,7 @@ if (window.auth) {
 }
 
 let userGoal = 'Lose Fat & Build Muscle'; // default fallback
+let userTdee = 2000; // default fallback
 let calorieAsynRating = 5; // default fallback
 let userTargetDailyCalorie = 2000; // default fallback
 let userTargetProtein = 100; // default fallback
@@ -44,6 +45,7 @@ async function fetchUserTargets() {
     if (nutritionResponse.ok) {
       const targets = await nutritionResponse.json();
       userGoal = userData.goal;
+      userTdee = targets.tdee || 2000;
       userTargetDailyCalorie = targets.targetCalories || 2000;
       userTargetDailyCaloriePublic = targets.targetCaloriesPublic || 2000;
       userTargetProtein = targets.protein?.grams || 100;
@@ -366,9 +368,7 @@ function renderProgress(data, startDate, endDate) {
   const averageProtein = days > 0 ? totalProtein / days : 0;
   const averageCarbs = days > 0 ? totalCarbs / days : 0;
   const averageFat = days > 0 ? totalFat / days : 0;
-
-  const totalTargetCalories = days * userTargetDailyCalorie;
-  const totalDeficit = totalTargetCalories - totalCalories;
+  const totalDeficit = (userTdee * days) - totalCalories;
   const averageDeficit = days > 0 ? totalDeficit / days : 0;
 
   // Calculate progress rating
