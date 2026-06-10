@@ -49,14 +49,6 @@ async function fetchUserTargets() {
       userTargetProtein = targets.protein?.grams || 100;
       userTargetCarbs = targets.carbs?.grams || 250;
       userTargetFat = targets.fat?.grams || 65;
-
-      console.log('Fetched user targets:', {
-        userGoal,
-        userTargetDailyCalorie,
-        userTargetProtein,
-        userTargetCarbs,
-        userTargetFat
-      });
     } else {
       console.warn('Failed to calculate nutrition targets');
     }
@@ -66,6 +58,19 @@ async function fetchUserTargets() {
 }
 
 function formatInputDate(value) {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toISOString().slice(0, 10);
+}
+
+function formatDisplayDate(value) {
   if (!value) {
     return '';
   }
@@ -338,10 +343,10 @@ function renderReportCards(dailyTotals) {
   ]);
 
   bestRecordCard.innerHTML = buildMetricCardGrid('🏆 All Time Best Records', [
-    ['⚡ Best calories', `${formatNumber(bestCaloriesDay.calories)} kcal`, `${formatInputDate(bestCaloriesDay.date)}`],
-    ['🥩 Highest protein', `${formatNumber(bestProteinDay.protein)} g`, `${formatInputDate(bestProteinDay.date)}`],
-    ['🍞 Best carbs', `${formatNumber(bestCarbsDay.carbs)} g`, `${formatInputDate(bestCarbsDay.date)}`],
-    ['🥑 Best fat', `${formatNumber(bestFatDay.fat)} g`, `${formatInputDate(bestFatDay.date)}`],
+    ['⚡ Best calories', `${formatNumber(bestCaloriesDay.calories)} kcal`, `${formatDisplayDate(bestCaloriesDay.date)}`],
+    ['🥩 Highest protein', `${formatNumber(bestProteinDay.protein)} g`, `${formatDisplayDate(bestProteinDay.date)}`],
+    ['🍞 Best carbs', `${formatNumber(bestCarbsDay.carbs)} g`, `${formatDisplayDate(bestCarbsDay.date)}`],
+    ['🥑 Best fat', `${formatNumber(bestFatDay.fat)} g`, `${formatDisplayDate(bestFatDay.date)}`],
   ]);
 }
 
@@ -368,8 +373,7 @@ function renderProgress(data, startDate, endDate) {
 
   // Calculate progress rating
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
-  console.log('Calculated progress rating:', progressRating);
-
+  
   progressCards.innerHTML = `
     ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
     ${buildCard('Protein | g/day', `${formatNumber(totalProtein)} g`, `${formatNumber(averageProtein)}`, '🥩')}
