@@ -299,7 +299,10 @@ function renderReportCards(dailyTotals) {
   }, null);
 
   const bestCarbsDay = dailyTotals.reduce((best, day) => {
-    if (!best) return day;    
+    if (!best) return day;
+
+    console.log(day.carbs, best.carbs, userTargetCarbs);
+
     return (userTargetCarbs - day.carbs) >= 0 && (userTargetCarbs - day.carbs) < (userTargetCarbs - best.carbs) ? day : best;
   }, null);
 
