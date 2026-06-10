@@ -352,6 +352,15 @@ function renderReportCards(dailyTotals) {
   ]);
 }
 
+function nonProtienMacroProgressRating(intake, target) {
+  return intake >= target ? (1-Math.abs(target - intake/target) * 4) : (intake/target * 5);
+}
+
+function protienProgressRating(intake, target) {
+  return intake >= target ? 5 : (intake / target) * 5;
+}
+
+
 function renderProgress(data, startDate, endDate) {
   const totalCalories = data.reduce((sum, item) => sum + Number(item.calories || 0), 0);
   const totalProtein = data.reduce((sum, item) => sum + Number(item.protein || 0), 0);
@@ -375,10 +384,18 @@ function renderProgress(data, startDate, endDate) {
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
   
   progressCards.innerHTML = `
-    ${buildCard('Calories | kcal/day', `Target ${formatNumber(userTargetDailyCalorie)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
-    ${buildCard('Protein | g/day', `Target ${formatNumber(userTargetProtein)} g`, `${formatNumber(averageProtein)}`, '🥩')}
-    ${buildCard('Carbs | g/day', `Target ${formatNumber(userTargetCarbs)} g`, `${formatNumber(averageCarbs)}`, '🍞')}
-    ${buildCard('Fat | g/day', `Target ${formatNumber(userTargetFat)} g`, `${formatNumber(averageFat)}`, '🥑')}
+    ${buildCard('Calories | kcal/day', 
+      `Target ${formatNumber(userTargetDailyCalorie)} kcal | ${formatNumber(NavigationPrecommitController(averageCalories,userTargetDailyCalorie))}☆`, 
+      `${formatNumber(averageCalories)}`,'⚡')}
+    ${buildCard('Protein | g/day', 
+      `Target ${formatNumber(userTargetProtein)} g | ${formatNumber(protienProgressRating(averageProtein, userTargetProtein))}☆`, 
+      `${formatNumber(averageProtein)}`, '🥩')}
+    ${buildCard('Carbs | g/day', 
+      `Target ${formatNumber(userTargetCarbs)} g | ${formatNumber(nonProtienMacroProgressRating(averageCarbs, userTargetCarbs))}☆`, 
+      `${formatNumber(averageCarbs)}`, '🍞')}
+    ${buildCard('Fat | g/day', 
+      `Target ${formatNumber(userTargetFat)} g | ${formatNumber(nonProtienMacroProgressRating(averageFat, userTargetFat))}☆`, 
+      `${formatNumber(averageFat)}`, '🥑')}
     ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
     ${buildCard('Maintained Calorie Deficit | kcal/day', `Target ${formatNumber(userTdee - userTargetDailyCalorie)} kcal`, `${formatNumber(averageDeficit)}`, '⬇️')}
     ${buildCard('Rating', `${formatNumber(progressRating)}/5`, `${formatNumber(progressRating)}`, '⭐')}
