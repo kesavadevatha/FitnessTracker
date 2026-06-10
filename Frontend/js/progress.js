@@ -375,12 +375,12 @@ function renderProgress(data, startDate, endDate) {
   const progressRating = calculateProgressRating(averageCalories, averageProtein, averageCarbs, averageFat);
   
   progressCards.innerHTML = `
-    ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}`, '⚡')}
-    ${buildCard('Protein | g/day', `${formatNumber(totalProtein)} g`, `${formatNumber(averageProtein)}`, '🥩')}
-    ${buildCard('Carbs | g/day', `${formatNumber(totalCarbs)} g`, `${formatNumber(averageCarbs)}`, '🍞')}
-    ${buildCard('Fat | g/day', `${formatNumber(totalFat)} g`, `${formatNumber(averageFat)}`, '🥑')}
+    ${buildCard('Calories | kcal/day', `${formatNumber(totalCalories)} kcal`, `${formatNumber(averageCalories)}/${formatNumber(userTargetDailyCalorie)}`, '⚡')}
+    ${buildCard('Protein | g/day', `${formatNumber(totalProtein)} g`, `${formatNumber(averageProtein)}/${formatNumber(userTargetProtein)}`, '🥩')}
+    ${buildCard('Carbs | g/day', `${formatNumber(totalCarbs)} g`, `${formatNumber(averageCarbs)}/${formatNumber(userTargetCarbs)}`, '🍞')}
+    ${buildCard('Fat | g/day', `${formatNumber(totalFat)} g`, `${formatNumber(averageFat)}/${formatNumber(userTargetFat)}`, '🥑')}
     ${buildCard('Streak | days','Active tracking streak', `${days}`,  '🔥')}
-    ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${formatNumber(averageDeficit)}`, '⬇️')}
+    ${buildCard('Maintained Calorie Deficit | kcal/day', `${formatNumber(totalDeficit)} kcal`, `${formatNumber(averageDeficit)}/${formatNumber(userTdee - userTargetDailyCalorie)}`, '⬇️')}
     ${buildCard('Rating', `${formatNumber(progressRating)}/5`, `${formatNumber(progressRating)}`, '⭐')}
   `;
 
