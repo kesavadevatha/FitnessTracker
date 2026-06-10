@@ -303,6 +303,11 @@ function renderReportCards(dailyTotals) {
 
     console.log(day.carbs, best.carbs, userTargetCarbs);
 
+    if(userTargetCarbs - day.carbs < 0 && userTargetCarbs - best.carbs < 0) {
+      // both over target, pick the one closer to target
+      return (userTargetCarbs - day.carbs) > (userTargetCarbs - best.carbs) ? day : best;
+    }
+
     return (userTargetCarbs - day.carbs) >= 0 && (userTargetCarbs - day.carbs) < (userTargetCarbs - best.carbs) ? day : best;
   }, null);
 
