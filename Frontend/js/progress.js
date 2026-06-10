@@ -353,7 +353,7 @@ function renderReportCards(dailyTotals) {
 }
 
 function nonProtienMacroProgressRating(intake, target) {
-  return intake >= target ? (1-Math.abs(target - intake/target) * 4) : (intake/target * 5);
+  return intake >= target ? (2*target - intake/target) * 4 : (intake/target * 5);
 }
 
 function protienProgressRating(intake, target) {
