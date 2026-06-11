@@ -447,10 +447,12 @@ async function fetchProgress(startDate, endDate) {
     }
 
     const rawRange = getRangeFromData(data);
-    if (rawRange && !startDate && !endDate) {
-      setRangeInputs(rawRange.startDate, rawRange.endDate);
-      startDate = rawRange.startDate;
-      endDate = rawRange.endDate;
+    if (rawRange) {
+
+      if (!startDate) startDate = rawRange.startDate; 
+      if (!endDate) endDate = rawRange.endDate;
+
+      setRangeInputs(startDate, endDate);
     }
 
     renderProgress(data, startDate || 'All available', endDate || 'All available');
