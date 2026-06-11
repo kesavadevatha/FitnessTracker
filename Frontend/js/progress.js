@@ -494,6 +494,10 @@ progressForm.addEventListener('submit', async (event) => {
 });
 
 /* -------------------- EXPORT/DOWNLOAD -------------------- */
+function showStatus(message, isError = false) {
+  status.textContent = message;
+  status.style.color = isError ? '#fca5a5' : '#cbd5e1';
+}
 
 async function fetchAllCatalogItems() {
   try {
