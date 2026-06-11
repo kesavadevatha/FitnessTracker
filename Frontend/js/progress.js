@@ -5,6 +5,7 @@ const weekReportCard = document.getElementById('week-report-card');
 const bestRecordCard = document.getElementById('best-report-card');
 const startDateInput = progressForm.querySelector('input[name="startDate"]');
 const endDateInput = progressForm.querySelector('input[name="endDate"]');
+const status = document.getElementById('catalog-status');
 
 if (window.auth) {
   auth.requireLogin();
