@@ -411,8 +411,3 @@
 .progress-modal-actions button {
   flex: 1;
 }
-
-.progress-modal-overlay {
-  position: fixed !important;
-  inset: 0 !important;
-}
