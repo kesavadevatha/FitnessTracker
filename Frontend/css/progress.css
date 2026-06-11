@@ -302,3 +302,83 @@
 @media (max-width:640px) {
   .rings-container { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
+
+.progress-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.8);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  z-index: 9999;
+}
+
+.progress-modal-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+.progress-modal {
+  width: min(520px, 100%);
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+}
+
+.progress-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.progress-modal-header h2 {
+  margin: 0;
+}
+
+.icon-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: rgba(148, 163, 184, 0.16);
+  color: #e2e8f0;
+}
+
+.primary-btn,
+.secondary-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-btn {
+  background: linear-gradient(
+    135deg,
+    #38bdf8,
+    #0ea5e9
+  );
+  color: #03111d;
+}
+
+.secondary-btn {
+  background: rgba(
+    56,
+    189,
+    248,
+    0.12
+  );
+  color: #e2e8f0;
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.icon-button:hover {
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}

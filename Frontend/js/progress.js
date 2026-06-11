@@ -644,17 +644,17 @@ async function handleDownloadClick() {
 
   // Create a modal with format options
   const formatModal = document.createElement('div');
-  formatModal.className = 'catalog-modal-overlay';
+  formatModal.className = 'progress-modal-overlay';
   formatModal.innerHTML = `
-    <div class="catalog-modal">
-      <div class="catalog-modal-header">
+    <div class="progress-modal">
+      <div class="progress-modal-header">
         <div>
           <p class="eyebrow">Download Options</p>
           <h2>Select Report Format</h2>
         </div>
         <button type="button" class="icon-button" data-close-format-modal aria-label="Close modal">✕</button>
       </div>
-      <div class="catalog-modal-body" style="padding: 24px;">
+      <div class="progress-modal-body" style="padding: 24px;">
         <p style="margin-bottom: 20px;">Choose the format for your food catalog report:</p>
         <div style="display: flex; gap: 12px;">
           <button type="button" id="export-excel-btn" class="primary-btn" style="flex: 1;">📊 Export as Excel</button>
