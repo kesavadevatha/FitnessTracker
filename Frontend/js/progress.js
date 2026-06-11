@@ -654,7 +654,7 @@ async function handleDownloadClick() {
         </div>
         <button type="button" class="icon-button" data-close-format-modal aria-label="Close modal">✕</button>
       </div>
-      <div class="progress-modal-body" style="padding: 24px;">
+      <div class="progress-modal-body">
         <p style="margin-bottom: 20px;">Choose the format for your food catalog report:</p>
         <div style="display: flex; gap: 12px;">
           <button type="button" id="export-excel-btn" class="primary-btn" style="flex: 1;">📊 Export as Excel</button>
@@ -665,6 +665,7 @@ async function handleDownloadClick() {
   `;
 
   const closeModal = () => {
+    document.body.style.overflow = '';
     formatModal.remove();
   };
 
@@ -680,6 +681,7 @@ async function handleDownloadClick() {
     closeModal();
   });
 
+  document.body.style.overflow = 'hidden';
   document.body.appendChild(formatModal);
 }
 

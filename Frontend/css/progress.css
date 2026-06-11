@@ -305,14 +305,23 @@
 
 .progress-modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(2, 6, 23, 0.8);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(2, 6, 23, 0.85);
+
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 24px;
-  overflow-y: auto;
-  z-index: 9999;
+
+  z-index: 999999;
+
+  overflow: hidden;
 }
 
 .progress-modal-overlay::-webkit-scrollbar {
@@ -320,12 +329,18 @@
 }
 
 .progress-modal {
-  width: min(520px, 100%);
-  background: rgba(15, 23, 42, 0.96);
+  width: min(520px, 90vw);
+  max-width: 520px;
+
+  background: rgba(15, 23, 42, 0.98);
   border: 1px solid rgba(148, 163, 184, 0.22);
   border-radius: 24px;
+
   padding: 24px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+
+  position: relative;
 }
 
 .progress-modal-header {
@@ -381,4 +396,23 @@
 .icon-button:hover {
   transform: translateY(-1px);
   transition: all 0.2s ease;
+}
+
+.progress-modal-body {
+  padding-top: 10px;
+}
+
+.progress-modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.progress-modal-actions button {
+  flex: 1;
+}
+
+.progress-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
 }
