@@ -3,9 +3,9 @@ const { hashPassword, createAuthToken } = require('../utils/authPurse');
 
 async function registerPurse(req, res) {
   try {
-    const { email, password, confirmPassword } = req.body;
-    if (!email || !password || !confirmPassword) {
-      return res.status(400).json({ error: 'Email, password and confirm password are required.' });
+    const { email, password, confirmPassword, firstName, lastName, phone } = req.body;
+    if (!email || !password || !confirmPassword || !firstName) {
+      return res.status(400).json({ error: 'First Name, Email, password and confirm password are required.' });
     }
 
     if (password !== confirmPassword) {
@@ -17,7 +17,7 @@ async function registerPurse(req, res) {
       return res.status(409).json({ error: 'A user with that email already exists.' });
     }
 
-    await createUser(email, password, false, false);
+    await createUser(email, password, firstName, lastName, phone);
     const token = createAuthToken({ email: email.toLowerCase()});
 
     res.status(201).json({
