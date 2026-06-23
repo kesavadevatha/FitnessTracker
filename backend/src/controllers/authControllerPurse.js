@@ -32,6 +32,35 @@ async function registerPurse(req, res) {
   }
 }
 
+async function loginPurse(req, res) {
+  try {
+    const { email, password } = req.body;
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid login' });
+    }
+
+    const incomingHash = hashPassword(password);
+    if (incomingHash !== user.password_hash) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    const token = createAuthToken({email: user.user_id});
+
+    res.json({
+      token,
+      user: {
+        email: user.email
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 module.exports = {
-  registerPurse
+  registerPurse,
+  loginPurse
 };
