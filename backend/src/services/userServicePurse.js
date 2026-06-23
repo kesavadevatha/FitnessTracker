@@ -25,7 +25,6 @@ async function createUser(email, password, firstName, lastName, phone) {
 
   try {
     const hash = hashPassword(password);
-    const adm_flg = isAdmin ? 'Y' : 'N';
 
     await conn.query(
       `
