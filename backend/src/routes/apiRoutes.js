@@ -5,6 +5,10 @@ const foodController = require('../controllers/foodController');
 const mealController = require('../controllers/mealController');
 const trackerController = require('../controllers/trackerController');
 const nutritionController = require('../controllers/nutritionController');
+
+// Purse App
+const authControllerPurse = require('../controllers/authControllerPurse');
+
 const { authenticateRequest } = require('../utils/auth');
 
 const router = express.Router();
@@ -37,5 +41,12 @@ router.post('/api/targets', authenticateRequest, nutritionController.calculateTa
 router.post('/api/targets-public', nutritionController.calculateTargets);
 router.post('/api/macro-analysis', nutritionController.analyzeMacroIntake);
 router.get('/api/macro-analysis', nutritionController.analyzeMacroIntake);
+
+
+// Purse APP
+// -------------------------------------------
+
+// Authentication
+router.get('/purse-api/auth/register', authControllerPurse.registerPurse);
 
 module.exports = router;
