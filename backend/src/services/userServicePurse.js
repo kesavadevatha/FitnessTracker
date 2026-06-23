@@ -34,7 +34,7 @@ async function createUser(email, password, firstName, lastName, phone) {
           password_hash,
           first_name,
           last_name,
-          phone,
+          mobile_number,
           created_date,
           updated_date
         )
