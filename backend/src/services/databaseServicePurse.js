@@ -1,7 +1,7 @@
 const { getConnection } = require('../db');
 const { hashPassword } = require('../utils/authPurse');
 
-async function initTables() {
+async function initTablesPurse() {
   const conn = await getConnection();
 
   try {
@@ -34,5 +34,5 @@ async function initTables() {
 }
 
 module.exports = {
-  initTables
+  initTablesPurse
 };

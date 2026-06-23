@@ -1,11 +1,12 @@
 const app = require('./src/app');
 const { initTables, seedData } = require('./src/services/databaseService');
-const { initTables } = require('./src/services/databaseServicePurse');
+const { initTablesPurse } = require('./src/services/databaseServicePurse');
 const PORT = process.env.PORT || 5000;
 
 (async () => {
   try {
     await initTables();
+    await initTablesPurse();
     await seedData();
 
     app.listen(PORT, () => {
