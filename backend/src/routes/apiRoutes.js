@@ -47,6 +47,6 @@ router.get('/api/macro-analysis', nutritionController.analyzeMacroIntake);
 // -------------------------------------------
 
 // Authentication
-router.get('/purse-api/auth/register', authControllerPurse.registerPurse);
+router.post('/purse-api/auth/register', authControllerPurse.registerPurse);
 
 module.exports = router;
