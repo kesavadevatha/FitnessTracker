@@ -8,7 +8,7 @@ async function initTablesPurse() {
     await conn.query(`CREATE SCHEMA IF NOT EXISTS custom;`);
 
     await conn.query(`
-      CREATE TABLE custom.purse_users (
+      CREATE TABLE IF NOT EXISTS custom.purse_users (
           user_id         BIGINT GENERATED ALWAYS AS IDENTITY,
           first_name      VARCHAR(100) NOT NULL,
           last_name       VARCHAR(100),
