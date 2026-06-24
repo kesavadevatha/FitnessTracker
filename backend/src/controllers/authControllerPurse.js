@@ -50,6 +50,7 @@ async function loginPurse(req, res) {
 
     res.json({
       token,
+      userDet: user,
       user: {
         email: user.email
       }
