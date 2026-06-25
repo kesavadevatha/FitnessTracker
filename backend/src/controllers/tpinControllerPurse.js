@@ -94,7 +94,34 @@ async function verifyTpin(req, res) {
   }
 }
 
+async function registeredUserTpinFlg(req, res) {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Invalid User Id' });
+    }
+
+    const flg = "Y"
+    const userTpin = await findUserTpin(userId);
+    console.log(userTpin);
+
+    if (!userTpin) {
+      flg = "N"
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+
+    res.json({
+      flg: flg
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
 module.exports = {
   createTpin,
-  verifyTpin
+  verifyTpin,
+  registeredUserTpinFlg
 };

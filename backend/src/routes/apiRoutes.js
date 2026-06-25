@@ -54,5 +54,6 @@ router.post('/purse-api/auth/login', authControllerPurse.loginPurse);
 // TPIN
 router.post('/purse-api/tpin/register', tpinController.createTpin);
 router.post('/purse-api/tpin/verification', tpinController.verifyTpin);
+router.post('/purse-api/tpin/registered', tpinController.registeredUserTpinFlg);
 
 module.exports = router;
