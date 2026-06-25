@@ -71,8 +71,10 @@ async function verifyTpin(req, res) {
       return res.status(401).json({ error: 'Invalid login' });
     }
 
-    const userTpin = await findUserTpin(user.user_id)
+    const userTpin = await findUserTpin(user.user_id);
+    console.log(userTpin);
     const incomingHash = hashPassword(tpin);
+    console.log(incomingHash);
     if (incomingHash !== userTpin) {
       return res.status(401).json({ error: 'Invalid password' });
     }
