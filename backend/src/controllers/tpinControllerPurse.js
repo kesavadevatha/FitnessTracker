@@ -6,8 +6,7 @@ async function createTpin(req, res) {
 
   try {
 
-    const { email } = req.user; // JWT middleware
-    const { tpin, confirmTpin } = req.body;
+    const { email, tpin, confirmTpin } = req.body;
 
     if (!tpin || !confirmTpin) {
       return res.status(400).json({
