@@ -1,4 +1,10 @@
-const { findUserByEmail, findUserTpin, createUserTpin } = require('../services/userServicePurse');
+const { 
+  findUserByEmail, 
+  findUserTpin, 
+  createUserTpin, 
+  isRegisteredTpinUser 
+} = require('../services/userServicePurse');
+
 const { hashPassword, createAuthToken } = require('../utils/authPurse');
 
 
@@ -102,14 +108,8 @@ async function registeredUserTpinFlg(req, res) {
       return res.status(401).json({ error: 'Invalid User Id' });
     }
 
-    const flg = "Y"
-    const userTpin = await findUserTpin(userId);
-    console.log(userTpin);
-
-    if (!userTpin) {
-      flg = "N"
-      return res.status(401).json({ error: 'Invalid password' });
-    }
+    const flg = await isRegisteredTpinUser(userId);
+    console.log(flg);
 
     res.json({
       flg: flg

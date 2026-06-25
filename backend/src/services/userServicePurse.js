@@ -39,6 +39,29 @@ async function findUserTpin(userId) {
   }
 }
 
+async function isRegisteredTpinUser(userId) {
+  const conn = await getConnection();
+
+  try {
+    const flg = "Y"
+    const result = await conn.query(
+      `
+        SELECT *
+        FROM custom.purse_tpin
+        WHERE user_id = $1
+      `,
+      [userId]
+    );
+    const tpinData = result.rows[0] || null;
+
+    if (!tpinData) flg = "N"; 
+
+    return flg;
+  } finally {
+    conn.release();
+  }
+}
+
 async function createUser(email, password, firstName, lastName, phone) {
   const conn = await getConnection();
 
@@ -182,5 +205,6 @@ module.exports = {
   saveUserProfile,
   getAllUsers,
   findUserTpin,
-  createUserTpin
+  createUserTpin,
+  isRegisteredTpinUser
 };
