@@ -28,7 +28,7 @@ async function initTablesPurse() {
     `);
 
     await conn.query(`
-      CREATE TABLE IF NOT EXISTS custom.user_tpin (
+      CREATE TABLE IF NOT EXISTS custom.purse_tpin (
         tpin_id                 BIGINT GENERATED ALWAYS AS IDENTITY,
         user_id                 BIGINT NOT NULL,
         tpin_hash               VARCHAR(500) NOT NULL,
