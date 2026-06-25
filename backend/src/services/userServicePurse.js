@@ -54,7 +54,9 @@ async function isRegisteredTpinUser(userId) {
     );
     const tpinData = result.rows[0] || null;
 
-    if (!tpinData) flg = "N"; 
+    if (!tpinData){
+      flg = "N";
+    }  
 
     return flg;
   } finally {
