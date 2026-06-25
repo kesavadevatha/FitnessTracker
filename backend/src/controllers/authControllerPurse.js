@@ -1,6 +1,7 @@
 const { findUserByEmail, createUser } = require('../services/userServicePurse');
 const { hashPassword, createAuthToken } = require('../utils/authPurse');
 
+
 async function registerPurse(req, res) {
   try {
     const { email, password, confirmPassword, firstName, lastName, phone } = req.body;

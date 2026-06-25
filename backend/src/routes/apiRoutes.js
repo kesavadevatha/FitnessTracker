@@ -8,6 +8,7 @@ const nutritionController = require('../controllers/nutritionController');
 
 // Purse App
 const authControllerPurse = require('../controllers/authControllerPurse');
+const tpinController = require('../controllers/tpinControllerPurse');
 
 const { authenticateRequest } = require('../utils/auth');
 
@@ -49,5 +50,9 @@ router.get('/api/macro-analysis', nutritionController.analyzeMacroIntake);
 // Authentication
 router.post('/purse-api/auth/register', authControllerPurse.registerPurse);
 router.post('/purse-api/auth/login', authControllerPurse.loginPurse);
+
+// TPIN
+router.post('/purse-api/tpin/register', tpinController.createTpin);
+router.post('/purse-api/tpin/verification', tpinController.verifyTpin);
 
 module.exports = router;
