@@ -59,9 +59,7 @@ async function isRegisteredTpinUser(userId) {
       flg = "N";
     }  
     console.log(flg);
-    return {
-      flg
-    };
+    return flg ;
   } finally {
     conn.release();
   }
