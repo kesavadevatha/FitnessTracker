@@ -44,7 +44,7 @@ async function initTablesPurse() {
       );
     `);
 
-    console.log('Tables initialized');
+    console.log('Purse: Tables initialized');
   } finally {
     conn.release();
   }
