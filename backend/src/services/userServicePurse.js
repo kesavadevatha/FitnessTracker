@@ -43,7 +43,7 @@ async function isRegisteredTpinUser(userId) {
   const conn = await getConnection();
 
   try {
-    const flg = "Y"
+    let flg = "Y"
     const result = await conn.query(
       `
         SELECT *
